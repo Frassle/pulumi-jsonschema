@@ -568,6 +568,8 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
         let propertiesSchema = JsonObject()
         for kv in properties do
             propertiesSchema.Add(kv.Key, kv.Value.Schema)
+            kv.Value.Description
+            |> Option.iter(fun desc -> kv.Value.Schema.Add("description", desc))
         schema.Add("properties", propertiesSchema)
 
     let raise (typ : string) = failwithf "Invalid type expected object got %s" typ

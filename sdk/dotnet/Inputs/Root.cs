@@ -15,36 +15,60 @@ namespace Pulumi.Jsonschema.Inputs
     /// </summary>
     public sealed class Root : global::Pulumi.InvokeArgs
     {
+        /// <summary>
+        /// Freeform text attribution of derived work, if required.
+        /// </summary>
         [Input("attribution")]
         public string? Attribution { get; set; }
 
         [Input("config")]
         private Dictionary<string, string>? _config;
+
+        /// <summary>
+        /// The package's configuration variables.
+        /// </summary>
         public Dictionary<string, string> Config
         {
             get => _config ?? (_config = new Dictionary<string, string>());
             set => _config = value;
         }
 
+        /// <summary>
+        /// The description of the package. Descriptions are interpreted as Markdown.
+        /// </summary>
         [Input("description")]
         public string? Description { get; set; }
 
+        /// <summary>
+        /// The human-friendly name of the package.
+        /// </summary>
         [Input("displayName")]
         public string? DisplayName { get; set; }
 
         [Input("functions")]
         private Dictionary<string, ImmutableDictionary<string, string>>? _functions;
+
+        /// <summary>
+        /// A map from token to functionSpec that describes the set of functions defined by this package.
+        /// </summary>
         public Dictionary<string, ImmutableDictionary<string, string>> Functions
         {
             get => _functions ?? (_functions = new Dictionary<string, ImmutableDictionary<string, string>>());
             set => _functions = value;
         }
 
+        /// <summary>
+        /// The package's homepage.
+        /// </summary>
         [Input("homepage")]
         public string? Homepage { get; set; }
 
         [Input("keywords")]
         private List<string>? _keywords;
+
+        /// <summary>
+        /// The list of keywords that are associated with the package, if any.
+        /// </summary>
         public List<string> Keywords
         {
             get => _keywords ?? (_keywords = new List<string>());
@@ -53,43 +77,73 @@ namespace Pulumi.Jsonschema.Inputs
 
         [Input("language")]
         private Dictionary<string, object>? _language;
+
+        /// <summary>
+        /// Additional language-specific data about the package.
+        /// </summary>
         public Dictionary<string, object> Language
         {
             get => _language ?? (_language = new Dictionary<string, object>());
             set => _language = value;
         }
 
+        /// <summary>
+        /// The name of the license used for the package's contents.
+        /// </summary>
         [Input("license")]
         public string? License { get; set; }
 
+        /// <summary>
+        /// The URL of the package's logo, if any.
+        /// </summary>
         [Input("logoUrl")]
         public string? LogoUrl { get; set; }
 
         [Input("meta")]
         private Dictionary<string, string>? _meta;
+
+        /// <summary>
+        /// Format metadata about this package.
+        /// </summary>
         public Dictionary<string, string> Meta
         {
             get => _meta ?? (_meta = new Dictionary<string, string>());
             set => _meta = value;
         }
 
+        /// <summary>
+        /// The unqualified name of the package (e.g. "aws", "azure", "gcp", "kubernetes", "random")
+        /// </summary>
         [Input("name", required: true)]
         public string Name { get; set; } = null!;
 
+        /// <summary>
+        /// The URL to use when downloading the provider plugin binary.
+        /// </summary>
         [Input("pluginDownloadURL")]
         public string? PluginDownloadURL { get; set; }
 
         [Input("provider")]
         public object? Provider { get; set; }
 
+        /// <summary>
+        /// The name of the person or organization that authored and published the package.
+        /// </summary>
         [Input("publisher")]
         public string? Publisher { get; set; }
 
+        /// <summary>
+        /// The URL at which the package's sources can be found.
+        /// </summary>
         [Input("repository")]
         public string? Repository { get; set; }
 
         [Input("resources")]
         private Dictionary<string, object>? _resources;
+
+        /// <summary>
+        /// A map from type token to resourceSpec that describes the set of resources and components defined by this package.
+        /// </summary>
         public Dictionary<string, object> Resources
         {
             get => _resources ?? (_resources = new Dictionary<string, object>());
@@ -98,12 +152,19 @@ namespace Pulumi.Jsonschema.Inputs
 
         [Input("types")]
         private Dictionary<string, object>? _types;
+
+        /// <summary>
+        /// A map from type token to complexTypeSpec that describes the set of complex types (i.e. object, enum) defined by this package.
+        /// </summary>
         public Dictionary<string, object> Types
         {
             get => _types ?? (_types = new Dictionary<string, object>());
             set => _types = value;
         }
 
+        /// <summary>
+        /// The version of the package. The version must be valid semver.
+        /// </summary>
         [Input("version")]
         public string? Version { get; set; }
 

@@ -16,24 +16,78 @@ namespace Pulumi.Jsonschema.Outputs
     [OutputType]
     public sealed class Root
     {
+        /// <summary>
+        /// Freeform text attribution of derived work, if required.
+        /// </summary>
         public readonly string? Attribution;
+        /// <summary>
+        /// The package's configuration variables.
+        /// </summary>
         public readonly ImmutableDictionary<string, string>? Config;
+        /// <summary>
+        /// The description of the package. Descriptions are interpreted as Markdown.
+        /// </summary>
         public readonly string? Description;
+        /// <summary>
+        /// The human-friendly name of the package.
+        /// </summary>
         public readonly string? DisplayName;
+        /// <summary>
+        /// A map from token to functionSpec that describes the set of functions defined by this package.
+        /// </summary>
         public readonly ImmutableDictionary<string, ImmutableDictionary<string, string>>? Functions;
+        /// <summary>
+        /// The package's homepage.
+        /// </summary>
         public readonly string? Homepage;
+        /// <summary>
+        /// The list of keywords that are associated with the package, if any.
+        /// </summary>
         public readonly ImmutableArray<string> Keywords;
+        /// <summary>
+        /// Additional language-specific data about the package.
+        /// </summary>
         public readonly ImmutableDictionary<string, object>? Language;
+        /// <summary>
+        /// The name of the license used for the package's contents.
+        /// </summary>
         public readonly string? License;
+        /// <summary>
+        /// The URL of the package's logo, if any.
+        /// </summary>
         public readonly string? LogoUrl;
+        /// <summary>
+        /// Format metadata about this package.
+        /// </summary>
         public readonly ImmutableDictionary<string, string>? Meta;
+        /// <summary>
+        /// The unqualified name of the package (e.g. "aws", "azure", "gcp", "kubernetes", "random")
+        /// </summary>
         public readonly string Name;
+        /// <summary>
+        /// The URL to use when downloading the provider plugin binary.
+        /// </summary>
         public readonly string? PluginDownloadURL;
         public readonly object? Provider;
+        /// <summary>
+        /// The name of the person or organization that authored and published the package.
+        /// </summary>
         public readonly string? Publisher;
+        /// <summary>
+        /// The URL at which the package's sources can be found.
+        /// </summary>
         public readonly string? Repository;
+        /// <summary>
+        /// A map from type token to resourceSpec that describes the set of resources and components defined by this package.
+        /// </summary>
         public readonly ImmutableDictionary<string, object>? Resources;
+        /// <summary>
+        /// A map from type token to complexTypeSpec that describes the set of complex types (i.e. object, enum) defined by this package.
+        /// </summary>
         public readonly ImmutableDictionary<string, object>? Types;
+        /// <summary>
+        /// The version of the package. The version must be valid semver.
+        /// </summary>
         public readonly string? Version;
 
         [OutputConstructor]
