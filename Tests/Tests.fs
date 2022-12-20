@@ -688,8 +688,9 @@ let writeSdk (schema : System.Text.Json.Nodes.JsonObject) (name : string) =
     proc.WaitForExit()
     if proc.ExitCode <> 0 then
         failwithf "gen-sdk failed\nstdout:\n%s\nstderr:\n%s" (out.ToString()) (err.ToString())
-
+        
     System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "Examples", name, "dotnet", "version.txt"), "")
+    System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "Examples", name, "dotnet", "schema.json"), schema.ToJsonString())
 
 [<Fact>]
 let ``Test githhub`` () =
