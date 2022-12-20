@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Jsonschema.Outputs
+namespace Pulumi.GithubWorkflow.Outputs
 {
 
     [OutputType]

@@ -765,7 +765,8 @@ type RootConversion = {
 // Generate a full pulumi schema using the conversion as the function to generate
 let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     let schema = JsonObject()
-    schema.Add("name", JsonValue.Create("jsonschema"))
+    let name = uri.Segments |> Seq.last |> System.IO.Path.GetFileNameWithoutExtension
+    schema.Add("name", JsonValue.Create(name))
     schema.Add("description", JsonValue.Create("A pulumi package generated from a json schema"))
     schema.Add("keywords", JsonArray(
         JsonValue.Create("pulumi"),
@@ -777,8 +778,8 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     schema.Add("functions", functions)
     let readFunction = JsonObject()
     let writeFunction = JsonObject()
-    functions.Add("jsonschema:index:read", readFunction)
-    functions.Add("jsonschema:index:write", writeFunction)
+    functions.Add(name + ":index:read", readFunction)
+    functions.Add(name + ":index:write", writeFunction)
 
     let root = {
         Uri = uri
@@ -800,10 +801,10 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
             let complexTypeSpec = conversion.Schema.Deserialize<JsonObject>()
             conversion.Description
             |> Option.iter (fun desc -> complexTypeSpec.Add("description", desc))
-            types.Add("jsonschema:index:root", complexTypeSpec)
+            types.Add(name + ":index:root", complexTypeSpec)
 
             let propertySpec = JsonObject()
-            propertySpec.Add("$ref", "#/types/jsonschema:index:root")
+            propertySpec.Add("$ref", JsonValue.Create("#/types/" + name + ":index:root"))
             propertySpec
         else
             let propertySpec = conversion.Schema.Deserialize<JsonObject>()

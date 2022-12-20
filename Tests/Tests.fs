@@ -87,14 +87,14 @@ let testBaseUri = Uri("https://github.com/Frassle/pulumi-jsonschema/schema.json"
 // Fills in the standard fields for the Pulumi schema
 let simpleSchema (objectType : string) : string =
     sprintf """{
-    "name":"jsonschema",
+    "name":"schema",
     "description":"A pulumi package generated from a json schema",
     "keywords":["pulumi","jsonschema"],
     "homepage":"https://github.com/Frassle/pulumi-jsonschema",
     "repository":"https://github.com/Frassle/pulumi-jsonschema",
     "license":"Apache-2.0",
     "functions":{
-        "jsonschema:index:read":{
+        "schema:index:read":{
             "description":"Read the given JSON into the object model",
             "inputs":{
                 "required": ["json"],
@@ -105,7 +105,7 @@ let simpleSchema (objectType : string) : string =
                 "properties": {"value": %s}
             }
         },
-        "jsonschema:index:write":{
+        "schema:index:write":{
             "description":"Read the given JSON into the object model",
             "inputs":{
                 "required": ["value"],
@@ -126,7 +126,7 @@ let complexSchema (types : (string*string) list) : string =
         |> String.concat ","
 
     sprintf """{
-    "name":"jsonschema",
+    "name":"schema",
     "description":"A pulumi package generated from a json schema",
     "keywords":["pulumi","jsonschema"],
     "homepage":"https://github.com/Frassle/pulumi-jsonschema",
@@ -134,7 +134,7 @@ let complexSchema (types : (string*string) list) : string =
     "license":"Apache-2.0",
     "types": {%s},
     "functions":{
-        "jsonschema:index:read":{
+        "schema:index:read":{
             "description":"Read the given JSON into the object model",
             "inputs":{
                 "required": ["json"],
@@ -142,14 +142,14 @@ let complexSchema (types : (string*string) list) : string =
             },
             "outputs":{
                 "required": ["value"],
-                "properties": {"value": {"$ref":"#/types/jsonschema:index:root"}}
+                "properties": {"value": {"$ref":"#/types/schema:index:root"}}
             }
         },
-        "jsonschema:index:write":{
+        "schema:index:write":{
             "description":"Read the given JSON into the object model",
             "inputs":{
                 "required": ["value"],
-                "properties": {"value": {"$ref":"#/types/jsonschema:index:root"}}
+                "properties": {"value": {"$ref":"#/types/schema:index:root"}}
             },
             "outputs":{
                 "required": ["json"],
@@ -236,7 +236,7 @@ let ``Test string enum`` () =
     conversion
     |> conversionToJson
     |> shouldJsonEqual (complexSchema [
-        "jsonschema:index:root", """{"type":"string","enum":[{"value":"info"},{"value":"warn"},{"value":"error"}]}"""
+        "schema:index:root", """{"type":"string","enum":[{"value":"info"},{"value":"warn"},{"value":"error"}]}"""
     ])
 
     Pulumi.Provider.PropertyValue("info")
@@ -375,7 +375,7 @@ let ``Test object with properties`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (complexSchema ["jsonschema:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}"""])
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}"""])
     
     Pulumi.Provider.PropertyValue(listToDict [
         "foo", Pulumi.Provider.PropertyValue("a")
@@ -414,7 +414,7 @@ let ``Test object with required properties`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (complexSchema ["jsonschema:index:root", """{
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
         "type":"object",
         "properties":{"foo":{"type":"string"}},
         "required": ["foo"]
@@ -455,7 +455,7 @@ let ``Test object with properties and additionalProperties`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (complexSchema ["jsonschema:index:root", """{
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
         "type":"object",
         "properties":{
             "foo":{"type":"string"},
@@ -508,7 +508,7 @@ let ``Test refs`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (complexSchema ["jsonschema:index:root", """{"type":"object","properties":{"foo":{"type":"number"}}}"""])
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{"type":"object","properties":{"foo":{"type":"number"}}}"""])
     
     Pulumi.Provider.PropertyValue(listToDict [
         "foo", Pulumi.Provider.PropertyValue(123)
@@ -597,7 +597,7 @@ let ``Test property description`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (complexSchema ["jsonschema:index:root", """{
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
         "type":"object",
         "properties":{
             "foo":{
@@ -628,8 +628,8 @@ let ``Test complex object`` () =
     conversion
     |> conversionToJson
     |> shouldJsonEqual (complexSchema [
-        "jsonschema:index:root", """{"type":"object","properties":{"foo":{"$ref":"#/types/jsonschema:index:foo"}}}"""
-        "jsonschema:index:foo", """{"type":"object","properties":{"bar":{"type":"number"}}}"""
+        "schema:index:root", """{"type":"object","properties":{"foo":{"$ref":"#/types/jsonschema:index:foo"}}}"""
+        "schema:index:foo", """{"type":"object","properties":{"bar":{"type":"number"}}}"""
     ])
     
     Pulumi.Provider.PropertyValue(listToDict [

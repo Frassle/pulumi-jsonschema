@@ -7,9 +7,9 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Jsonschema
+namespace Pulumi.Pulumi
 {
-    [JsonschemaResourceType("pulumi:providers:jsonschema")]
+    [PulumiResourceType("pulumi:providers:pulumi")]
     public partial class Provider : global::Pulumi.ProviderResource
     {
         /// <summary>
@@ -20,7 +20,7 @@ namespace Pulumi.Jsonschema
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
         public Provider(string name, ProviderArgs? args = null, CustomResourceOptions? options = null)
-            : base("jsonschema", name, args ?? new ProviderArgs(), MakeResourceOptions(options, ""))
+            : base("pulumi", name, args ?? new ProviderArgs(), MakeResourceOptions(options, ""))
         {
         }
 

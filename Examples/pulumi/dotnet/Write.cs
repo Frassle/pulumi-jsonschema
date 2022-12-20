@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Jsonschema
+namespace Pulumi.Pulumi
 {
     public static class Write
     {
@@ -15,13 +15,13 @@ namespace Pulumi.Jsonschema
         /// Read the given JSON into the object model
         /// </summary>
         public static Task<WriteResult> InvokeAsync(WriteArgs args, InvokeOptions? options = null)
-            => global::Pulumi.Deployment.Instance.InvokeAsync<WriteResult>("jsonschema:index:write", args ?? new WriteArgs(), options.WithDefaults());
+            => global::Pulumi.Deployment.Instance.InvokeAsync<WriteResult>("pulumi:index:write", args ?? new WriteArgs(), options.WithDefaults());
 
         /// <summary>
         /// Read the given JSON into the object model
         /// </summary>
         public static Output<WriteResult> Invoke(WriteInvokeArgs args, InvokeOptions? options = null)
-            => global::Pulumi.Deployment.Instance.Invoke<WriteResult>("jsonschema:index:write", args ?? new WriteInvokeArgs(), options.WithDefaults());
+            => global::Pulumi.Deployment.Instance.Invoke<WriteResult>("pulumi:index:write", args ?? new WriteInvokeArgs(), options.WithDefaults());
     }
 
 

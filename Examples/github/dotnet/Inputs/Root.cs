@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Jsonschema.Inputs
+namespace Pulumi.GithubWorkflow.Inputs
 {
 
     public sealed class Root : global::Pulumi.InvokeArgs
