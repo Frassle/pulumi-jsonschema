@@ -9,6 +9,34 @@ open System.Collections.Immutable
 open System.Text.Json
 open System.Text.Json.Nodes
 
+type KeywordCollection = IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>
+
+[<RequireQualifiedAccess>]
+type JsonSchema = 
+    | Bool of bool
+    | Keywords of KeywordCollection
+
+    static member Of (schema : Json.Schema.JsonSchema) =
+        match schema.BoolValue |> Option.ofNullable with
+        | Some false -> JsonSchema.Bool false
+        | Some true -> JsonSchema.Bool true
+        | None ->
+            JsonSchema.Keywords schema.Keywords
+    
+let pickKeyword<'T when 'T :> Json.Schema.IJsonSchemaKeyword> (keywords : KeywordCollection) : 'T option =
+    let picked = 
+        keywords
+        |> Seq.choose (function | :? 'T as t -> Some t | _ -> None)
+        |> Seq.toArray
+
+    // Error if we see more than 1 of the same type of keyword, mostly for sanity
+    if picked.Length > 1 then
+        failwithf "Found more than one keyword of type %s" (typeof<'T>.FullName)
+
+    if picked.Length = 1 then
+        Some picked[0]
+    else 
+        None
 
 type SchemaConversion = {
     Schema : JsonObject
@@ -80,37 +108,22 @@ type RootInformation = {
     Document : JsonElement
 }
 
-let pickKeyword<'T when 'T :> Json.Schema.IJsonSchemaKeyword> (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>) : 'T option =
-    let picked = 
-        keywords
-        |> Seq.choose (function | :? 'T as t -> Some t | _ -> None)
-        |> Seq.toArray
-
-    // Error if we see more than 1 of the same type of keyword, mostly for sanity
-    if picked.Length > 1 then
-        failwithf "Found more than one keyword of type %s" (typeof<'T>.FullName)
-
-    if picked.Length = 1 then
-        Some picked[0]
-    else 
-        None
-
-let isSimpleType (schemaValueType : Json.Schema.SchemaValueType) (schema : Json.Schema.JsonSchema) : bool =
-    schema.Keywords
+let isSimpleType (schemaValueType : Json.Schema.SchemaValueType) (keywords : KeywordCollection) : bool =
+    keywords
     |> pickKeyword<Json.Schema.TypeKeyword>
     |> Option.map (fun typ ->
         typ.Type = schemaValueType
     ) |> Option.defaultValue false
 
-let isSimpleUnion (schema : Json.Schema.JsonSchema) : bool =
-    schema.Keywords
+let isSimpleUnion (keywords : KeywordCollection) : bool =
+    keywords
     |> pickKeyword<Json.Schema.TypeKeyword>
     |> Option.map (fun typ ->
         not (typ.Type.HasFlag Json.Schema.SchemaValueType.Object) &&
         not (typ.Type.HasFlag Json.Schema.SchemaValueType.Array)
     ) |> Option.defaultValue false
         
-let convertNullSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>) : Conversion =
+let convertNullSchema (keywords : KeywordCollection) : Conversion =
     let schema = JsonObject()
     schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
 
@@ -143,7 +156,7 @@ let convertNullSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKey
         Reader = reader
     }
 
-let convertBoolSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>) : Conversion =
+let convertBoolSchema (keywords : KeywordCollection) : Conversion =
     let schema = JsonObject()
     schema.Add("type", JsonValue.Create("bool"))
 
@@ -182,7 +195,7 @@ let convertBoolSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKey
         Reader = reader
     }
 
-let convertStringSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>) : Conversion =
+let convertStringSchema (keywords : KeywordCollection) : Conversion =
     let schema = JsonObject()
     schema.Add("type", JsonValue.Create("string"))
 
@@ -219,7 +232,7 @@ let convertStringSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaK
         Reader = reader
     }
 
-let convertNumberSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>) : Conversion =
+let convertNumberSchema (keywords : KeywordCollection) : Conversion =
     let schema = JsonObject()
     schema.Add("type", JsonValue.Create("number"))
 
@@ -256,7 +269,7 @@ let convertNumberSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaK
         Reader = reader
     }
 
-let convertSimpleUnion (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>) : Conversion =
+let convertSimpleUnion (keywords : KeywordCollection) : Conversion =
     let typ = keywords |> pickKeyword<Json.Schema.TypeKeyword> |> Option.get
     
     let nullConversion =
@@ -345,7 +358,7 @@ let convertSimpleUnion (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKe
     }
 
     
-let rec convertRef (root : RootInformation) (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion option =
+let rec convertRef (root : RootInformation) (ref : Json.Schema.RefKeyword) : Conversion option =
     //let newUri = Uri("schema.json", ref.Reference)
 // var newUri = new Uri(context.Scope.LocalScope, Reference);
 // var navigation = (newUri.OriginalString, context.InstanceLocation);
@@ -369,7 +382,7 @@ let rec convertRef (root : RootInformation) (schema : Json.Schema.JsonSchema) (r
         | None -> failwithf "failed to find $ref %O" ref.Reference
         | Some subelement ->
             let subschema = Json.Schema.JsonSchema.FromText(subelement.GetRawText())
-            convertSubSchema root subschema
+            convertSubSchema root (JsonSchema.Of subschema)
     | _ ->
         failwithf "failed to parse ref %s" newUri.Fragment
 
@@ -404,7 +417,7 @@ and convertArraySchema (root : RootInformation) (keywords : IReadOnlyCollection<
     let items =
         itemsKeyword
         |> Option.map (fun ik ->
-            convertSubSchema root ik.SingleSchema
+            convertSubSchema root (JsonSchema.Of ik.SingleSchema)
         )
         |> Option.defaultValue (Some Any)
 
@@ -468,32 +481,41 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
     let propertiesKeyword = keywords |> pickKeyword<Json.Schema.PropertiesKeyword>
     let additionalPropertiesKeyword = keywords |> pickKeyword<Json.Schema.AdditionalPropertiesKeyword>
     let requiredKeyword = keywords |> pickKeyword<Json.Schema.RequiredKeyword>
+    let unevaluatedPropertiesKeyword = keywords |> pickKeyword<Json.Schema.UnevaluatedPropertiesKeyword>
 
     let properties = 
         propertiesKeyword
         |> Option.map (fun pk ->
             pk.Properties
             |> Seq.map (fun kv ->
-                match convertSubSchema root kv.Value with 
+                match convertSubSchema root (JsonSchema.Of kv.Value) with 
                 | Some subConversion -> (kv.Key, subConversion)
                 | None -> failwith "false properties not yet implemented"
             )
             |> Map.ofSeq
         )
 
-    let additionalProperties =
-        additionalPropertiesKeyword
-        |> Option.map (fun apk ->
-            convertSubSchema root apk.Schema
-        )
-        |> Option.defaultValue (Some Any)
-
     // Pulumi schema only directly supports maps (i.e additionalProperties is Some and properties = []) or fixed property bags (i.e. additionalProperties is None)
-    // We'll have to work out some container to support both
-    match additionalProperties, properties with
-    | Some _, Some _ -> failwith "properties and additionalProperties is not yet implemented"
-    | Some additionalProperties, None -> schema.Add("additionalProperties", additionalProperties.Schema)
-    | None, _ -> ()
+    // If we have both we need to add an extra "additionalProperties" property to the object
+    let additionalProperties =
+        match additionalPropertiesKeyword with 
+        | Some apk -> convertSubSchema root (JsonSchema.Of apk.Schema)
+        | None -> Some Any
+
+    let properties = 
+        match additionalProperties, properties with
+        | Some apk, Some properties -> 
+            // Make a fresh map conversion, this is dumb but we just reconvert the apk schema to get the mapping schema
+            let mapConversion = convertObjectSchema root ([
+                Json.Schema.TypeKeyword(Json.Schema.SchemaValueType.Object) :> Json.Schema.IJsonSchemaKeyword
+                Json.Schema.AdditionalPropertiesKeyword (additionalPropertiesKeyword.Value.Schema)
+            ] |> List)
+
+            Some (properties.Add ("additionalProperties", mapConversion))
+        | Some apk, None ->
+            schema.Add("additionalProperties", apk.Schema)
+            properties 
+        | _, properties -> properties
 
     let required = 
         match requiredKeyword with
@@ -532,21 +554,46 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
                         failwithf "property '%s' is required" key
 
                 obj
-                |> Seq.map (fun kv ->
-                    let maybeConversion = 
-                        match properties with
-                        | Some properties -> properties.TryFind kv.Key
-                        | None -> None
-                        |> Option.orElse additionalProperties
-
-                    match maybeConversion with 
-                    | Some conversion ->
-                        let node = conversion.Writer kv.Value
+                |> Seq.collect (fun kv ->
+                    match properties, additionalProperties with
+                    | None, None -> 
+                        // No properties or additionalProperties
+                        failwithf "unexpected property '%s'" kv.Key
+                    | Some properties, None -> 
+                        match properties.TryFind kv.Key with 
+                        | Some conversion ->
+                            let node = conversion.Writer kv.Value
+                            match node with 
+                            | Some node -> [KeyValuePair.Create(kv.Key, node)] :> seq<_>
+                            | None -> [KeyValuePair.Create(kv.Key, null)]
+                        | None -> failwithf "unexpected property '%s'" kv.Key
+                    | None, Some additionalProperties ->
+                        let node = additionalProperties.Writer kv.Value
                         match node with 
-                        | Some node -> KeyValuePair.Create(kv.Key, node)
-                        | None -> KeyValuePair.Create(kv.Key, null)
-                    | None ->
-                        failwithf "Could not write property %s" kv.Key)
+                        | Some node -> [KeyValuePair.Create(kv.Key, node)]
+                        | None -> [KeyValuePair.Create(kv.Key, null)]
+                    | Some properties, Some additionalProperties ->
+                        if kv.Key = "additionalProperties" then
+                            // This _should_ be an object
+                            match kv.Value.TryGetObject() with
+                            | false, _ -> failwithf "Invalid type expected object got %O" kv.Value
+                            | true, additionalObj ->
+                                additionalObj
+                                |> Seq.map (fun kv ->
+                                    let node = additionalProperties.Writer kv.Value
+                                    match node with 
+                                    | Some node -> KeyValuePair.Create(kv.Key, node)
+                                    | None -> KeyValuePair.Create(kv.Key, null)
+                                )
+                        else 
+                            match properties.TryFind kv.Key with 
+                            | Some conversion ->
+                                let node = conversion.Writer kv.Value
+                                match node with 
+                                | Some node -> [KeyValuePair.Create(kv.Key, node)]
+                                | None -> [KeyValuePair.Create(kv.Key, null)]
+                            | None -> failwithf "unexpected property '%s'" kv.Key
+                )
                 |> JsonObject
                 :> JsonNode
                 |> Some
@@ -560,21 +607,38 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
         )
 
     let reader (value : JsonElement) = 
-        if value.ValueKind = JsonValueKind.Object then
-            value.EnumerateObject()
-            |> Seq.map (fun kv ->
-                let maybeConversion = 
-                    match properties with
-                    | Some properties -> properties.TryFind kv.Name
-                    | None -> None
-                    |> Option.orElse additionalProperties
+        if value.ValueKind = JsonValueKind.Object then            
+            let properties, additionalProperties =
+                value.EnumerateObject()
+                |> Seq.fold (fun (propsSoFar, addPropsSoFar) kv ->
+                    match properties, additionalProperties with
+                    | None, None -> 
+                        // No properties or additionalProperties
+                        failwithf "unexpected property '%s'" kv.Name
+                    | Some properties, None -> 
+                        match properties.TryFind kv.Name with 
+                        | Some conversion ->
+                            KeyValuePair.Create(kv.Name, conversion.Reader kv.Value) :: propsSoFar, []
+                        | None -> failwithf "unexpected property '%s'" kv.Name
+                    | None, Some additionalProperties ->
+                        KeyValuePair.Create(kv.Name, additionalProperties.Reader kv.Value) :: propsSoFar, []
+                    | Some properties, Some additionalProperties ->
+                        match properties.TryFind kv.Name with 
+                        | Some conversion ->
+                            KeyValuePair.Create(kv.Name, conversion.Reader kv.Value) :: propsSoFar, addPropsSoFar
+                        | None ->                         
+                            propsSoFar, KeyValuePair.Create(kv.Name, additionalProperties.Reader kv.Value) :: addPropsSoFar
+                ) ([], [])
 
-                match maybeConversion with 
-                | Some conversion -> 
-                    let value = conversion.Reader kv.Value
-                    KeyValuePair.Create(kv.Name, value)
-                | None ->
-                    failwithf "Could not read property %s" kv.Name)
+            // If we have any additionalProperties add them to the properties
+            let properties = 
+                match additionalProperties with
+                | [] -> properties
+                | additionalProperties ->
+                    let arr = Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange additionalProperties)
+                    KeyValuePair.Create("additionalProperties", arr) ::  properties
+
+            properties
             |> ImmutableDictionary.CreateRange
             |> Pulumi.Provider.PropertyValue
         else 
@@ -586,51 +650,51 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
             Writer = writer
             Reader = reader
         }
-    else 
+    else
         TypeSpec {
             Schema = schema
             Writer = writer
             Reader = reader
         }
         
-and convertAllOf (schema : Json.Schema.JsonSchema) (allof : Json.Schema.AllOfKeyword) : Conversion =
+and convertAllOf (schema : JsonSchema) (allof : Json.Schema.AllOfKeyword) : Conversion =
     Any
 
-and convertOneOf (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
+and convertOneOf (schema : JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
     Any
 
-and convertSubSchema (root : RootInformation) (schema : Json.Schema.JsonSchema) : Conversion option =
-    match schema.BoolValue |> Option.ofNullable with 
-    | Some false -> None
-    | Some true ->  Some Any
-    | None ->
-        let allOf = pickKeyword<Json.Schema.AllOfKeyword> schema.Keywords
-        let oneOf = pickKeyword<Json.Schema.OneOfKeyword> schema.Keywords
-        let ref = pickKeyword<Json.Schema.RefKeyword> schema.Keywords
+and convertSubSchema (root : RootInformation) (schema : JsonSchema) : Conversion option =
+    match schema with 
+    | JsonSchema.Bool false -> None
+    | JsonSchema.Bool true ->  Some Any
+    | JsonSchema.Keywords keywords ->
+        let allOf = pickKeyword<Json.Schema.AllOfKeyword> keywords
+        let oneOf = pickKeyword<Json.Schema.OneOfKeyword> keywords
+        let ref = pickKeyword<Json.Schema.RefKeyword> keywords
         
         if ref.IsSome then
-            convertRef root schema ref.Value
+            convertRef root ref.Value
         elif allOf.IsSome then
             Some (convertAllOf schema allOf.Value)
         elif oneOf.IsSome then
             Some (convertOneOf schema oneOf.Value)
-        elif isSimpleType Json.Schema.SchemaValueType.Null schema then 
-            Some (convertNullSchema schema.Keywords)
-        elif isSimpleType Json.Schema.SchemaValueType.Boolean schema then 
-            Some (convertBoolSchema schema.Keywords)
-        elif isSimpleType Json.Schema.SchemaValueType.String schema then 
-            Some (convertStringSchema schema.Keywords)
-        elif isSimpleType Json.Schema.SchemaValueType.Number schema then 
-            Some (convertNumberSchema schema.Keywords)
-        elif isSimpleType Json.Schema.SchemaValueType.Object schema then 
-            Some (convertObjectSchema root schema.Keywords)
-        elif isSimpleType Json.Schema.SchemaValueType.Array schema then 
-            Some (convertArraySchema root schema.Keywords)
-        elif isSimpleUnion schema then
-            Some (convertSimpleUnion schema.Keywords)
+        elif isSimpleType Json.Schema.SchemaValueType.Null keywords then 
+            Some (convertNullSchema keywords)
+        elif isSimpleType Json.Schema.SchemaValueType.Boolean keywords then 
+            Some (convertBoolSchema keywords)
+        elif isSimpleType Json.Schema.SchemaValueType.String keywords then 
+            Some (convertStringSchema keywords)
+        elif isSimpleType Json.Schema.SchemaValueType.Number keywords then 
+            Some (convertNumberSchema keywords)
+        elif isSimpleType Json.Schema.SchemaValueType.Object keywords then 
+            Some (convertObjectSchema root keywords)
+        elif isSimpleType Json.Schema.SchemaValueType.Array keywords then 
+            Some (convertArraySchema root keywords)
+        elif isSimpleUnion keywords then
+            Some (convertSimpleUnion keywords)
         else 
             let msg =
-                schema.Keywords
+                keywords
                 |> Seq.map (fun kw -> kw.ToString())
                 |> String.concat ", "
                 |> sprintf "unhandled schema: %s"
@@ -665,7 +729,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         Document = jsonSchema
     }
     let jsonSchema = Json.Schema.JsonSchema.FromText (jsonSchema.GetRawText())
-    let conversion = convertSubSchema root jsonSchema
+    let conversion = convertSubSchema root (JsonSchema.Of jsonSchema)
 
     let conversion = 
         match conversion with 

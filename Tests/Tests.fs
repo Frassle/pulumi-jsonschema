@@ -410,6 +410,57 @@ let ``Test object with required properties`` () =
     |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
         "foo", Pulumi.Provider.PropertyValue("string")
     ]))
+    
+
+[<Fact>]
+let ``Test object with properties and additionalProperties`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "object",
+        "properties": {
+            "foo": { "type": "string" }
+        },
+        "additionalProperties": { "type": "number" }
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (complexSchema ["root", """{
+        "type":"object",
+        "properties":{
+            "foo":{"type":"string"},
+            "additionalProperties":{"type": "object", "additionalProperties": {"type": "number"}}
+        }
+    }"""])
+    
+    Pulumi.Provider.PropertyValue(listToDict [
+        "foo", Pulumi.Provider.PropertyValue("a")
+        "additionalProperties", Pulumi.Provider.PropertyValue(listToDict [
+            "bob", Pulumi.Provider.PropertyValue(123)
+        ])
+    ])
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """{"foo":"a","bob":123}"""
+    
+    // Properties are optional by default
+    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """{}"""
+
+    fromJson """{"foo":"string", "other": 54}"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
+        "foo", Pulumi.Provider.PropertyValue("string")
+        "additionalProperties", Pulumi.Provider.PropertyValue(listToDict [
+            "other", Pulumi.Provider.PropertyValue(54)
+        ])
+    ]))
+
+    fromJson """{}"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test refs`` () =
@@ -429,8 +480,8 @@ let ``Test refs`` () =
     |> conversionToJson
     |> shouldJsonEqual (complexSchema ["root", """{"type":"object","properties":{"foo":{"type":"number"}}}"""])
     
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [
-        KeyValuePair.Create("foo", Pulumi.Provider.PropertyValue(123));
+    Pulumi.Provider.PropertyValue(listToDict [
+        "foo", Pulumi.Provider.PropertyValue(123)
     ])
     |> conversion.Writer
     |> toJson
@@ -450,7 +501,7 @@ let ``Test refs`` () =
 
     fromJson """{}"""
     |> conversion.Reader
-    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)    
 
 [<Fact>]
 let ``Test simple type union`` () =
@@ -499,7 +550,7 @@ let ``Test githhub`` () =
 
 [<Fact>]
 let ``Test pulumi`` () =
-    let uri = Uri("https://raw.githubusercontent.com/pulumi/pulumi/efa90bf2a7a8f5454feb34944ab5763dc101cd22/pkg/codegen/schema/pulumi.json")
+    let uri = Uri("https://raw.githubusercontent.com/pulumi/pulumi/fraser/fixSchema/pkg/codegen/schema/pulumi.json")
     let schema = 
         use client = new System.Net.Http.HttpClient()
         let contents = client.GetStringAsync(uri)
