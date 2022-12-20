@@ -10,35 +10,25 @@ using Pulumi.Serialization;
 namespace Pulumi.GithubWorkflow.Inputs
 {
 
-    public sealed class Root : global::Pulumi.InvokeArgs
+    public sealed class A0 : global::Pulumi.InvokeArgs
     {
+        /// <summary>
+        /// default any for anyOf
+        /// </summary>
         [Input("concurrency")]
         public object? Concurrency { get; set; }
 
         [Input("defaults")]
-        private Dictionary<string, string>? _defaults;
-        public Dictionary<string, string> Defaults
-        {
-            get => _defaults ?? (_defaults = new Dictionary<string, string>());
-            set => _defaults = value;
-        }
+        public Inputs.A3? Defaults { get; set; }
 
+        /// <summary>
+        /// default any for anyOf
+        /// </summary>
         [Input("env")]
         public object? Env { get; set; }
 
         [Input("jobs", required: true)]
-        private Dictionary<string, string>? _jobs;
-
-        /// <summary>
-        /// A workflow run is made up of one or more jobs. Jobs run in parallel by default. To run jobs sequentially, you can define dependencies on other jobs using the jobs.&lt;job_id&gt;.needs keyword.
-        /// Each job runs in a fresh instance of the virtual environment specified by runs-on.
-        /// You can run an unlimited number of jobs as long as you are within the workflow usage limits. For more information, see https://help.github.com/en/github/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#usage-limits.
-        /// </summary>
-        public Dictionary<string, string> Jobs
-        {
-            get => _jobs ?? (_jobs = new Dictionary<string, string>());
-            set => _jobs = value;
-        }
+        public Inputs.A2 Jobs { get; set; } = null!;
 
         /// <summary>
         /// The name of your workflow. GitHub displays the names of your workflows on your repository's actions page. If you omit this field, GitHub sets the name to the workflow's filename.
@@ -46,9 +36,15 @@ namespace Pulumi.GithubWorkflow.Inputs
         [Input("name")]
         public string? Name { get; set; }
 
+        /// <summary>
+        /// default any for anyOf
+        /// </summary>
         [Input("on", required: true)]
         public object On { get; set; } = null!;
 
+        /// <summary>
+        /// default any for anyOf
+        /// </summary>
         [Input("permissions")]
         public object? Permissions { get; set; }
 
@@ -58,9 +54,9 @@ namespace Pulumi.GithubWorkflow.Inputs
         [Input("run-name")]
         public string? Run-name { get; set; }
 
-        public Root()
+        public A0()
         {
         }
-        public static new Root Empty => new Root();
+        public static new A0 Empty => new A0();
     }
 }

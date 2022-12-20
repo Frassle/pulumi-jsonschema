@@ -194,7 +194,7 @@ let ``Test bool`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (simpleSchema """{"type":"bool"}""")
+    |> shouldJsonEqual (simpleSchema """{"type":"boolean"}""")
 
     Pulumi.Provider.PropertyValue(true)
     |> conversion.Writer

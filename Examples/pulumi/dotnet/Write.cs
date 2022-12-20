@@ -28,7 +28,7 @@ namespace Pulumi.Pulumi
     public sealed class WriteArgs : global::Pulumi.InvokeArgs
     {
         [Input("value", required: true)]
-        public Inputs.Root Value { get; set; } = null!;
+        public Inputs.A0 Value { get; set; } = null!;
 
         public WriteArgs()
         {
@@ -39,7 +39,7 @@ namespace Pulumi.Pulumi
     public sealed class WriteInvokeArgs : global::Pulumi.InvokeArgs
     {
         [Input("value", required: true)]
-        public Input<Inputs.RootArgs> Value { get; set; } = null!;
+        public Input<Inputs.A0Args> Value { get; set; } = null!;
 
         public WriteInvokeArgs()
         {

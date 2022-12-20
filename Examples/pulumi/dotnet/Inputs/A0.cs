@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// A description of the schema for a Pulumi Package
     /// </summary>
-    public sealed class Root : global::Pulumi.InvokeArgs
+    public sealed class A0 : global::Pulumi.InvokeArgs
     {
         /// <summary>
         /// Freeform text attribution of derived work, if required.
@@ -22,16 +22,7 @@ namespace Pulumi.Pulumi.Inputs
         public string? Attribution { get; set; }
 
         [Input("config")]
-        private Dictionary<string, string>? _config;
-
-        /// <summary>
-        /// The package's configuration variables.
-        /// </summary>
-        public Dictionary<string, string> Config
-        {
-            get => _config ?? (_config = new Dictionary<string, string>());
-            set => _config = value;
-        }
+        public Inputs.A3? Config { get; set; }
 
         /// <summary>
         /// The description of the package. Descriptions are interpreted as Markdown.
@@ -46,14 +37,14 @@ namespace Pulumi.Pulumi.Inputs
         public string? DisplayName { get; set; }
 
         [Input("functions")]
-        private Dictionary<string, ImmutableDictionary<string, string>>? _functions;
+        private Dictionary<string, Inputs.A1>? _functions;
 
         /// <summary>
         /// A map from token to functionSpec that describes the set of functions defined by this package.
         /// </summary>
-        public Dictionary<string, ImmutableDictionary<string, string>> Functions
+        public Dictionary<string, Inputs.A1> Functions
         {
-            get => _functions ?? (_functions = new Dictionary<string, ImmutableDictionary<string, string>>());
+            get => _functions ?? (_functions = new Dictionary<string, Inputs.A1>());
             set => _functions = value;
         }
 
@@ -100,16 +91,7 @@ namespace Pulumi.Pulumi.Inputs
         public string? LogoUrl { get; set; }
 
         [Input("meta")]
-        private Dictionary<string, string>? _meta;
-
-        /// <summary>
-        /// Format metadata about this package.
-        /// </summary>
-        public Dictionary<string, string> Meta
-        {
-            get => _meta ?? (_meta = new Dictionary<string, string>());
-            set => _meta = value;
-        }
+        public Inputs.A4? Meta { get; set; }
 
         /// <summary>
         /// The unqualified name of the package (e.g. "aws", "azure", "gcp", "kubernetes", "random")
@@ -123,6 +105,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("pluginDownloadURL")]
         public string? PluginDownloadURL { get; set; }
 
+        /// <summary>
+        /// default any for allOf
+        /// </summary>
         [Input("provider")]
         public object? Provider { get; set; }
 
@@ -168,9 +153,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("version")]
         public string? Version { get; set; }
 
-        public Root()
+        public A0()
         {
         }
-        public static new Root Empty => new Root();
+        public static new A0 Empty => new A0();
     }
 }

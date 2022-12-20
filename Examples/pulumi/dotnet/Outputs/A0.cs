@@ -14,16 +14,13 @@ namespace Pulumi.Pulumi.Outputs
     /// A description of the schema for a Pulumi Package
     /// </summary>
     [OutputType]
-    public sealed class Root
+    public sealed class A0
     {
         /// <summary>
         /// Freeform text attribution of derived work, if required.
         /// </summary>
         public readonly string? Attribution;
-        /// <summary>
-        /// The package's configuration variables.
-        /// </summary>
-        public readonly ImmutableDictionary<string, string>? Config;
+        public readonly Outputs.A3? Config;
         /// <summary>
         /// The description of the package. Descriptions are interpreted as Markdown.
         /// </summary>
@@ -35,7 +32,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from token to functionSpec that describes the set of functions defined by this package.
         /// </summary>
-        public readonly ImmutableDictionary<string, ImmutableDictionary<string, string>>? Functions;
+        public readonly ImmutableDictionary<string, Outputs.A1>? Functions;
         /// <summary>
         /// The package's homepage.
         /// </summary>
@@ -56,10 +53,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The URL of the package's logo, if any.
         /// </summary>
         public readonly string? LogoUrl;
-        /// <summary>
-        /// Format metadata about this package.
-        /// </summary>
-        public readonly ImmutableDictionary<string, string>? Meta;
+        public readonly Outputs.A4? Meta;
         /// <summary>
         /// The unqualified name of the package (e.g. "aws", "azure", "gcp", "kubernetes", "random")
         /// </summary>
@@ -68,6 +62,9 @@ namespace Pulumi.Pulumi.Outputs
         /// The URL to use when downloading the provider plugin binary.
         /// </summary>
         public readonly string? PluginDownloadURL;
+        /// <summary>
+        /// default any for allOf
+        /// </summary>
         public readonly object? Provider;
         /// <summary>
         /// The name of the person or organization that authored and published the package.
@@ -91,16 +88,16 @@ namespace Pulumi.Pulumi.Outputs
         public readonly string? Version;
 
         [OutputConstructor]
-        private Root(
+        private A0(
             string? attribution,
 
-            ImmutableDictionary<string, string>? config,
+            Outputs.A3? config,
 
             string? description,
 
             string? displayName,
 
-            ImmutableDictionary<string, ImmutableDictionary<string, string>>? functions,
+            ImmutableDictionary<string, Outputs.A1>? functions,
 
             string? homepage,
 
@@ -112,7 +109,7 @@ namespace Pulumi.Pulumi.Outputs
 
             string? logoUrl,
 
-            ImmutableDictionary<string, string>? meta,
+            Outputs.A4? meta,
 
             string name,
 

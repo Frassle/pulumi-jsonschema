@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// A description of the schema for a Pulumi Package
     /// </summary>
-    public sealed class RootArgs : global::Pulumi.ResourceArgs
+    public sealed class A0Args : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Freeform text attribution of derived work, if required.
@@ -22,16 +22,7 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? Attribution { get; set; }
 
         [Input("config")]
-        private InputMap<string>? _config;
-
-        /// <summary>
-        /// The package's configuration variables.
-        /// </summary>
-        public InputMap<string> Config
-        {
-            get => _config ?? (_config = new InputMap<string>());
-            set => _config = value;
-        }
+        public Input<Inputs.A3Args>? Config { get; set; }
 
         /// <summary>
         /// The description of the package. Descriptions are interpreted as Markdown.
@@ -46,14 +37,14 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? DisplayName { get; set; }
 
         [Input("functions")]
-        private InputMap<ImmutableDictionary<string, string>>? _functions;
+        private InputMap<Inputs.A1Args>? _functions;
 
         /// <summary>
         /// A map from token to functionSpec that describes the set of functions defined by this package.
         /// </summary>
-        public InputMap<ImmutableDictionary<string, string>> Functions
+        public InputMap<Inputs.A1Args> Functions
         {
-            get => _functions ?? (_functions = new InputMap<ImmutableDictionary<string, string>>());
+            get => _functions ?? (_functions = new InputMap<Inputs.A1Args>());
             set => _functions = value;
         }
 
@@ -100,16 +91,7 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? LogoUrl { get; set; }
 
         [Input("meta")]
-        private InputMap<string>? _meta;
-
-        /// <summary>
-        /// Format metadata about this package.
-        /// </summary>
-        public InputMap<string> Meta
-        {
-            get => _meta ?? (_meta = new InputMap<string>());
-            set => _meta = value;
-        }
+        public Input<Inputs.A4Args>? Meta { get; set; }
 
         /// <summary>
         /// The unqualified name of the package (e.g. "aws", "azure", "gcp", "kubernetes", "random")
@@ -123,6 +105,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("pluginDownloadURL")]
         public Input<string>? PluginDownloadURL { get; set; }
 
+        /// <summary>
+        /// default any for allOf
+        /// </summary>
         [Input("provider")]
         public Input<object>? Provider { get; set; }
 
@@ -168,9 +153,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("version")]
         public Input<string>? Version { get; set; }
 
-        public RootArgs()
+        public A0Args()
         {
         }
-        public static new RootArgs Empty => new RootArgs();
+        public static new A0Args Empty => new A0Args();
     }
 }

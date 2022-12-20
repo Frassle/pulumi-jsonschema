@@ -11,22 +11,29 @@ namespace Pulumi.GithubWorkflow.Outputs
 {
 
     [OutputType]
-    public sealed class Root
+    public sealed class A0
     {
-        public readonly object? Concurrency;
-        public readonly ImmutableDictionary<string, string>? Defaults;
-        public readonly object? Env;
         /// <summary>
-        /// A workflow run is made up of one or more jobs. Jobs run in parallel by default. To run jobs sequentially, you can define dependencies on other jobs using the jobs.&lt;job_id&gt;.needs keyword.
-        /// Each job runs in a fresh instance of the virtual environment specified by runs-on.
-        /// You can run an unlimited number of jobs as long as you are within the workflow usage limits. For more information, see https://help.github.com/en/github/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#usage-limits.
+        /// default any for anyOf
         /// </summary>
-        public readonly ImmutableDictionary<string, string> Jobs;
+        public readonly object? Concurrency;
+        public readonly Outputs.A3? Defaults;
+        /// <summary>
+        /// default any for anyOf
+        /// </summary>
+        public readonly object? Env;
+        public readonly Outputs.A2 Jobs;
         /// <summary>
         /// The name of your workflow. GitHub displays the names of your workflows on your repository's actions page. If you omit this field, GitHub sets the name to the workflow's filename.
         /// </summary>
         public readonly string? Name;
+        /// <summary>
+        /// default any for anyOf
+        /// </summary>
         public readonly object On;
+        /// <summary>
+        /// default any for anyOf
+        /// </summary>
         public readonly object? Permissions;
         /// <summary>
         /// The name for workflow runs generated from the workflow. GitHub displays the workflow run name in the list of workflow runs on your repository's 'Actions' tab.
@@ -34,14 +41,14 @@ namespace Pulumi.GithubWorkflow.Outputs
         public readonly string? Run-name;
 
         [OutputConstructor]
-        private Root(
+        private A0(
             object? concurrency,
 
-            ImmutableDictionary<string, string>? defaults,
+            Outputs.A3? defaults,
 
             object? env,
 
-            ImmutableDictionary<string, string> jobs,
+            Outputs.A2 jobs,
 
             string? name,
 
