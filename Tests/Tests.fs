@@ -595,8 +595,10 @@ let ``Test pulumi`` () =
     System.IO.File.WriteAllText("pulumi.json", conversion.Schema.ToJsonString())
 
     let si = System.Diagnostics.ProcessStartInfo("pulumi")
-    for arg in ["package"; "gen-sdk"; "--langauge"; "dotnet"; System.IO.Path.GetFullPath("pulumi.json")] do
+    for arg in ["package"; "gen-sdk"; System.IO.Path.GetFullPath("pulumi.json"); "--language"; "dotnet"] do
         si.ArgumentList.Add arg
+    si.RedirectStandardOutput <- true
+    si.RedirectStandardError <- true
     // Find the root directory
     let mutable cwd = System.Environment.CurrentDirectory
     while System.IO.Path.GetFileName cwd <> "Tests" do
@@ -604,5 +606,20 @@ let ``Test pulumi`` () =
     // Go up one more directory
     cwd <- System.IO.Path.GetDirectoryName cwd
     si.WorkingDirectory <- cwd
-    let proc = System.Diagnostics.Process.Start si
+    let proc = new System.Diagnostics.Process()
+    proc.StartInfo <- si
+    let out = System.Text.StringBuilder()
+    let err = System.Text.StringBuilder()
+    proc.OutputDataReceived.Add(fun diag -> out.AppendLine(diag.Data) |> ignore)
+    proc.ErrorDataReceived.Add(fun diag -> err.AppendLine(diag.Data) |> ignore)
+
+    if not (proc.Start()) then
+        failwith "gen-sdk failed to start"
+    proc.BeginOutputReadLine()
+    proc.BeginErrorReadLine()
+
     proc.WaitForExit()
+    if proc.ExitCode <> 0 then
+        failwithf "gen-sdk failed\nstdout:\n%s\nstderr:\n%s" (out.ToString()) (err.ToString())
+
+    System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "sdk", "dotnet", "version.txt"), "")

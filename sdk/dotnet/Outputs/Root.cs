@@ -10,6 +10,9 @@ using Pulumi.Serialization;
 namespace Pulumi.Jsonschema.Outputs
 {
 
+    /// <summary>
+    /// A description of the schema for a Pulumi Package
+    /// </summary>
     [OutputType]
     public sealed class Root
     {

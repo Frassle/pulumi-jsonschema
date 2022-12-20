@@ -10,6 +10,9 @@ using Pulumi.Serialization;
 namespace Pulumi.Jsonschema.Inputs
 {
 
+    /// <summary>
+    /// A description of the schema for a Pulumi Package
+    /// </summary>
     public sealed class RootArgs : global::Pulumi.ResourceArgs
     {
         [Input("attribution")]

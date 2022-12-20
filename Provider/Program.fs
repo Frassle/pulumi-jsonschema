@@ -223,6 +223,7 @@ let convertStringSchema (keywords : KeywordCollection) : Conversion =
     let schema = JsonObject()
     schema.Add("type", JsonValue.Create("string"))
 
+
     let raise (typ : string) = failwithf "Invalid type expected string got %s" typ
     let rec writer (value : Pulumi.Provider.PropertyValue) =
         value.Match(
@@ -789,7 +790,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     // Use Deserialize to clone
     let writeObjectType = readObjectType.Deserialize<JsonNode>()
 
-    let jsonType() =
+    let jsonProperty() =
         let node = JsonObject()
         node.Add("type", JsonValue.Create("string"))
         node
@@ -800,7 +801,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     readFunction.Add("inputs", JsonObject([
         mkkv "required" (JsonArray(JsonValue.Create "json"))
         mkkv "properties" (JsonObject([
-             mkkv "json" (jsonType())
+             mkkv "json" (jsonProperty())
         ]))
     ]))
     readFunction.Add("outputs", JsonObject([
@@ -820,7 +821,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     writeFunction.Add("outputs", JsonObject([
         mkkv "required" (JsonArray(JsonValue.Create "json"))
         mkkv "properties" (JsonObject([
-             mkkv "json" (jsonType())
+             mkkv "json" (jsonProperty())
         ]))
     ]))
 
