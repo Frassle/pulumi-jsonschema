@@ -969,9 +969,72 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
         |> ComplexTypeSpec.Object
         |> Conversion.ComplexTypeSpec
 
-and convertAllOf (schema : Json.Schema.JsonSchema) (allof : Json.Schema.AllOfKeyword) : Conversion =    
-    TypeSpec.Any (Some "default any for allOf")
-    |> Conversion.TypeSpec
+and convertAllOf (root : RootInformation) (path : string list) (schema : Json.Schema.JsonSchema) (allOf : Json.Schema.AllOfKeyword): Conversion option =
+    // allOf is a union of all the subschemas
+    // we build a new _schema_ that merges the subschemas in ways that are possible to express in the type system (falling back to just any if we can't merge them)
+    // then we send that newly built schema to be converted
+    let boolSchemas, keywordSchemas = schema :: Seq.toList allOf.Schemas |> List.partition (fun s -> s.BoolValue.HasValue)
+
+    // If _any_ are false we can early out
+    match boolSchemas |> List.map (fun s -> s.BoolValue.Value) |> List.exists not with 
+    | true -> None
+    | false ->
+
+    let allKeywords = 
+        keywordSchemas
+        |> List.fold (fun keywords schema ->
+            schema.Keywords
+            |> Seq.fold (fun keywords keyword ->
+                // Don't add the current allOf keyword we're dealing with 
+                if keyword.Equals(allOf) then keywords
+                else 
+                    let key = keyword.GetType().FullName
+                    keywords |> Map.change key (function 
+                        | None -> Some [keyword] 
+                        | Some others -> Some (keyword :: others))
+            ) keywords
+        ) Map.empty
+
+    // First go through any keywords that are unique, these can just be added to the new schema
+    let newSchema = Json.Schema.JsonSchemaBuilder()
+    let allKeywords =
+        allKeywords
+        |> Map.filter (fun _ list -> 
+            match list with 
+            | [] -> false
+            | [x] -> 
+                newSchema.Add(x)
+                false
+            | _ -> true)
+
+    // At this point allKeywords is made of keywords that are in multiple schemas
+    
+    // First find the "properties" keyword
+    let allKeywords = 
+        allKeywords
+        |> Map.filter (fun _ list -> 
+            match list with 
+            | (:? Json.Schema.PropertiesKeyword) :: _ -> 
+                list 
+                |> Seq.cast<Json.Schema.PropertiesKeyword>
+                |> Seq.map (fun kw -> kw.Properties)
+                |> Seq.fold (fun properties next ->
+                    next 
+                    |> Seq.fold (fun properties property -> 
+                        match Map.tryFind property.Key properties with 
+                        | None -> Map.add property.Key property.Value properties
+                        | Some _ -> failwith "Property key conflict in allOf"
+                    ) properties
+                ) Map.empty
+                |> fun properties -> 
+                    newSchema.Add(Json.Schema.PropertiesKeyword(properties))
+                false
+            | _ -> true)
+
+    if allKeywords.Count <> 0 then
+        failwithf "Needs more translation %O" allKeywords
+
+    convertSubSchema root path (newSchema.Build())
 
 and convertOneOf (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
     TypeSpec.Any (Some "default any for anyOf")
@@ -990,7 +1053,7 @@ and convertSubSchema (root : RootInformation) (path : string list) (schema : Jso
         if ref.IsSome then
             convertRef root ref.Value
         elif allOf.IsSome then
-            Some (convertAllOf schema allOf.Value)
+            convertAllOf root path schema allOf.Value
         elif oneOf.IsSome then
             Some (convertOneOf schema oneOf.Value)
         elif isSimpleType Json.Schema.SchemaValueType.Null keywords then 

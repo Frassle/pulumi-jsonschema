@@ -661,18 +661,10 @@ let ``Test complex object`` () =
 let ``Test allOf`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
         "type": "object",
-        "additionalProperties": false,
         "properties": {
             "foo": {  "type": "string" }
         },
-        "allOf": [ { "$ref": "#/$defs/myType" } ],
-        "$defs": {
-            "myType": { 
-                "properties": {
-                    "bar": { "type": "number" }
-                }
-            }
-        }
+        "allOf": [ { "properties": { "bar": { "type": "number" } } } ]
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
     
@@ -682,17 +674,24 @@ let ``Test allOf`` () =
         "schema:index:root", """{
             "type":"object",
             "properties":{
+                "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "pulumi.json#/Any"
+                    }
+                },
                 "foo":{"type":"string"},
                 "bar":{"type":"number"}
             }
         }"""])
     
     Pulumi.Provider.PropertyValue(listToDict [
-        "foo", Pulumi.Provider.PropertyValue(123)
+        "foo", Pulumi.Provider.PropertyValue("hello")
+        "bar", Pulumi.Provider.PropertyValue(-123)
     ])
     |> conversion.Writer
     |> toJson
-    |> shouldJsonEqual """{"foo":123}"""
+    |> shouldJsonEqual """{"foo":"hello","bar":-123}"""
     
     // Properties are optional by default
     Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
@@ -700,10 +699,10 @@ let ``Test allOf`` () =
     |> toJson
     |> shouldJsonEqual """{}"""
 
-    fromJson """{"foo":456.789}"""
+    fromJson """{"foo":"world"}"""
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
-        "foo", Pulumi.Provider.PropertyValue(456.789)
+        "foo", Pulumi.Provider.PropertyValue("world")
     ]))
 
     fromJson """{}"""
