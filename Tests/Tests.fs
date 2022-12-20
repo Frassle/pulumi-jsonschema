@@ -248,6 +248,13 @@ let ``Test string enum`` () =
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue "info")
 
+    let exc = Assert.Throws<Exception>(fun () ->
+        Pulumi.Provider.PropertyValue("badenum")
+        |> conversion.Writer
+        |> ignore
+    )
+    exc.Message |> shouldEqual "Expected value to match one of the values specified by the enum"
+
 [<Fact>]
 let ``Test number`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
