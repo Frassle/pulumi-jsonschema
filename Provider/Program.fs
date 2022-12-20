@@ -98,8 +98,18 @@ type Conversion =
                     Pulumi.Provider.PropertyValue(value.GetDouble())
                 elif value.ValueKind = JsonValueKind.String then 
                     Pulumi.Provider.PropertyValue(value.GetString())
+                elif value.ValueKind = JsonValueKind.Array then 
+                    value.EnumerateArray()
+                    |> Seq.map (fun item -> this.Reader item)
+                    |> ImmutableArray.CreateRange
+                    |> Pulumi.Provider.PropertyValue
+                elif value.ValueKind = JsonValueKind.Object then 
+                    value.EnumerateObject()
+                    |> Seq.map (fun item -> KeyValuePair.Create(item.Name, this.Reader item.Value))
+                    |> ImmutableDictionary.CreateRange
+                    |> Pulumi.Provider.PropertyValue
                 else 
-                    failwith "not implemented"
+                    failwithf "unexpected JsonValueKind: %O" value.ValueKind
         | TypeSpec conversion -> conversion.Reader
         | ComplexTypeSpec conversion -> conversion.Reader
 
@@ -506,10 +516,12 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
         match additionalProperties, properties with
         | Some apk, Some properties -> 
             // Make a fresh map conversion, this is dumb but we just reconvert the apk schema to get the mapping schema
-            let mapConversion = convertObjectSchema root ([
-                Json.Schema.TypeKeyword(Json.Schema.SchemaValueType.Object) :> Json.Schema.IJsonSchemaKeyword
-                Json.Schema.AdditionalPropertiesKeyword (additionalPropertiesKeyword.Value.Schema)
-            ] |> List)
+            let mapConversion = convertObjectSchema root (seq {
+                yield Json.Schema.TypeKeyword(Json.Schema.SchemaValueType.Object) :> Json.Schema.IJsonSchemaKeyword
+                match additionalPropertiesKeyword with 
+                | Some apk -> yield Json.Schema.AdditionalPropertiesKeyword (apk.Schema)
+                | None -> ()
+            } |> List)
 
             Some (properties.Add ("additionalProperties", mapConversion))
         | Some apk, None ->
