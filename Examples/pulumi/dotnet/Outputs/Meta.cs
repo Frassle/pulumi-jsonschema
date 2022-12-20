@@ -7,23 +7,24 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Pulumi.Inputs
+namespace Pulumi.Pulumi.Outputs
 {
 
     /// <summary>
     /// Format metadata about this package.
     /// </summary>
-    public sealed class A4Args : global::Pulumi.ResourceArgs
+    [OutputType]
+    public sealed class Meta
     {
         /// <summary>
         /// A regex that is used by the importer to extract a module name from the module portion of a type token. Packages that use the module format "namespace1/namespace2/.../namespaceN" do not need to specify a format. The regex must define one capturing group that contains the module name, which must be formatted as "namespace1/namespace2/...namespaceN".
         /// </summary>
-        [Input("moduleFormat", required: true)]
-        public Input<string> ModuleFormat { get; set; } = null!;
+        public readonly string ModuleFormat;
 
-        public A4Args()
+        [OutputConstructor]
+        private Meta(string moduleFormat)
         {
+            ModuleFormat = moduleFormat;
         }
-        public static new A4Args Empty => new A4Args();
     }
 }

@@ -14,7 +14,7 @@ namespace Pulumi.Pulumi.Outputs
     /// Describes a function.
     /// </summary>
     [OutputType]
-    public sealed class A1
+    public sealed class FunctionDefinition
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
         /// <summary>
@@ -25,7 +25,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The description of the function, if any. Interpreted as Markdown.
         /// </summary>
         public readonly string? Description;
-        public readonly Outputs.A2? Inputs;
+        public readonly Outputs.ObjectTypeDetails? Inputs;
         /// <summary>
         /// Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author
         /// </summary>
@@ -38,17 +38,17 @@ namespace Pulumi.Pulumi.Outputs
         /// A list of parameter names that determines whether the input bag should be treated as a single argument or as multiple arguments. The list corresponds to the order in which the parameters should be passed to the function.
         /// </summary>
         public readonly ImmutableArray<string> MultiArgumentInputs;
-        public readonly Outputs.A2? Outputs;
+        public readonly Outputs.ObjectTypeDetails? Outputs;
 
         [OutputConstructor]
-        private A1(
+        private FunctionDefinition(
             ImmutableDictionary<string, object>? additionalProperties,
 
             string? deprecationMessage,
 
             string? description,
 
-            Outputs.A2? inputs,
+            Outputs.ObjectTypeDetails? inputs,
 
             bool? isOverlay,
 
@@ -56,7 +56,7 @@ namespace Pulumi.Pulumi.Outputs
 
             ImmutableArray<string> multiArgumentInputs,
 
-            Outputs.A2? outputs)
+            Outputs.ObjectTypeDetails? outputs)
         {
             AdditionalProperties = additionalProperties;
             DeprecationMessage = deprecationMessage;

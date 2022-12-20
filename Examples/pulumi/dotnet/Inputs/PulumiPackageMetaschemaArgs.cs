@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// A description of the schema for a Pulumi Package
     /// </summary>
-    public sealed class A0Args : global::Pulumi.ResourceArgs
+    public sealed class PulumiPackageMetaschemaArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Freeform text attribution of derived work, if required.
@@ -22,7 +22,7 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? Attribution { get; set; }
 
         [Input("config")]
-        public Input<Inputs.A3Args>? Config { get; set; }
+        public Input<Inputs.ConfigArgs>? Config { get; set; }
 
         /// <summary>
         /// The description of the package. Descriptions are interpreted as Markdown.
@@ -37,14 +37,14 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? DisplayName { get; set; }
 
         [Input("functions")]
-        private InputMap<Inputs.A1Args>? _functions;
+        private InputMap<Inputs.FunctionDefinitionArgs>? _functions;
 
         /// <summary>
         /// A map from token to functionSpec that describes the set of functions defined by this package.
         /// </summary>
-        public InputMap<Inputs.A1Args> Functions
+        public InputMap<Inputs.FunctionDefinitionArgs> Functions
         {
-            get => _functions ?? (_functions = new InputMap<Inputs.A1Args>());
+            get => _functions ?? (_functions = new InputMap<Inputs.FunctionDefinitionArgs>());
             set => _functions = value;
         }
 
@@ -91,7 +91,7 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? LogoUrl { get; set; }
 
         [Input("meta")]
-        public Input<Inputs.A4Args>? Meta { get; set; }
+        public Input<Inputs.MetaArgs>? Meta { get; set; }
 
         /// <summary>
         /// The unqualified name of the package (e.g. "aws", "azure", "gcp", "kubernetes", "random")
@@ -153,9 +153,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("version")]
         public Input<string>? Version { get; set; }
 
-        public A0Args()
+        public PulumiPackageMetaschemaArgs()
         {
         }
-        public static new A0Args Empty => new A0Args();
+        public static new PulumiPackageMetaschemaArgs Empty => new PulumiPackageMetaschemaArgs();
     }
 }

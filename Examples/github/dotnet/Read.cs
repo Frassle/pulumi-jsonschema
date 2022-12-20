@@ -51,10 +51,10 @@ namespace Pulumi.GithubWorkflow
     [OutputType]
     public sealed class ReadResult
     {
-        public readonly Outputs.A0 Value;
+        public readonly Outputs.Root Value;
 
         [OutputConstructor]
-        private ReadResult(Outputs.A0 value)
+        private ReadResult(Outputs.Root value)
         {
             Value = value;
         }

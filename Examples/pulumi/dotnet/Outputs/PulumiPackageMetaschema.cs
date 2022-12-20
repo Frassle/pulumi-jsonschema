@@ -14,13 +14,13 @@ namespace Pulumi.Pulumi.Outputs
     /// A description of the schema for a Pulumi Package
     /// </summary>
     [OutputType]
-    public sealed class A0
+    public sealed class PulumiPackageMetaschema
     {
         /// <summary>
         /// Freeform text attribution of derived work, if required.
         /// </summary>
         public readonly string? Attribution;
-        public readonly Outputs.A3? Config;
+        public readonly Outputs.Config? Config;
         /// <summary>
         /// The description of the package. Descriptions are interpreted as Markdown.
         /// </summary>
@@ -32,7 +32,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from token to functionSpec that describes the set of functions defined by this package.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.A1>? Functions;
+        public readonly ImmutableDictionary<string, Outputs.FunctionDefinition>? Functions;
         /// <summary>
         /// The package's homepage.
         /// </summary>
@@ -53,7 +53,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The URL of the package's logo, if any.
         /// </summary>
         public readonly string? LogoUrl;
-        public readonly Outputs.A4? Meta;
+        public readonly Outputs.Meta? Meta;
         /// <summary>
         /// The unqualified name of the package (e.g. "aws", "azure", "gcp", "kubernetes", "random")
         /// </summary>
@@ -88,16 +88,16 @@ namespace Pulumi.Pulumi.Outputs
         public readonly string? Version;
 
         [OutputConstructor]
-        private A0(
+        private PulumiPackageMetaschema(
             string? attribution,
 
-            Outputs.A3? config,
+            Outputs.Config? config,
 
             string? description,
 
             string? displayName,
 
-            ImmutableDictionary<string, Outputs.A1>? functions,
+            ImmutableDictionary<string, Outputs.FunctionDefinition>? functions,
 
             string? homepage,
 
@@ -109,7 +109,7 @@ namespace Pulumi.Pulumi.Outputs
 
             string? logoUrl,
 
-            Outputs.A4? meta,
+            Outputs.Meta? meta,
 
             string name,
 

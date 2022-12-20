@@ -86,7 +86,7 @@ let writePrimitive (typ : PrimitiveType) (schema : Json.Schema.JsonSchema) (valu
     let rec getNode (value : Pulumi.Provider.PropertyValue) =
         match typ with 
         | PrimitiveType.Boolean ->
-            let raise  (typ : string) = failwithf "Invalid type expected bool got %s" typ
+            let raise  (typ : string) = failwithf "Invalid type expected boolean got %s" typ
             value.Match(
                 (fun _ -> raise "null"),
                 (fun b -> 
@@ -202,12 +202,13 @@ type UnionConversion = {
         let schema = JsonObject()
 
         let oneof = JsonArray()
-        [this.NumberConversion; this.BooleanConversion; this.StringConversion]
+        [this.BooleanConversion; this.NumberConversion; this.StringConversion]
         |> List.iter (function 
             | None -> ()
             | Some conversion -> 
                 let spec, _ = conversion.BuildTypeSpec()
                 oneof.Add(spec))
+        schema.Add("oneOf", oneof)
 
         schema, this.Description
 
@@ -215,12 +216,13 @@ type UnionConversion = {
         let schema = JsonObject()
 
         let oneof = JsonArray()
-        [this.NumberConversion; this.BooleanConversion; this.StringConversion]
+        [this.BooleanConversion; this.NumberConversion; this.StringConversion]
         |> List.iter (function 
             | None -> ()
             | Some conversion -> 
                 let spec, _ = conversion.BuildTypeSpec()
                 oneof.Add(spec))
+        schema.Add("oneOf", oneof)
                 
         this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
         schema
@@ -240,12 +242,12 @@ type UnionConversion = {
                 | Some conversion -> conversion.Writer value
             ),
             (fun _ -> 
-                match this.BooleanConversion with 
+                match this.NumberConversion with 
                 | None -> raise "number"
                 | Some conversion -> conversion.Writer value
             ),
             (fun _ -> 
-                match this.BooleanConversion with 
+                match this.StringConversion with 
                 | None -> raise "string"
                 | Some conversion -> conversion.Writer value
             ),
@@ -272,6 +274,8 @@ type UnionConversion = {
 
 type EnumConversion = {
     Schema : Json.Schema.JsonSchema
+    Path : string list
+    Title : string option
     Description : string option
     Type : PrimitiveType
     Values : JsonNode list
@@ -281,7 +285,10 @@ type EnumConversion = {
         schema.Add("type", this.Type.JsonValue)
         let values = 
             this.Values
-            |> Seq.map (fun v -> JsonObject([KeyValuePair.Create("value", v)]) :> JsonNode)
+            |> Seq.map (fun v -> 
+                let value = v.Deserialize<JsonNode>()
+                JsonObject([KeyValuePair.Create("value", value)]) :> JsonNode
+            )
             |> Seq.toArray
             |> JsonArray
         schema.Add("enum", values)
@@ -516,6 +523,8 @@ and [<RequireQualifiedAccess>] TypeSpec =
 
 and ObjectConversion = {
     Schema : Json.Schema.JsonSchema
+    Path : string list
+    Title : string option
     Description : string option
     Properties : Map<string, Conversion>
     AdditionalProperties : Conversion option
@@ -648,6 +657,16 @@ and ObjectConversion = {
 and [<RequireQualifiedAccess>] ComplexTypeSpec =
     | Enum of EnumConversion
     | Object of ObjectConversion
+
+    member this.Path = 
+        match this with 
+        | ComplexTypeSpec.Enum spec -> spec.Path
+        | ComplexTypeSpec.Object spec -> spec.Path
+    
+    member this.Title = 
+        match this with 
+        | ComplexTypeSpec.Enum spec -> spec.Title
+        | ComplexTypeSpec.Object spec -> spec.Title
     
     member this.BuildComplexTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with 
@@ -730,31 +749,36 @@ let isSimpleUnion (keywords : KeywordCollection) : bool =
         not (typ.Type.HasFlag Json.Schema.SchemaValueType.Array)
     ) |> Option.defaultValue false
         
-let description keywords = 
+let getDescription keywords = 
     match pickKeyword<Json.Schema.DescriptionKeyword> keywords with 
     | Some desc -> Some desc.Value
     | None -> None
 
+let getTitle keywords = 
+    match pickKeyword<Json.Schema.TitleKeyword> keywords with 
+    | Some title -> Some title.Value
+    | None -> None
+
 let convertNullSchema (jsonSchema : Json.Schema.JsonSchema) : NullConversion =
     { 
-        Description = description jsonSchema.Keywords
+        Description = getDescription jsonSchema.Keywords
     }
 
 let convertBoolSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversion =
     {
         Schema = jsonSchema
         Type = PrimitiveType.Boolean
-        Description = description jsonSchema.Keywords
+        Description = getDescription jsonSchema.Keywords
     }
 
-let convertStringSchema (jsonSchema : Json.Schema.JsonSchema) : Conversion =
+let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion =
     let enum = pickKeyword<Json.Schema.EnumKeyword> jsonSchema.Keywords
     match enum with 
     | None -> 
         {
             Schema = jsonSchema
             Type = PrimitiveType.String
-            Description = description jsonSchema.Keywords
+            Description = getDescription jsonSchema.Keywords
         }
         |> TypeSpec.PrimitiveConversion
         |> Conversion.TypeSpec
@@ -765,8 +789,10 @@ let convertStringSchema (jsonSchema : Json.Schema.JsonSchema) : Conversion =
 
         {   
             Schema = jsonSchema
+            Path = path
             Type = PrimitiveType.String
-            Description = description jsonSchema.Keywords
+            Description = getDescription jsonSchema.Keywords
+            Title = getTitle jsonSchema.Keywords
             Values = enumValues
         }
         |> ComplexTypeSpec.Enum
@@ -776,7 +802,7 @@ let convertNumberSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConvers
     {
         Schema = jsonSchema
         Type = PrimitiveType.Number
-        Description = description jsonSchema.Keywords
+        Description = getDescription jsonSchema.Keywords
     }
 
 let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
@@ -789,7 +815,7 @@ let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
 
     let stringConversion =
         if typ.Type.HasFlag Json.Schema.SchemaValueType.String then
-            match convertStringSchema jsonSchema with 
+            match convertStringSchema [] jsonSchema with 
             | Conversion.TypeSpec spec -> 
                 match spec with 
                 | TypeSpec.PrimitiveConversion p -> Some p
@@ -804,7 +830,7 @@ let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
 
     {
         Schema = jsonSchema
-        Description = description jsonSchema.Keywords
+        Description = getDescription jsonSchema.Keywords
         NumberConversion = numberConversion
         StringConversion = stringConversion
         BooleanConversion = boolConversion
@@ -834,7 +860,17 @@ let rec convertRef (root : RootInformation) (ref : Json.Schema.RefKeyword) : Con
         | None -> failwithf "failed to find $ref %O" ref.Reference
         | Some subelement ->
             let subschema = Json.Schema.JsonSchema.FromText(subelement.GetRawText())
-            convertSubSchema root subschema
+            // We need a new path here because this _ref_ could be seen by multiple paths
+            let path = 
+                pointerFragment.Segments
+                |> Seq.map (fun s -> s.Value)
+                |> Seq.toList
+                |> function
+                // Trim "$defs" off
+                | "$defs" :: path -> path
+                | path -> path
+
+            convertSubSchema root (List.rev path) subschema
     | _ ->
         failwithf "failed to parse ref %s" newUri.Fragment
 
@@ -859,12 +895,12 @@ let rec convertRef (root : RootInformation) (ref : Json.Schema.RefKeyword) : Con
 //		throw new JsonSchemaException($"Cannot resolve schema `{newUri}`");
 //
 
-and convertArraySchema (root : RootInformation) (jsonSchema : Json.Schema.JsonSchema) : ArrayConversion =
+and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.JsonSchema) : ArrayConversion =
     let itemsKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.ItemsKeyword>
 
     let items =
         itemsKeyword
-        |> Option.map (fun ik -> convertSubSchema root ik.SingleSchema)
+        |> Option.map (fun ik -> convertSubSchema root ("item" :: path) ik.SingleSchema)
         |> Option.defaultValue (Some (Conversion.TypeSpec (TypeSpec.Any (Json.Schema.JsonSchema.True, None))))
         |> function  
         | None -> failwith "array with false items not yet supported"
@@ -872,11 +908,11 @@ and convertArraySchema (root : RootInformation) (jsonSchema : Json.Schema.JsonSc
 
     {
         Schema = jsonSchema
-        Description = description jsonSchema.Keywords
+        Description = getDescription jsonSchema.Keywords
         Items = items
     }
 
-and convertObjectSchema (root : RootInformation) (jsonSchema : Json.Schema.JsonSchema) : Conversion =
+and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.JsonSchema) : Conversion =
     let propertiesKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.PropertiesKeyword>
     let additionalPropertiesKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.AdditionalPropertiesKeyword>
     let requiredKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.RequiredKeyword>
@@ -887,7 +923,7 @@ and convertObjectSchema (root : RootInformation) (jsonSchema : Json.Schema.JsonS
         |> Option.map (fun pk ->
             pk.Properties
             |> Seq.map (fun kv ->
-                match convertSubSchema root kv.Value with 
+                match convertSubSchema root (kv.Key :: path) kv.Value with 
                 | Some subConversion -> (kv.Key, subConversion)
                 | None -> failwith "false properties not yet implemented"
             )
@@ -898,7 +934,7 @@ and convertObjectSchema (root : RootInformation) (jsonSchema : Json.Schema.JsonS
     // If we have both we need to add an extra "additionalProperties" property to the object
     let additionalProperties =
         match additionalPropertiesKeyword with 
-        | Some apk -> convertSubSchema root apk.Schema
+        | Some apk -> convertSubSchema root ("additionalProperties" :: path) apk.Schema
         | None -> Some (Conversion.TypeSpec (TypeSpec.Any (Json.Schema.JsonSchema.True, None)))
 
     let properties = 
@@ -911,7 +947,7 @@ and convertObjectSchema (root : RootInformation) (jsonSchema : Json.Schema.JsonS
             | Some apk -> mappingSchema.Add (Json.Schema.AdditionalPropertiesKeyword apk.Schema)
             | None -> ()
 
-            let mapConversion = convertObjectSchema root (mappingSchema.Build())
+            let mapConversion = convertObjectSchema root ("additionalProperties" :: path) (mappingSchema.Build())
 
             Some (properties.Add ("additionalProperties", mapConversion))
         | _, properties -> properties
@@ -921,15 +957,18 @@ and convertObjectSchema (root : RootInformation) (jsonSchema : Json.Schema.JsonS
         | None -> Seq.empty
         | Some required -> required.Properties
         |> Set.ofSeq 
-
-    let description = description jsonSchema.Keywords
+        
+    let description = getDescription jsonSchema.Keywords
+    let title = getTitle jsonSchema.Keywords
 
     match properties, additionalProperties with 
     | None, None -> 
         // An empty object!
         {
             Schema = jsonSchema
+            Path = path
             Description = description
+            Title = title
             Properties = Map.empty
             AdditionalProperties = None
             Required = required
@@ -948,7 +987,9 @@ and convertObjectSchema (root : RootInformation) (jsonSchema : Json.Schema.JsonS
     | Some props, aps ->
         {
             Schema = jsonSchema
+            Path = path
             Description = description
+            Title = title
             Properties = props
             AdditionalProperties = aps
             Required = required
@@ -964,7 +1005,7 @@ and convertOneOf (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKey
     TypeSpec.Any (schema, Some "default any for anyOf")
     |> Conversion.TypeSpec
 
-and convertSubSchema (root : RootInformation) (schema : Json.Schema.JsonSchema) : Conversion option =
+and convertSubSchema (root : RootInformation) (path : string list) (schema : Json.Schema.JsonSchema) : Conversion option =
     match schema.BoolValue |> Option.ofNullable with
     | Some false -> None
     | Some true -> TypeSpec.Any (schema, None) |> Conversion.TypeSpec |> Some
@@ -985,13 +1026,13 @@ and convertSubSchema (root : RootInformation) (schema : Json.Schema.JsonSchema) 
         elif isSimpleType Json.Schema.SchemaValueType.Boolean keywords then 
             convertBoolSchema schema |> TypeSpec.PrimitiveConversion |> Conversion.TypeSpec |> Some
         elif isSimpleType Json.Schema.SchemaValueType.String keywords then 
-            convertStringSchema schema |> Some
+            convertStringSchema path schema |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Number keywords then 
             convertNumberSchema schema |> TypeSpec.PrimitiveConversion |> Conversion.TypeSpec |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Object keywords then 
-            convertObjectSchema root schema |> Some
+            convertObjectSchema root path schema |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Array keywords then 
-            convertArraySchema root schema |> TypeSpec.ArrayConversion |> Conversion.TypeSpec |> Some
+            convertArraySchema root path schema |> TypeSpec.ArrayConversion |> Conversion.TypeSpec |> Some
         elif isSimpleUnion keywords then
             convertSimpleUnion schema |> TypeSpec.UnionConversion |> Conversion.TypeSpec |> Some
         else 
@@ -1010,6 +1051,10 @@ type RootConversion = {
     Writer : Pulumi.Provider.PropertyValue -> JsonNode option
     Reader : JsonElement ->  Pulumi.Provider.PropertyValue
 }
+
+let cleanTitleForTypeName (title : string) : string =
+    // Just remove any invalid chars for now
+    title.Replace(" ", "").Replace("-", "_")
 
 // Generate a full pulumi schema using the conversion as the function to generate
 let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
@@ -1035,7 +1080,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         Document = jsonSchema
     }
     let jsonSchema = Json.Schema.JsonSchema.FromText (jsonSchema.GetRawText())
-    let conversion = convertSubSchema root jsonSchema
+    let conversion = convertSubSchema root [] jsonSchema
 
     let conversion = 
         match conversion with 
@@ -1044,11 +1089,27 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
 
     // We need to get all complex types and make names for them, then ask for the root schema to generate a pulumi schema for itself _given_ those names
     let complexTypes = conversion.CollectComplexTypes()
+    let usedNames = System.Collections.Generic.HashSet()
     let names = System.Collections.Generic.Dictionary()
-    let mutable namei = 0
     for complexType in complexTypes do
-        let name = "a" + namei.ToString()
-        namei <- namei + 1
+        let name = 
+            // If we have a title use that
+            complexType.Title
+            |> Option.map cleanTitleForTypeName
+            |> Option.defaultWith (fun () ->
+                // Else use the path of the type
+                complexType.Path
+                |> List.rev
+                |> String.concat "_"
+                |> cleanTitleForTypeName
+            )
+            // Default the empty string to "root"
+            |> fun name -> if name = "" then "root" else name
+
+        if usedNames.Contains name then
+            failwith "Name conflicts not yet auto resolved"
+
+        usedNames.Add(name) |> ignore
         names.Add(complexType, name)
             
     let names = ImmutableDictionary.CreateRange(names)    

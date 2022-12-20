@@ -13,13 +13,13 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes a function.
     /// </summary>
-    public sealed class A1Args : global::Pulumi.ResourceArgs
+    public sealed class FunctionDefinition : global::Pulumi.InvokeArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
@@ -27,53 +27,53 @@ namespace Pulumi.Pulumi.Inputs
         /// Indicates whether the function is deprecated
         /// </summary>
         [Input("deprecationMessage")]
-        public Input<string>? DeprecationMessage { get; set; }
+        public string? DeprecationMessage { get; set; }
 
         /// <summary>
         /// The description of the function, if any. Interpreted as Markdown.
         /// </summary>
         [Input("description")]
-        public Input<string>? Description { get; set; }
+        public string? Description { get; set; }
 
         [Input("inputs")]
-        public Input<Inputs.A2Args>? Inputs { get; set; }
+        public Inputs.ObjectTypeDetails? Inputs { get; set; }
 
         /// <summary>
         /// Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author
         /// </summary>
         [Input("isOverlay")]
-        public Input<bool>? IsOverlay { get; set; }
+        public bool? IsOverlay { get; set; }
 
         [Input("language")]
-        private InputMap<object>? _language;
+        private Dictionary<string, object>? _language;
 
         /// <summary>
         /// Additional language-specific data about the function.
         /// </summary>
-        public InputMap<object> Language
+        public Dictionary<string, object> Language
         {
-            get => _language ?? (_language = new InputMap<object>());
+            get => _language ?? (_language = new Dictionary<string, object>());
             set => _language = value;
         }
 
         [Input("multiArgumentInputs")]
-        private InputList<string>? _multiArgumentInputs;
+        private List<string>? _multiArgumentInputs;
 
         /// <summary>
         /// A list of parameter names that determines whether the input bag should be treated as a single argument or as multiple arguments. The list corresponds to the order in which the parameters should be passed to the function.
         /// </summary>
-        public InputList<string> MultiArgumentInputs
+        public List<string> MultiArgumentInputs
         {
-            get => _multiArgumentInputs ?? (_multiArgumentInputs = new InputList<string>());
+            get => _multiArgumentInputs ?? (_multiArgumentInputs = new List<string>());
             set => _multiArgumentInputs = value;
         }
 
         [Input("outputs")]
-        public Input<Inputs.A2Args>? Outputs { get; set; }
+        public Inputs.ObjectTypeDetails? Outputs { get; set; }
 
-        public A1Args()
+        public FunctionDefinition()
         {
         }
-        public static new A1Args Empty => new A1Args();
+        public static new FunctionDefinition Empty => new FunctionDefinition();
     }
 }

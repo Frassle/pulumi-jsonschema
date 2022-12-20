@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.GithubWorkflow.Inputs
 {
 
-    public sealed class A0 : global::Pulumi.InvokeArgs
+    public sealed class Root : global::Pulumi.InvokeArgs
     {
         /// <summary>
         /// default any for anyOf
@@ -19,7 +19,7 @@ namespace Pulumi.GithubWorkflow.Inputs
         public object? Concurrency { get; set; }
 
         [Input("defaults")]
-        public Inputs.A3? Defaults { get; set; }
+        public Inputs.Definitions_defaults? Defaults { get; set; }
 
         /// <summary>
         /// default any for anyOf
@@ -28,7 +28,7 @@ namespace Pulumi.GithubWorkflow.Inputs
         public object? Env { get; set; }
 
         [Input("jobs", required: true)]
-        public Inputs.A2 Jobs { get; set; } = null!;
+        public Inputs.Jobs Jobs { get; set; } = null!;
 
         /// <summary>
         /// The name of your workflow. GitHub displays the names of your workflows on your repository's actions page. If you omit this field, GitHub sets the name to the workflow's filename.
@@ -54,9 +54,9 @@ namespace Pulumi.GithubWorkflow.Inputs
         [Input("run-name")]
         public string? Run-name { get; set; }
 
-        public A0()
+        public Root()
         {
         }
-        public static new A0 Empty => new A0();
+        public static new Root Empty => new Root();
     }
 }

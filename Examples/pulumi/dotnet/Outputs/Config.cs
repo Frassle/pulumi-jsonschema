@@ -7,41 +7,32 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Pulumi.Inputs
+namespace Pulumi.Pulumi.Outputs
 {
 
     /// <summary>
     /// The package's configuration variables.
     /// </summary>
-    public sealed class A3Args : global::Pulumi.ResourceArgs
+    [OutputType]
+    public sealed class Config
     {
-        [Input("required")]
-        private InputList<string>? _required;
-
         /// <summary>
         /// A list of the names of the package's required configuration variables.
         /// </summary>
-        public InputList<string> Required
-        {
-            get => _required ?? (_required = new InputList<string>());
-            set => _required = value;
-        }
-
-        [Input("variables")]
-        private InputMap<object>? _variables;
-
+        public readonly ImmutableArray<string> Required;
         /// <summary>
         /// A map from variable name to propertySpec that describes a package's configuration variables.
         /// </summary>
-        public InputMap<object> Variables
-        {
-            get => _variables ?? (_variables = new InputMap<object>());
-            set => _variables = value;
-        }
+        public readonly ImmutableDictionary<string, object>? Variables;
 
-        public A3Args()
+        [OutputConstructor]
+        private Config(
+            ImmutableArray<string> required,
+
+            ImmutableDictionary<string, object>? variables)
         {
+            Required = required;
+            Variables = variables;
         }
-        public static new A3Args Empty => new A3Args();
     }
 }

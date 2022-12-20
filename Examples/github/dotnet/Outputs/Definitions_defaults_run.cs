@@ -7,26 +7,29 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.GithubWorkflow.Inputs
+namespace Pulumi.GithubWorkflow.Outputs
 {
 
-    public sealed class A1Args : global::Pulumi.ResourceArgs
+    [OutputType]
+    public sealed class Definitions_defaults_run
     {
         /// <summary>
         /// unhandled schema: Json.Schema.CommentKeyword, Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword
         /// </summary>
-        [Input("shell")]
-        public Input<object>? Shell { get; set; }
-
+        public readonly object? Shell;
         /// <summary>
         /// Using the working-directory keyword, you can specify the working directory of where to run the command.
         /// </summary>
-        [Input("working-directory")]
-        public Input<string>? Working-directory { get; set; }
+        public readonly string? Working-directory;
 
-        public A1Args()
+        [OutputConstructor]
+        private Definitions_defaults_run(
+            object? shell,
+
+            string? working-directory)
         {
+            Shell = shell;
+            Working-directory = working-directory;
         }
-        public static new A1Args Empty => new A1Args();
     }
 }

@@ -16,10 +16,10 @@ namespace Pulumi.GithubWorkflow.Outputs
     /// You can run an unlimited number of jobs as long as you are within the workflow usage limits. For more information, see https://help.github.com/en/github/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#usage-limits.
     /// </summary>
     [OutputType]
-    public sealed class A2
+    public sealed class Jobs
     {
         [OutputConstructor]
-        private A2()
+        private Jobs()
         {
         }
     }

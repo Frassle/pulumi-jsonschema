@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// The package's configuration variables.
     /// </summary>
-    public sealed class A3 : global::Pulumi.InvokeArgs
+    public sealed class Config : global::Pulumi.InvokeArgs
     {
         [Input("required")]
         private List<string>? _required;
@@ -39,9 +39,9 @@ namespace Pulumi.Pulumi.Inputs
             set => _variables = value;
         }
 
-        public A3()
+        public Config()
         {
         }
-        public static new A3 Empty => new A3();
+        public static new Config Empty => new Config();
     }
 }

@@ -7,65 +7,56 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.GithubWorkflow.Outputs
+namespace Pulumi.GithubWorkflow.Inputs
 {
 
-    [OutputType]
-    public sealed class A0
+    public sealed class RootArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// default any for anyOf
         /// </summary>
-        public readonly object? Concurrency;
-        public readonly Outputs.A3? Defaults;
+        [Input("concurrency")]
+        public Input<object>? Concurrency { get; set; }
+
+        [Input("defaults")]
+        public Input<Inputs.Definitions_defaultsArgs>? Defaults { get; set; }
+
         /// <summary>
         /// default any for anyOf
         /// </summary>
-        public readonly object? Env;
-        public readonly Outputs.A2 Jobs;
+        [Input("env")]
+        public Input<object>? Env { get; set; }
+
+        [Input("jobs", required: true)]
+        public Input<Inputs.JobsArgs> Jobs { get; set; } = null!;
+
         /// <summary>
         /// The name of your workflow. GitHub displays the names of your workflows on your repository's actions page. If you omit this field, GitHub sets the name to the workflow's filename.
         /// </summary>
-        public readonly string? Name;
+        [Input("name")]
+        public Input<string>? Name { get; set; }
+
         /// <summary>
         /// default any for anyOf
         /// </summary>
-        public readonly object On;
+        [Input("on", required: true)]
+        public Input<object> On { get; set; } = null!;
+
         /// <summary>
         /// default any for anyOf
         /// </summary>
-        public readonly object? Permissions;
+        [Input("permissions")]
+        public Input<object>? Permissions { get; set; }
+
         /// <summary>
         /// The name for workflow runs generated from the workflow. GitHub displays the workflow run name in the list of workflow runs on your repository's 'Actions' tab.
         /// </summary>
-        public readonly string? Run-name;
+        [Input("run-name")]
+        public Input<string>? Run-name { get; set; }
 
-        [OutputConstructor]
-        private A0(
-            object? concurrency,
-
-            Outputs.A3? defaults,
-
-            object? env,
-
-            Outputs.A2 jobs,
-
-            string? name,
-
-            object on,
-
-            object? permissions,
-
-            string? run-name)
+        public RootArgs()
         {
-            Concurrency = concurrency;
-            Defaults = defaults;
-            Env = env;
-            Jobs = jobs;
-            Name = name;
-            On = on;
-            Permissions = permissions;
-            Run-name = run-name;
         }
+        public static new RootArgs Empty => new RootArgs();
     }
 }

@@ -15,11 +15,11 @@ namespace Pulumi.GithubWorkflow.Inputs
     /// Each job runs in a fresh instance of the virtual environment specified by runs-on.
     /// You can run an unlimited number of jobs as long as you are within the workflow usage limits. For more information, see https://help.github.com/en/github/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#usage-limits.
     /// </summary>
-    public sealed class A2 : global::Pulumi.InvokeArgs
+    public sealed class JobsArgs : global::Pulumi.ResourceArgs
     {
-        public A2()
+        public JobsArgs()
         {
         }
-        public static new A2 Empty => new A2();
+        public static new JobsArgs Empty => new JobsArgs();
     }
 }

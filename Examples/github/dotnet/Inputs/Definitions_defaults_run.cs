@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.GithubWorkflow.Inputs
 {
 
-    public sealed class A1 : global::Pulumi.InvokeArgs
+    public sealed class Definitions_defaults_run : global::Pulumi.InvokeArgs
     {
         /// <summary>
         /// unhandled schema: Json.Schema.CommentKeyword, Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword
@@ -24,9 +24,9 @@ namespace Pulumi.GithubWorkflow.Inputs
         [Input("working-directory")]
         public string? Working-directory { get; set; }
 
-        public A1()
+        public Definitions_defaults_run()
         {
         }
-        public static new A1 Empty => new A1();
+        public static new Definitions_defaults_run Empty => new Definitions_defaults_run();
     }
 }

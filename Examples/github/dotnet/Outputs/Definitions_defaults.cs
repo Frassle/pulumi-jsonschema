@@ -11,12 +11,12 @@ namespace Pulumi.GithubWorkflow.Outputs
 {
 
     [OutputType]
-    public sealed class A3
+    public sealed class Definitions_defaults
     {
-        public readonly Outputs.A1? Run;
+        public readonly Outputs.Definitions_defaults_run? Run;
 
         [OutputConstructor]
-        private A3(Outputs.A1? run)
+        private Definitions_defaults(Outputs.Definitions_defaults_run? run)
         {
             Run = run;
         }

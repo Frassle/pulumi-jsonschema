@@ -14,7 +14,7 @@ namespace Pulumi.Pulumi.Outputs
     /// Describes an object type
     /// </summary>
     [OutputType]
-    public sealed class A2
+    public sealed class ObjectTypeDetails
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
         /// <summary>
@@ -27,7 +27,7 @@ namespace Pulumi.Pulumi.Outputs
         public readonly ImmutableArray<string> Required;
 
         [OutputConstructor]
-        private A2(
+        private ObjectTypeDetails(
             ImmutableDictionary<string, object>? additionalProperties,
 
             ImmutableDictionary<string, object>? properties,

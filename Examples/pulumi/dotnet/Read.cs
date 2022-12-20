@@ -51,10 +51,10 @@ namespace Pulumi.Pulumi
     [OutputType]
     public sealed class ReadResult
     {
-        public readonly Outputs.A0 Value;
+        public readonly Outputs.PulumiPackageMetaschema Value;
 
         [OutputConstructor]
-        private ReadResult(Outputs.A0 value)
+        private ReadResult(Outputs.PulumiPackageMetaschema value)
         {
             Value = value;
         }

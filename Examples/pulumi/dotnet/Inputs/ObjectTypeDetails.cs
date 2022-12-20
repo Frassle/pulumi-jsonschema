@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object type
     /// </summary>
-    public sealed class A2 : global::Pulumi.InvokeArgs
+    public sealed class ObjectTypeDetails : global::Pulumi.InvokeArgs
     {
         [Input("additionalProperties")]
         private Dictionary<string, object>? _additionalProperties;
@@ -47,9 +47,9 @@ namespace Pulumi.Pulumi.Inputs
             set => _required = value;
         }
 
-        public A2()
+        public ObjectTypeDetails()
         {
         }
-        public static new A2 Empty => new A2();
+        public static new ObjectTypeDetails Empty => new ObjectTypeDetails();
     }
 }

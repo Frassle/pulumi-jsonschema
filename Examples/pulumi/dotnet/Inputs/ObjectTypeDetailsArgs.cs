@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object type
     /// </summary>
-    public sealed class A2Args : global::Pulumi.ResourceArgs
+    public sealed class ObjectTypeDetailsArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
         private InputMap<object>? _additionalProperties;
@@ -47,9 +47,9 @@ namespace Pulumi.Pulumi.Inputs
             set => _required = value;
         }
 
-        public A2Args()
+        public ObjectTypeDetailsArgs()
         {
         }
-        public static new A2Args Empty => new A2Args();
+        public static new ObjectTypeDetailsArgs Empty => new ObjectTypeDetailsArgs();
     }
 }

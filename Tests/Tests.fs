@@ -543,8 +543,8 @@ let ``Test simple type union`` () =
     conversion
     |> conversionToJson
     |> shouldJsonEqual (simpleSchema """{"oneOf": [
-            {"type": "string"},
-            {"type": "bool"}
+            {"type": "boolean"},
+            {"type": "string"}
         ]
     }""")
 
@@ -628,7 +628,7 @@ let ``Test complex object`` () =
     conversion
     |> conversionToJson
     |> shouldJsonEqual (complexSchema [
-        "schema:index:root", """{"type":"object","properties":{"foo":{"$ref":"#/types/jsonschema:index:foo"}}}"""
+        "schema:index:root", """{"type":"object","properties":{"foo":{"$ref":"#/types/schema:index:foo"}}}"""
         "schema:index:foo", """{"type":"object","properties":{"bar":{"type":"number"}}}"""
     ])
     
@@ -639,7 +639,7 @@ let ``Test complex object`` () =
     ])
     |> conversion.Writer
     |> toJson
-    |> shouldJsonEqual """{"foo":"a"}"""
+    |> shouldJsonEqual """{"foo":{"bar":4}}"""
     
     // Properties are optional by default
     Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
@@ -647,10 +647,10 @@ let ``Test complex object`` () =
     |> toJson
     |> shouldJsonEqual """{}"""
 
-    fromJson """{"foo":"string"}"""
+    fromJson """{"foo":{}}"""
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
-        "foo", Pulumi.Provider.PropertyValue("string")
+        "foo", Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
     ]))
 
     fromJson """{}"""
