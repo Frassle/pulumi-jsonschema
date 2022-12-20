@@ -690,7 +690,9 @@ let writeSdk (schema : System.Text.Json.Nodes.JsonObject) (name : string) =
         failwithf "gen-sdk failed\nstdout:\n%s\nstderr:\n%s" (out.ToString()) (err.ToString())
         
     System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "Examples", name, "dotnet", "version.txt"), "")
-    System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "Examples", name, "dotnet", "schema.json"), schema.ToJsonString())
+    let options = System.Text.Json.JsonSerializerOptions()
+    options.WriteIndented <- true
+    System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "Examples", name, "dotnet", "schema.json"), schema.ToJsonString(options))
 
 [<Fact>]
 let ``Test githhub`` () =
