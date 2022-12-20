@@ -57,6 +57,50 @@
     }
   },
   "types": {
+    "pulumi:index:FunctionDefinition": {
+      "type": "object",
+      "description": "Describes a function.",
+      "properties": {
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          }
+        },
+        "deprecationMessage": {
+          "type": "string",
+          "description": "Indicates whether the function is deprecated"
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the function, if any. Interpreted as Markdown."
+        },
+        "inputs": {
+          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
+        },
+        "isOverlay": {
+          "type": "boolean",
+          "description": "Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author"
+        },
+        "language": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          },
+          "description": "Additional language-specific data about the function."
+        },
+        "multiArgumentInputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of parameter names that determines whether the input bag should be treated as a single argument or as multiple arguments. The list corresponds to the order in which the parameters should be passed to the function."
+        },
+        "outputs": {
+          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
+        }
+      }
+    },
     "pulumi:index:ObjectTypeDetails": {
       "type": "object",
       "description": "Describes an object type",
@@ -106,6 +150,19 @@
             "$ref": "pulumi.json#/Any"
           },
           "description": "A map from variable name to propertySpec that describes a package\u0027s configuration variables."
+        }
+      }
+    },
+    "pulumi:index:meta": {
+      "type": "object",
+      "description": "Format metadata about this package.",
+      "required": [
+        "moduleFormat"
+      ],
+      "properties": {
+        "moduleFormat": {
+          "type": "string",
+          "description": "A regex that is used by the importer to extract a module name from the module portion of a type token. Packages that use the module format \u0022namespace1/namespace2/.../namespaceN\u0022 do not need to specify a format. The regex must define one capturing group that contains the module name, which must be formatted as \u0022namespace1/namespace2/...namespaceN\u0022."
         }
       }
     },
@@ -204,63 +261,6 @@
         "version": {
           "type": "string",
           "description": "The version of the package. The version must be valid semver."
-        }
-      }
-    },
-    "pulumi:index:FunctionDefinition": {
-      "type": "object",
-      "description": "Describes a function.",
-      "properties": {
-        "additionalProperties": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          }
-        },
-        "deprecationMessage": {
-          "type": "string",
-          "description": "Indicates whether the function is deprecated"
-        },
-        "description": {
-          "type": "string",
-          "description": "The description of the function, if any. Interpreted as Markdown."
-        },
-        "inputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
-        },
-        "isOverlay": {
-          "type": "boolean",
-          "description": "Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author"
-        },
-        "language": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          },
-          "description": "Additional language-specific data about the function."
-        },
-        "multiArgumentInputs": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "A list of parameter names that determines whether the input bag should be treated as a single argument or as multiple arguments. The list corresponds to the order in which the parameters should be passed to the function."
-        },
-        "outputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
-        }
-      }
-    },
-    "pulumi:index:meta": {
-      "type": "object",
-      "description": "Format metadata about this package.",
-      "required": [
-        "moduleFormat"
-      ],
-      "properties": {
-        "moduleFormat": {
-          "type": "string",
-          "description": "A regex that is used by the importer to extract a module name from the module portion of a type token. Packages that use the module format \u0022namespace1/namespace2/.../namespaceN\u0022 do not need to specify a format. The regex must define one capturing group that contains the module name, which must be formatted as \u0022namespace1/namespace2/...namespaceN\u0022."
         }
       }
     }

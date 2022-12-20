@@ -26,15 +26,6 @@ let pickKeyword<'T when 'T :> Json.Schema.IJsonSchemaKeyword> (keywords : Keywor
     else 
         None
 
-let validate (jsonSchema : Json.Schema.JsonSchema) (node : JsonNode option) : JsonNode option =
-    let options = Json.Schema.ValidationOptions()
-    options.OutputFormat <- Json.Schema.OutputFormat.Basic
-    let validation = jsonSchema.Validate(Option.toObj node, options)
-    if not validation.IsValid then 
-        failwith validation.Message
-    else 
-        node
-
 [<RequireQualifiedAccess>]
 type PrimitiveType = Boolean | Integer | Number | String
 with 
@@ -82,7 +73,7 @@ type NullConversion = {
         else 
             failwithf "Invalid JSON document expected null got %O" value.ValueKind
 
-let writePrimitive (typ : PrimitiveType) (schema : Json.Schema.JsonSchema) (value : Pulumi.Provider.PropertyValue) = 
+let writePrimitive (typ : PrimitiveType) (value : Pulumi.Provider.PropertyValue) = 
     let rec getNode (value : Pulumi.Provider.PropertyValue) =
         match typ with 
         | PrimitiveType.Boolean ->
@@ -146,7 +137,7 @@ let writePrimitive (typ : PrimitiveType) (schema : Json.Schema.JsonSchema) (valu
                 (fun output -> getNode output.Value),
                 (fun _ -> raise "computed")
             )
-    validate schema (getNode value)
+    getNode value
 
 let readPrimitive (typ: PrimitiveType) (value : JsonElement) =    
     match typ with 
@@ -170,7 +161,6 @@ let readPrimitive (typ: PrimitiveType) (value : JsonElement) =
             failwithf "Invalid JSON document expected number got %O" value.ValueKind
 
 type PrimitiveConversion = {
-    Schema : Json.Schema.JsonSchema
     Description : string option
     Type : PrimitiveType
 } with
@@ -186,13 +176,12 @@ type PrimitiveConversion = {
         schema
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        writePrimitive this.Type this.Schema value
+        writePrimitive this.Type value
 
     member this.Reader (value : JsonElement) = 
         readPrimitive this.Type value
 
 type UnionConversion = {
-    Schema : Json.Schema.JsonSchema
     Description : string option
     BooleanConversion : PrimitiveConversion option
     NumberConversion : PrimitiveConversion option
@@ -260,7 +249,6 @@ type UnionConversion = {
             (fun output -> this.Writer output.Value),
             (fun _ -> raise "computed")
         )
-        |> validate this.Schema
 
     member this.Reader (value : JsonElement) = 
         if (value.ValueKind = JsonValueKind.True || value.ValueKind = JsonValueKind.False) && this.BooleanConversion.IsSome then
@@ -273,7 +261,6 @@ type UnionConversion = {
             failwithf "Invalid JSON document expected %s got %O" this.expectedTypes value.ValueKind
 
 type EnumConversion = {
-    Schema : Json.Schema.JsonSchema
     Path : string list
     Title : string option
     Description : string option
@@ -296,14 +283,13 @@ type EnumConversion = {
         schema
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        writePrimitive this.Type this.Schema value
+        writePrimitive this.Type value
 
     member this.Reader (value : JsonElement) = 
         readPrimitive this.Type value
 
                 
 type ArrayConversion = {
-    Schema : Json.Schema.JsonSchema
     Description : string option
     Items : Conversion
 } with
@@ -348,7 +334,6 @@ type ArrayConversion = {
             (fun output -> this.Writer output.Value),
             (fun _ -> raise "computed")
         )
-        |> validate this.Schema
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Array then
@@ -363,7 +348,6 @@ type ArrayConversion = {
         this.Items.CollectComplexTypes()
 
 and MapConversion = {
-    Schema : Json.Schema.JsonSchema
     Description : string option
     AdditionalProperties : Conversion
 } with
@@ -409,7 +393,6 @@ and MapConversion = {
             (fun output -> this.Writer output.Value),
             (fun _ -> raise "computed")
         )
-        |> validate this.Schema
 
     member this.Reader (value : JsonElement) = 
         if value.ValueKind = JsonValueKind.Object then
@@ -424,7 +407,7 @@ and MapConversion = {
         this.AdditionalProperties.CollectComplexTypes()
 
 and [<RequireQualifiedAccess>] TypeSpec = 
-    | Any of (Json.Schema.JsonSchema * string option) // Also known as Any
+    | Any of string option // Also known as Any
     | NullConversion of NullConversion
     | PrimitiveConversion of PrimitiveConversion
     | ArrayConversion of ArrayConversion
@@ -433,7 +416,7 @@ and [<RequireQualifiedAccess>] TypeSpec =
 
     member this.BuildTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) = 
         match this with 
-        | Any (_, desc) ->
+        | Any desc ->
             let schema = JsonObject()
             schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
             schema, desc
@@ -445,7 +428,7 @@ and [<RequireQualifiedAccess>] TypeSpec =
 
     member this.BuildPropertySpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) = 
         match this with 
-        | Any (_, desc) ->
+        | Any desc ->
             let schema = JsonObject()
             schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
             desc |> Option.iter (fun desc -> schema.Add("description", desc))
@@ -458,7 +441,7 @@ and [<RequireQualifiedAccess>] TypeSpec =
         
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
         match this with 
-        | Any (schema, _) -> 
+        | Any _ -> 
             let rec getValue (value : Pulumi.Provider.PropertyValue) =
                 value.Match(
                     (fun () -> None),
@@ -474,7 +457,7 @@ and [<RequireQualifiedAccess>] TypeSpec =
                     (fun output -> getValue output.Value),
                     (fun _ ->failwith "not implemented")
                 )
-            validate schema (getValue value)
+            getValue value
         | NullConversion c -> c.Writer value
         | PrimitiveConversion c -> c.Writer value
         | ArrayConversion c -> c.Writer value
@@ -522,7 +505,6 @@ and [<RequireQualifiedAccess>] TypeSpec =
         | UnionConversion c -> ImmutableHashSet.Empty
 
 and ObjectConversion = {
-    Schema : Json.Schema.JsonSchema
     Path : string list
     Title : string option
     Description : string option
@@ -609,7 +591,6 @@ and ObjectConversion = {
             (fun output -> this.Writer output.Value),
             (fun _ -> raise "computed")
         )
-        |> validate this.Schema
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Object then            
@@ -766,7 +747,6 @@ let convertNullSchema (jsonSchema : Json.Schema.JsonSchema) : NullConversion =
 
 let convertBoolSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversion =
     {
-        Schema = jsonSchema
         Type = PrimitiveType.Boolean
         Description = getDescription jsonSchema.Keywords
     }
@@ -776,7 +756,6 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
     match enum with 
     | None -> 
         {
-            Schema = jsonSchema
             Type = PrimitiveType.String
             Description = getDescription jsonSchema.Keywords
         }
@@ -788,7 +767,6 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
             |> Seq.toList
 
         {   
-            Schema = jsonSchema
             Path = path
             Type = PrimitiveType.String
             Description = getDescription jsonSchema.Keywords
@@ -800,7 +778,6 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
 
 let convertNumberSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversion =
     {
-        Schema = jsonSchema
         Type = PrimitiveType.Number
         Description = getDescription jsonSchema.Keywords
     }
@@ -829,7 +806,6 @@ let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
         else None
 
     {
-        Schema = jsonSchema
         Description = getDescription jsonSchema.Keywords
         NumberConversion = numberConversion
         StringConversion = stringConversion
@@ -901,13 +877,12 @@ and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.J
     let items =
         itemsKeyword
         |> Option.map (fun ik -> convertSubSchema root ("item" :: path) ik.SingleSchema)
-        |> Option.defaultValue (Some (Conversion.TypeSpec (TypeSpec.Any (Json.Schema.JsonSchema.True, None))))
+        |> Option.defaultValue (Some (Conversion.TypeSpec (TypeSpec.Any None)))
         |> function  
         | None -> failwith "array with false items not yet supported"
         | Some items -> items
 
     {
-        Schema = jsonSchema
         Description = getDescription jsonSchema.Keywords
         Items = items
     }
@@ -935,7 +910,7 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
     let additionalProperties =
         match additionalPropertiesKeyword with 
         | Some apk -> convertSubSchema root ("additionalProperties" :: path) apk.Schema
-        | None -> Some (Conversion.TypeSpec (TypeSpec.Any (Json.Schema.JsonSchema.True, None)))
+        | None -> Some (Conversion.TypeSpec (TypeSpec.Any None))
 
     let properties = 
         match additionalProperties, properties with
@@ -965,7 +940,6 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
     | None, None -> 
         // An empty object!
         {
-            Schema = jsonSchema
             Path = path
             Description = description
             Title = title
@@ -978,7 +952,6 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
     | None, Some aps -> 
         // A map
         {
-            Schema = jsonSchema
             Description = description
             AdditionalProperties = aps
         }
@@ -986,7 +959,6 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
         |> Conversion.TypeSpec
     | Some props, aps ->
         {
-            Schema = jsonSchema
             Path = path
             Description = description
             Title = title
@@ -998,17 +970,17 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
         |> Conversion.ComplexTypeSpec
 
 and convertAllOf (schema : Json.Schema.JsonSchema) (allof : Json.Schema.AllOfKeyword) : Conversion =    
-    TypeSpec.Any (schema, Some "default any for allOf")
+    TypeSpec.Any (Some "default any for allOf")
     |> Conversion.TypeSpec
 
 and convertOneOf (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
-    TypeSpec.Any (schema, Some "default any for anyOf")
+    TypeSpec.Any (Some "default any for anyOf")
     |> Conversion.TypeSpec
 
 and convertSubSchema (root : RootInformation) (path : string list) (schema : Json.Schema.JsonSchema) : Conversion option =
     match schema.BoolValue |> Option.ofNullable with
     | Some false -> None
-    | Some true -> TypeSpec.Any (schema, None) |> Conversion.TypeSpec |> Some
+    | Some true -> TypeSpec.Any None |> Conversion.TypeSpec |> Some
     | None ->
         let keywords = schema.Keywords
         let allOf = pickKeyword<Json.Schema.AllOfKeyword> keywords
@@ -1042,7 +1014,7 @@ and convertSubSchema (root : RootInformation) (path : string list) (schema : Jso
                 |> String.concat ", "
                 |> sprintf "unhandled schema: %s"
             
-            TypeSpec.Any (schema, Some msg)
+            TypeSpec.Any (Some msg)
             |> Conversion.TypeSpec
             |> Some
 
@@ -1160,10 +1132,29 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         ]))
     ]))
 
+    let validationOptions = Json.Schema.ValidationOptions()
+    validationOptions.OutputFormat <- Json.Schema.OutputFormat.Basic
+    
+    let writer (value : Pulumi.Provider.PropertyValue) = 
+        let result = conversion.Writer value
+        let validation = jsonSchema.Validate(Option.toObj result, validationOptions)
+        if not validation.IsValid then 
+            failwith validation.Message
+        else 
+            result
+
+    let reader (element : JsonElement) =
+        let node = element.Deserialize<JsonNode>()
+        let validation = jsonSchema.Validate(node, validationOptions)
+        if not validation.IsValid then 
+            failwith validation.Message
+        else 
+            conversion.Reader element
+
     {
         Schema = schema
-        Reader = conversion.Reader
-        Writer = conversion.Writer
+        Reader = reader
+        Writer = writer
     }
 
 type Provider(conversion : RootConversion, host : Pulumi.Provider.IHost) =
