@@ -598,12 +598,14 @@ let ``Test complex object`` () =
     conversion
     |> conversionToJson
     |> shouldJsonEqual (complexSchema [
-        "jsonschema:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}"""
-        "jsonschema:index:root", """{"type":"object","properties":{"bar":{"type":"number"}}}"""
+        "jsonschema:index:root", """{"type":"object","properties":{"foo":{"$ref":"#/types/jsonschema:index:foo"}}}"""
+        "jsonschema:index:foo", """{"type":"object","properties":{"bar":{"type":"number"}}}"""
     ])
     
     Pulumi.Provider.PropertyValue(listToDict [
-        "foo", Pulumi.Provider.PropertyValue("a")
+        "foo", Pulumi.Provider.PropertyValue(listToDict [
+            "bar", Pulumi.Provider.PropertyValue(4)
+        ])
     ])
     |> conversion.Writer
     |> toJson
