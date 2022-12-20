@@ -378,7 +378,7 @@ let ``Test empty object`` () =
         (fun _ -> failwith "unexpected"))
 
 [<Fact>]
-let ``Test object with additional keys`` () =
+let ``Test object with additional properties`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
         "type": "object",
         "additionalProperties": { "type": "string" }
@@ -422,7 +422,8 @@ let ``Test object with properties`` () =
         "type": "object",
         "properties": {
             "foo": { "type": "string" }
-        }
+        },
+        "additionalProperties": false
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
     
@@ -485,6 +486,7 @@ let ``Test object with required properties`` () =
         "properties": {
             "foo": { "type": "string" }
         },
+        "additionalProperties": false,
         "required": ["foo"]
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
@@ -535,6 +537,7 @@ let ``Test object with required properties`` () =
 let ``Test refs`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
         "type": "object",
+        "additionalProperties": false,
         "properties": {
             "foo": { "$ref": "#/$defs/myType" }
         },
@@ -667,7 +670,7 @@ let ``Test githhub`` () =
 
 [<Fact>]
 let ``Test pulumi`` () =
-    let uri = Uri("https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json")
+    let uri = Uri("https://raw.githubusercontent.com/pulumi/pulumi/569369d6f18120d0074d07eac656745f6f7244bf/pkg/codegen/schema/pulumi.json")
     let schema = 
         use client = new System.Net.Http.HttpClient()
         let contents = client.GetStringAsync(uri)

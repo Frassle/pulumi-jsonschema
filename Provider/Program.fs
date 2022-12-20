@@ -9,60 +9,76 @@ open System.Collections.Immutable
 open System.Text.Json
 open System.Text.Json.Nodes
 
-type Conversion = {
-    IsComplex : bool
+
+type SchemaConversion = {
     Schema : JsonObject
     Writer : Pulumi.Provider.PropertyValue -> JsonNode option
     Reader : JsonElement ->  Pulumi.Provider.PropertyValue
 }
 
+type Conversion =
+    | Any // Also known as Any
+    | TypeSpec of SchemaConversion
+    | ComplexTypeSpec of SchemaConversion
+
+    member this.IsComplexType = 
+        match this with 
+        | ComplexTypeSpec _ -> true
+        | _ -> false
+
+    member this.Schema = 
+        match this with 
+        | Any ->
+            let schema = JsonObject()
+            schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
+            schema
+        | TypeSpec conversion -> conversion.Schema
+        | ComplexTypeSpec conversion -> conversion.Schema
+        
+    member this.Writer = 
+        match this with 
+        | Any -> 
+            fun (value : Pulumi.Provider.PropertyValue) ->
+                value.Match<JsonNode>(
+                    (fun () -> null),
+                    (fun b -> JsonValue.Create(b)),
+                    (fun n -> JsonValue.Create(n)),
+                    (fun s -> JsonValue.Create(s)),
+                    (fun a -> failwith "not implemented"),
+                    (fun o -> failwith "not implemented"),
+                    (fun _ -> failwith "not implemented"),
+                    (fun _ -> failwith "not implemented"),
+                    (fun secret -> failwith "not implemented"),
+                    (fun _ -> failwith "not implemented"),   
+                    (fun output -> failwith "not implemented"),
+                    (fun _ ->failwith "not implemented")
+                ) |> Option.ofObj
+        | TypeSpec conversion -> conversion.Writer
+        | ComplexTypeSpec conversion -> conversion.Writer
+
+    member this.Reader = 
+        match this with 
+        | Any -> 
+            fun (value : JsonElement) ->
+                if value.ValueKind = JsonValueKind.Null then
+                    Pulumi.Provider.PropertyValue.Null
+                elif value.ValueKind = JsonValueKind.False then 
+                    Pulumi.Provider.PropertyValue(false)
+                elif value.ValueKind = JsonValueKind.True then 
+                    Pulumi.Provider.PropertyValue(true)
+                elif value.ValueKind = JsonValueKind.Number then 
+                    Pulumi.Provider.PropertyValue(value.GetDouble())
+                elif value.ValueKind = JsonValueKind.String then 
+                    Pulumi.Provider.PropertyValue(value.GetString())
+                else 
+                    failwith "not implemented"
+        | TypeSpec conversion -> conversion.Reader
+        | ComplexTypeSpec conversion -> conversion.Reader
+
 type RootInformation = {
     Uri : Uri
     Document : JsonElement
 }
-
-// Creates a new Conversion that for the pulumi Any type
-let createAnyConversion () = 
-    let schema = JsonObject()
-    schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
-
-    let rec writer (value : Pulumi.Provider.PropertyValue) : JsonNode option =
-        value.Match<JsonNode>(
-            (fun () -> null),
-            (fun b -> JsonValue.Create(b)),
-            (fun n -> JsonValue.Create(n)),
-            (fun s -> JsonValue.Create(s)),
-            (fun a -> failwith "not implemented"),
-            (fun o -> failwith "not implemented"),
-            (fun _ -> failwith "not implemented"),
-            (fun _ -> failwith "not implemented"),
-            (fun secret -> failwith "not implemented"),
-            (fun _ -> failwith "not implemented"),   
-            (fun output -> failwith "not implemented"),
-            (fun _ ->failwith "not implemented")
-        ) |> Option.ofObj
-
-    let reader  (value : JsonElement) = 
-        if value.ValueKind = JsonValueKind.Null then
-            Pulumi.Provider.PropertyValue.Null
-        elif value.ValueKind = JsonValueKind.False then 
-            Pulumi.Provider.PropertyValue(false)
-        elif value.ValueKind = JsonValueKind.True then 
-            Pulumi.Provider.PropertyValue(true)
-        elif value.ValueKind = JsonValueKind.Number then 
-            Pulumi.Provider.PropertyValue(value.GetDouble())
-        elif value.ValueKind = JsonValueKind.String then 
-            Pulumi.Provider.PropertyValue(value.GetString())
-        else 
-            failwith "not implemented"
-
-
-    {
-        IsComplex = false
-        Schema = schema
-        Writer = writer
-        Reader = reader
-    }
 
 let pickKeyword<'T when 'T :> Json.Schema.IJsonSchemaKeyword> (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>) : 'T option =
     let picked = 
@@ -121,8 +137,7 @@ let convertNullSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKey
         else 
             failwithf "Invalid JSON document expected null got %O" value.ValueKind
 
-    {
-        IsComplex = false
+    TypeSpec {
         Schema = schema
         Writer = writer
         Reader = reader
@@ -161,8 +176,7 @@ let convertBoolSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKey
         else 
             failwithf "Invalid JSON document expected bool got %O" value.ValueKind
 
-    {
-        IsComplex = false
+    TypeSpec {
         Schema = schema
         Writer = writer
         Reader = reader
@@ -199,8 +213,7 @@ let convertStringSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaK
         else 
             failwithf "Invalid JSON document expected string got %O" value.ValueKind
 
-    {
-        IsComplex = false
+    TypeSpec {
         Schema = schema
         Writer = writer
         Reader = reader
@@ -237,8 +250,7 @@ let convertNumberSchema (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaK
         else 
             failwithf "Invalid JSON document expected number got %O" value.ValueKind
 
-    {
-        IsComplex = false
+    TypeSpec {
         Schema = schema
         Writer = writer
         Reader = reader
@@ -326,15 +338,14 @@ let convertSimpleUnion (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKe
         else 
             failwithf "Invalid JSON document expected %s got %O" expectedTypes value.ValueKind
 
-    {
-        IsComplex = false
+    TypeSpec {
         Schema = schema
         Writer = writer
         Reader = reader
     }
 
     
-let rec convertRef (root : RootInformation) (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion =
+let rec convertRef (root : RootInformation) (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion option =
     //let newUri = Uri("schema.json", ref.Reference)
 // var newUri = new Uri(context.Scope.LocalScope, Reference);
 // var navigation = (newUri.OriginalString, context.InstanceLocation);
@@ -395,9 +406,10 @@ and convertArraySchema (root : RootInformation) (keywords : IReadOnlyCollection<
         |> Option.map (fun ik ->
             convertSubSchema root ik.SingleSchema
         )
+        |> Option.defaultValue (Some Any)
 
     match items with 
-    | None -> ()
+    | None -> failwith "array with false items not yet supported"
     | Some items -> schema.Add("items", items.Schema)
 
     let raise (typ : string) = failwithf "Invalid type expected array got %s" typ
@@ -443,8 +455,7 @@ and convertArraySchema (root : RootInformation) (keywords : IReadOnlyCollection<
         else 
             failwithf "Invalid JSON document expected array got %O" value.ValueKind
 
-    {
-        IsComplex = false
+    TypeSpec {
         Schema = schema
         Writer = writer
         Reader = reader
@@ -463,8 +474,9 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
         |> Option.map (fun pk ->
             pk.Properties
             |> Seq.map (fun kv ->
-                let subConversion = convertSubSchema root kv.Value
-                (kv.Key, subConversion)
+                match convertSubSchema root kv.Value with 
+                | Some subConversion -> (kv.Key, subConversion)
+                | None -> failwith "false properties not yet implemented"
             )
             |> Map.ofSeq
         )
@@ -474,17 +486,14 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
         |> Option.map (fun apk ->
             convertSubSchema root apk.Schema
         )
-        |> Option.orElseWith (fun () ->
-            // If we don't have properties or additionalProperties then JSON schema says this is an object of "anything", but pulumi schema of just "type": "object" defaults to string values.
-            if properties.IsSome then None
-            else 
-                Some (createAnyConversion())
-        )
-     
+        |> Option.defaultValue (Some Any)
 
-    match additionalProperties with
-    | None -> ()
-    | Some additionalProperties -> schema.Add("additionalProperties", additionalProperties.Schema)
+    // Pulumi schema only directly supports maps (i.e additionalProperties is Some and properties = []) or fixed property bags (i.e. additionalProperties is None)
+    // We'll have to work out some container to support both
+    match additionalProperties, properties with
+    | Some _, Some _ -> failwith "properties and additionalProperties is not yet implemented"
+    | Some additionalProperties, None -> schema.Add("additionalProperties", additionalProperties.Schema)
+    | None, _ -> ()
 
     let required = 
         match requiredKeyword with
@@ -571,20 +580,26 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
         else 
             failwithf "Invalid JSON document expected object got %O" value.ValueKind
 
-    {
-        IsComplex = properties.IsSome
-        Schema = schema
-        Writer = writer
-        Reader = reader
-    }
+    if properties.IsSome then 
+        ComplexTypeSpec {
+            Schema = schema
+            Writer = writer
+            Reader = reader
+        }
+    else 
+        TypeSpec {
+            Schema = schema
+            Writer = writer
+            Reader = reader
+        }
 
 and convertOneOf (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
-    createAnyConversion()
+    Any
 
-and convertSubSchema (root : RootInformation) (schema : Json.Schema.JsonSchema) : Conversion =
+and convertSubSchema (root : RootInformation) (schema : Json.Schema.JsonSchema) : Conversion option =
     match schema.BoolValue |> Option.ofNullable with 
-    | Some bool -> 
-        failwithf "bool schemas are not implemented"
+    | Some false -> None
+    | Some true ->  Some Any
     | None ->
         let oneOf = pickKeyword<Json.Schema.OneOfKeyword> schema.Keywords
         let ref = pickKeyword<Json.Schema.RefKeyword> schema.Keywords
@@ -592,30 +607,28 @@ and convertSubSchema (root : RootInformation) (schema : Json.Schema.JsonSchema) 
         if ref.IsSome then
             convertRef root schema ref.Value
         elif oneOf.IsSome then
-            convertOneOf schema oneOf.Value
+            Some (convertOneOf schema oneOf.Value)
         elif isSimpleType Json.Schema.SchemaValueType.Null schema then 
-            convertNullSchema schema.Keywords
+            Some (convertNullSchema schema.Keywords)
         elif isSimpleType Json.Schema.SchemaValueType.Boolean schema then 
-            convertBoolSchema schema.Keywords
+            Some (convertBoolSchema schema.Keywords)
         elif isSimpleType Json.Schema.SchemaValueType.String schema then 
-            convertStringSchema schema.Keywords
+            Some (convertStringSchema schema.Keywords)
         elif isSimpleType Json.Schema.SchemaValueType.Number schema then 
-            convertNumberSchema schema.Keywords
+            Some (convertNumberSchema schema.Keywords)
         elif isSimpleType Json.Schema.SchemaValueType.Object schema then 
-            convertObjectSchema root schema.Keywords
+            Some (convertObjectSchema root schema.Keywords)
         elif isSimpleType Json.Schema.SchemaValueType.Array schema then 
-            convertArraySchema root schema.Keywords
+            Some (convertArraySchema root schema.Keywords)
         elif isSimpleUnion schema then
-            convertSimpleUnion schema.Keywords
+            Some (convertSimpleUnion schema.Keywords)
         else 
             let msg =
                 schema.Keywords
                 |> Seq.map (fun kw -> kw.ToString())
                 |> String.concat ", "
                 |> sprintf "unhandled schema: %s"
-            let conversion = createAnyConversion()
-            conversion.Schema["description"] <- msg
-            conversion
+            Some Any
 
 type RootConversion = {
     Schema: JsonObject
@@ -647,10 +660,15 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     }
     let jsonSchema = Json.Schema.JsonSchema.FromText (jsonSchema.GetRawText())
     let conversion = convertSubSchema root jsonSchema
+
+    let conversion = 
+        match conversion with 
+        | None -> failwith "top level false schemas are not supported, this schema can not read or write anything"
+        | Some conversion -> conversion
     
     // if the schema is a valid complex type then embed it into types and return that, else we'll embed it directly
     let readObjectType = 
-        if conversion.IsComplex then
+        if conversion.IsComplexType then
             let types = JsonObject()
             schema.Add("types", types)
             types.Add("root", conversion.Schema)
