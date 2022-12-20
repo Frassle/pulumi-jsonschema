@@ -15,6 +15,14 @@ namespace Pulumi.Pulumi.Inputs
     /// </summary>
     public sealed class Config : global::Pulumi.InvokeArgs
     {
+        [Input("additionalProperties")]
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
+        {
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
+            set => _additionalProperties = value;
+        }
+
         [Input("required")]
         private List<string>? _required;
 

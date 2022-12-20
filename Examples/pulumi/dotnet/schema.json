@@ -57,9 +57,9 @@
     }
   },
   "types": {
-    "pulumi:index:FunctionDefinition": {
+    "pulumi:index:ObjectTypeDetails": {
       "type": "object",
-      "description": "Describes a function.",
+      "description": "Describes an object type",
       "properties": {
         "additionalProperties": {
           "type": "object",
@@ -67,37 +67,19 @@
             "$ref": "pulumi.json#/Any"
           }
         },
-        "deprecationMessage": {
-          "type": "string",
-          "description": "Indicates whether the function is deprecated"
-        },
-        "description": {
-          "type": "string",
-          "description": "The description of the function, if any. Interpreted as Markdown."
-        },
-        "inputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
-        },
-        "isOverlay": {
-          "type": "boolean",
-          "description": "Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author"
-        },
-        "language": {
+        "properties": {
           "type": "object",
           "additionalProperties": {
             "$ref": "pulumi.json#/Any"
           },
-          "description": "Additional language-specific data about the function."
+          "description": "A map from property name to propertySpec that describes the object\u0027s properties."
         },
-        "multiArgumentInputs": {
+        "required": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "A list of parameter names that determines whether the input bag should be treated as a single argument or as multiple arguments. The list corresponds to the order in which the parameters should be passed to the function."
-        },
-        "outputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
+          "description": "A list of the names of an object type\u0027s required properties. These properties must be set for inputs and will always be set for outputs."
         }
       }
     },
@@ -105,6 +87,12 @@
       "type": "object",
       "description": "The package\u0027s configuration variables.",
       "properties": {
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          }
+        },
         "required": {
           "type": "array",
           "items": {
@@ -219,9 +207,9 @@
         }
       }
     },
-    "pulumi:index:ObjectTypeDetails": {
+    "pulumi:index:FunctionDefinition": {
       "type": "object",
-      "description": "Describes an object type",
+      "description": "Describes a function.",
       "properties": {
         "additionalProperties": {
           "type": "object",
@@ -229,19 +217,37 @@
             "$ref": "pulumi.json#/Any"
           }
         },
-        "properties": {
+        "deprecationMessage": {
+          "type": "string",
+          "description": "Indicates whether the function is deprecated"
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the function, if any. Interpreted as Markdown."
+        },
+        "inputs": {
+          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
+        },
+        "isOverlay": {
+          "type": "boolean",
+          "description": "Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author"
+        },
+        "language": {
           "type": "object",
           "additionalProperties": {
             "$ref": "pulumi.json#/Any"
           },
-          "description": "A map from property name to propertySpec that describes the object\u0027s properties."
+          "description": "Additional language-specific data about the function."
         },
-        "required": {
+        "multiArgumentInputs": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "A list of the names of an object type\u0027s required properties. These properties must be set for inputs and will always be set for outputs."
+          "description": "A list of parameter names that determines whether the input bag should be treated as a single argument or as multiple arguments. The list corresponds to the order in which the parameters should be passed to the function."
+        },
+        "outputs": {
+          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
         }
       }
     },
