@@ -293,10 +293,10 @@ let ``Test empty object`` () =
     |> toJson
     |> shouldJsonEqual "{}"
     
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange([
-        KeyValuePair.Create("hello", Pulumi.Provider.PropertyValue("a"));
-        KeyValuePair.Create("test", Pulumi.Provider.PropertyValue(123));
-    ]))
+    Pulumi.Provider.PropertyValue(listToDict [
+        "hello", Pulumi.Provider.PropertyValue("a")
+        "test", Pulumi.Provider.PropertyValue(123)
+    ])
     |> conversion.Writer
     |> toJson
     |> shouldJsonEqual """{"hello": "a", "test": 123}"""
@@ -317,9 +317,9 @@ let ``Test object with additional properties`` () =
     |> conversionToJson
     |> shouldJsonEqual (simpleSchema """{"type":"object","additionalProperties":{"type":"string"}}""")
     
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [
-        KeyValuePair.Create("hello", Pulumi.Provider.PropertyValue("a"));
-        KeyValuePair.Create("test", Pulumi.Provider.PropertyValue("b"));
+    Pulumi.Provider.PropertyValue(listToDict [
+        "hello", Pulumi.Provider.PropertyValue("a")
+        "test", Pulumi.Provider.PropertyValue("b")
     ])
     |> conversion.Writer
     |> toJson
@@ -347,8 +347,8 @@ let ``Test object with properties`` () =
     |> conversionToJson
     |> shouldJsonEqual (complexSchema ["jsonschema:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}"""])
     
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [
-        KeyValuePair.Create("foo", Pulumi.Provider.PropertyValue("a"));
+    Pulumi.Provider.PropertyValue(listToDict [
+        "foo", Pulumi.Provider.PropertyValue("a")
     ])
     |> conversion.Writer
     |> toJson
@@ -390,8 +390,8 @@ let ``Test object with required properties`` () =
         "required": ["foo"]
     }"""])
     
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [
-        KeyValuePair.Create("foo", Pulumi.Provider.PropertyValue("a"));
+    Pulumi.Provider.PropertyValue(listToDict [
+        "foo", Pulumi.Provider.PropertyValue("a")
     ])
     |> conversion.Writer
     |> toJson
@@ -576,6 +576,54 @@ let ``Test property description`` () =
             }
         }
     }"""])
+    
+[<Fact>]
+let ``Test complex object`` () =
+    // This schema can't emit to Pulumi as a single nested object because we need to declare a "complexTypeSpec"
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "object",
+        "properties": {
+            "foo": { 
+                "type": "object",
+                "properties": {
+                    "bar": { "type": "number" }
+                },
+                "additionalProperties": false
+            }
+        },
+        "additionalProperties": false
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (complexSchema [
+        "jsonschema:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}"""
+        "jsonschema:index:root", """{"type":"object","properties":{"bar":{"type":"number"}}}"""
+    ])
+    
+    Pulumi.Provider.PropertyValue(listToDict [
+        "foo", Pulumi.Provider.PropertyValue("a")
+    ])
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """{"foo":"a"}"""
+    
+    // Properties are optional by default
+    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """{}"""
+
+    fromJson """{"foo":"string"}"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
+        "foo", Pulumi.Provider.PropertyValue("string")
+    ]))
+
+    fromJson """{}"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
         
 [<Fact>]
 let ``Test githhub`` () =
