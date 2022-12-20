@@ -499,7 +499,7 @@ let ``Test githhub`` () =
 
 [<Fact>]
 let ``Test pulumi`` () =
-    let uri = Uri("https://raw.githubusercontent.com/pulumi/pulumi/569369d6f18120d0074d07eac656745f6f7244bf/pkg/codegen/schema/pulumi.json")
+    let uri = Uri("https://raw.githubusercontent.com/pulumi/pulumi/efa90bf2a7a8f5454feb34944ab5763dc101cd22/pkg/codegen/schema/pulumi.json")
     let schema = 
         use client = new System.Net.Http.HttpClient()
         let contents = client.GetStringAsync(uri)

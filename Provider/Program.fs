@@ -592,6 +592,9 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
             Writer = writer
             Reader = reader
         }
+        
+and convertAllOf (schema : Json.Schema.JsonSchema) (allof : Json.Schema.AllOfKeyword) : Conversion =
+    Any
 
 and convertOneOf (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
     Any
@@ -601,11 +604,14 @@ and convertSubSchema (root : RootInformation) (schema : Json.Schema.JsonSchema) 
     | Some false -> None
     | Some true ->  Some Any
     | None ->
+        let allOf = pickKeyword<Json.Schema.AllOfKeyword> schema.Keywords
         let oneOf = pickKeyword<Json.Schema.OneOfKeyword> schema.Keywords
         let ref = pickKeyword<Json.Schema.RefKeyword> schema.Keywords
         
         if ref.IsSome then
             convertRef root schema ref.Value
+        elif allOf.IsSome then
+            Some (convertAllOf schema allOf.Value)
         elif oneOf.IsSome then
             Some (convertOneOf schema oneOf.Value)
         elif isSimpleType Json.Schema.SchemaValueType.Null schema then 
