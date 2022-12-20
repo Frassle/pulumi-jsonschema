@@ -186,8 +186,8 @@ let convertBoolSchema (jsonSchema : Json.Schema.JsonSchema) : Conversion =
     let rec writer (value : Pulumi.Provider.PropertyValue) =
         value.Match(
             (fun _ -> raise "null"),
-            (fun str -> 
-                JsonValue.Create(str) 
+            (fun b -> 
+                JsonValue.Create(b) 
                 :> JsonNode
                 |> Some
             ),
@@ -223,33 +223,25 @@ let convertStringSchema (jsonSchema : Json.Schema.JsonSchema) : Conversion =
     schema.Add("type", JsonValue.Create("string"))
 
     let raise (typ : string) = failwithf "Invalid type expected string got %s" typ
-    let writer (value : Pulumi.Provider.PropertyValue) : JsonNode option =
-        let rec getString (value : Pulumi.Provider.PropertyValue) =
-            value.Match<JsonNode>(
-                (fun _ -> raise "null"),
-                (fun _ -> raise "bool"),
-                (fun _ -> raise "number"),
-                (fun str -> 
-                    JsonValue.Create(str) 
-                    :> JsonNode
-                ),
-                (fun _ -> raise "array"),
-                (fun _ -> raise "object"),
-                (fun _ -> raise "asset"),
-                (fun _ -> raise "archive"),
-                (fun secret -> getString secret),
-                (fun _ -> raise "resource"),            
-                (fun output -> getString output.Value),
-                (fun _ -> raise "computed")
-            )
-        let result = getString value
-        let options = Json.Schema.ValidationOptions()
-        options.OutputFormat <- Json.Schema.OutputFormat.Basic
-        let validation = jsonSchema.Validate(result, options)
-        if not validation.IsValid then 
-            failwith validation.Message
-        else 
-            Some result
+    let rec writer (value : Pulumi.Provider.PropertyValue) : JsonNode option =
+        value.Match(
+            (fun _ -> raise "null"),
+            (fun _ -> raise "bool"),
+            (fun _ -> raise "number"),
+            (fun s -> 
+                JsonValue.Create(s) 
+                :> JsonNode
+                |> Some
+            ),
+            (fun _ -> raise "array"),
+            (fun _ -> raise "object"),
+            (fun _ -> raise "asset"),
+            (fun _ -> raise "archive"),
+            (fun secret -> writer secret),
+            (fun _ -> raise "resource"),            
+            (fun output -> writer output.Value),
+            (fun _ -> raise "computed")
+        )
 
     let reader (value : JsonElement) = 
         if value.ValueKind = JsonValueKind.String then
