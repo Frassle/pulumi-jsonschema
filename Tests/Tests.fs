@@ -159,10 +159,10 @@ let complexSchema (types : (string*string) list) : string =
     }
 }""" typesJson
     
-let dictToMap<'K, 'V when 'K: comparison> (dict : ImmutableDictionary<'K, 'V>) : Map<'K, 'V> =
-    dict 
-    |> Seq.map (fun kv -> kv.Key, kv.Value)
-    |> Map.ofSeq
+let listToDict<'K, 'V> (list : ('K * 'V) list) : ImmutableDictionary<'K, 'V> =
+    list
+    |> Seq.map (fun (k, v) -> KeyValuePair.Create(k, v))
+    |> ImmutableDictionary.CreateRange
 
 [<Fact>]
 let ``Test null`` () =
@@ -183,19 +183,7 @@ let ``Test null`` () =
 
     fromJson "null"
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun () -> ()),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual Pulumi.Provider.PropertyValue.Null
 
 [<Fact>]
 let ``Test bool`` () =
@@ -215,19 +203,7 @@ let ``Test bool`` () =
 
     fromJson "true"
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (shouldEqual true),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue true)
 
 [<Fact>]
 let ``Test string`` () =
@@ -247,19 +223,7 @@ let ``Test string`` () =
 
     fromJson "\"test\""
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (shouldEqual "test"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue "test")
 
 [<Fact>]
 let ``Test number`` () =
@@ -279,19 +243,7 @@ let ``Test number`` () =
 
     fromJson "53.42"
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (shouldEqual 53.42),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue 53.42)
         
 [<Fact>]
 let ``Test array`` () =
@@ -315,22 +267,10 @@ let ``Test array`` () =
 
     fromJson """["foo","bar"]"""
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun arr -> 
-            arr
-            |> Seq.toList
-            |> shouldEqual ([Pulumi.Provider.PropertyValue("foo"); Pulumi.Provider.PropertyValue("bar")])),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue (ImmutableArray.CreateRange [
+        Pulumi.Provider.PropertyValue("foo")
+        Pulumi.Provider.PropertyValue("bar")
+    ]))
 
 [<Fact>]
 let ``Test empty object`` () =
@@ -363,19 +303,7 @@ let ``Test empty object`` () =
 
     fromJson "{}"
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun obj -> obj.Count |> shouldEqual 0),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test object with additional properties`` () =
@@ -399,22 +327,10 @@ let ``Test object with additional properties`` () =
 
     fromJson """{"a":"string","b":"number"}"""
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun obj -> 
-            obj 
-            |> dictToMap
-            |> shouldEqual (Map.ofList ["a", Pulumi.Provider.PropertyValue("string"); "b", Pulumi.Provider.PropertyValue("number")])),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
+        "a", Pulumi.Provider.PropertyValue("string")
+        "b", Pulumi.Provider.PropertyValue("number")
+    ]))
 
 [<Fact>]
 let ``Test object with properties`` () =
@@ -446,38 +362,13 @@ let ``Test object with properties`` () =
 
     fromJson """{"foo":"string"}"""
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun obj -> 
-            obj 
-            |> dictToMap
-            |> shouldEqual (Map.ofList ["foo", Pulumi.Provider.PropertyValue("string")])),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
+        "foo", Pulumi.Provider.PropertyValue("string")
+    ]))
 
     fromJson """{}"""
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun obj -> obj.Count |> shouldEqual 0),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test object with required properties`` () =
@@ -516,22 +407,9 @@ let ``Test object with required properties`` () =
 
     fromJson """{"foo":"string"}"""
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun obj -> 
-            obj 
-            |> dictToMap
-            |> shouldEqual (Map.ofList ["foo", Pulumi.Provider.PropertyValue("string")])),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
+        "foo", Pulumi.Provider.PropertyValue("string")
+    ]))
 
 [<Fact>]
 let ``Test refs`` () =
@@ -566,38 +444,13 @@ let ``Test refs`` () =
 
     fromJson """{"foo":456.789}"""
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun obj -> 
-            obj 
-            |> dictToMap
-            |> shouldEqual (Map.ofList ["foo", Pulumi.Provider.PropertyValue(456.789)])),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
+        "foo", Pulumi.Provider.PropertyValue(456.789)
+    ]))
 
     fromJson """{}"""
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun obj -> obj.Count |> shouldEqual 0),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test simple type union`` () =
@@ -626,35 +479,11 @@ let ``Test simple type union`` () =
 
     fromJson "true"
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (shouldEqual true),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue true)
 
     fromJson "\"testing\""
     |> conversion.Reader
-    |> fun value -> value.Match<unit>(
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (shouldEqual "testing"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"),
-        (fun _ -> failwith "unexpected"))
+    |> shouldEqual (Pulumi.Provider.PropertyValue "testing")
         
 [<Fact>]
 let ``Test githhub`` () =
