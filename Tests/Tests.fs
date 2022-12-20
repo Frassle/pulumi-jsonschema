@@ -226,6 +226,29 @@ let ``Test string`` () =
     |> shouldEqual (Pulumi.Provider.PropertyValue "test")
 
 [<Fact>]
+let ``Test string enum`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "string",
+        "enum": ["info", "warn", "error"]
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (complexSchema [
+        "jsonschema:index:root", """{"type":"string","enum":[{"value":"info"},{"value":"warn"},{"value":"error"}]}"""
+    ])
+
+    Pulumi.Provider.PropertyValue("info")
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual "\"info\""
+
+    fromJson "\"info\""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue "info")
+
+[<Fact>]
 let ``Test number`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
         "type": "number" 

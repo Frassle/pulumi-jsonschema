@@ -223,7 +223,6 @@ let convertStringSchema (keywords : KeywordCollection) : Conversion =
     let schema = JsonObject()
     schema.Add("type", JsonValue.Create("string"))
 
-
     let raise (typ : string) = failwithf "Invalid type expected string got %s" typ
     let rec writer (value : Pulumi.Provider.PropertyValue) =
         value.Match(
@@ -249,14 +248,36 @@ let convertStringSchema (keywords : KeywordCollection) : Conversion =
         if value.ValueKind = JsonValueKind.String then
             Pulumi.Provider.PropertyValue(value.GetString())
         else 
-            failwithf "Invalid JSON document expected string got %O" value.ValueKind
+            failwithf "Invalid JSON document expected string got %O" value.ValueKind            
 
-    TypeSpec {
-        Description = description keywords
-        Schema = schema
-        Writer = writer
-        Reader = reader
-    }
+    let enum = pickKeyword<Json.Schema.EnumKeyword> keywords
+    match enum with 
+    | None -> 
+        TypeSpec {
+            Description = description keywords
+            Schema = schema
+            Writer = writer
+            Reader = reader
+        }
+    | Some enum ->
+        let enumValues =
+            enum.Values
+            |> Seq.map (fun value -> 
+                JsonObject([
+                    KeyValuePair.Create("value", value.Deserialize<JsonNode>())
+                ]) :> JsonNode
+            )
+            |> Seq.toArray
+            |> JsonArray
+        schema.Add("enum", enumValues)
+
+        ComplexTypeSpec {
+            Description = description keywords
+            Schema = schema
+            Writer = writer
+            Reader = reader
+        }
+
 
 let convertNumberSchema (keywords : KeywordCollection) : Conversion =
     let schema = JsonObject()
@@ -434,7 +455,6 @@ let rec convertRef (root : RootInformation) (ref : Json.Schema.RefKeyword) : Con
 //	if (targetSchema == null)
 //		throw new JsonSchemaException($"Cannot resolve schema `{newUri}`");
 //
-
 
 and convertArraySchema (root : RootInformation) (keywords : IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>) : Conversion =
     let schema = JsonObject()
