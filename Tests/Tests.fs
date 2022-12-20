@@ -657,42 +657,12 @@ let ``Test complex object`` () =
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
         
-[<Fact>]
-let ``Test githhub`` () =
-    let uri = Uri("https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json")
-    let schema = 
-        use client = new System.Net.Http.HttpClient()
-        let contents = client.GetStringAsync(uri)
-        System.Text.Json.JsonDocument.Parse contents.Result
-        
-    let conversion = Provider.convertSchema uri schema.RootElement
-
-    Assert.NotNull(conversion)
-
-[<Fact>]
-let ``Test pulumi`` () =
-    let uri = Uri("https://raw.githubusercontent.com/pulumi/pulumi/fraser/fixSchema/pkg/codegen/schema/pulumi.json")
-    let schema = 
-        use client = new System.Net.Http.HttpClient()
-        let contents = client.GetStringAsync(uri)
-        System.Text.Json.JsonDocument.Parse contents.Result
-        
-    let conversion = Provider.convertSchema uri schema.RootElement
-
-    Assert.NotNull(conversion)
-
-    // What's "fun" is that this is the schema for pulumi schema,
-    // and so we've generated a pulumi schema for pulumi schema,
-    // which means it should be able to read itself
-    let pulumiSchemaDocument = conversion.Schema.Deserialize<JsonElement>()
-    let dom = conversion.Reader pulumiSchemaDocument
-    Assert.NotNull(dom)
-    
+let writeSdk (schema : System.Text.Json.Nodes.JsonObject) (name : string) =
     // And now we can re-generate the SDK for this!
-    System.IO.File.WriteAllText("pulumi.json", conversion.Schema.ToJsonString())
+    System.IO.File.WriteAllText(name + ".json", schema.ToJsonString())
 
     let si = System.Diagnostics.ProcessStartInfo("pulumi")
-    for arg in ["package"; "gen-sdk"; System.IO.Path.GetFullPath("pulumi.json"); "--language"; "dotnet"] do
+    for arg in ["package"; "gen-sdk"; System.IO.Path.GetFullPath(name + ".json"); "--language"; "dotnet"; "--out"; "./Examples/" + name] do
         si.ArgumentList.Add arg
     si.RedirectStandardOutput <- true
     si.RedirectStandardError <- true
@@ -719,4 +689,38 @@ let ``Test pulumi`` () =
     if proc.ExitCode <> 0 then
         failwithf "gen-sdk failed\nstdout:\n%s\nstderr:\n%s" (out.ToString()) (err.ToString())
 
-    System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "sdk", "dotnet", "version.txt"), "")
+    System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "Examples", name, "dotnet", "version.txt"), "")
+
+[<Fact>]
+let ``Test githhub`` () =
+    let uri = Uri("https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json")
+    let schema = 
+        use client = new System.Net.Http.HttpClient()
+        let contents = client.GetStringAsync(uri)
+        System.Text.Json.JsonDocument.Parse contents.Result
+        
+    let conversion = Provider.convertSchema uri schema.RootElement
+
+    Assert.NotNull(conversion)
+    writeSdk conversion.Schema "github"
+
+[<Fact>]
+let ``Test pulumi`` () =
+    let uri = Uri("https://raw.githubusercontent.com/pulumi/pulumi/fraser/fixSchema/pkg/codegen/schema/pulumi.json")
+    let schema = 
+        use client = new System.Net.Http.HttpClient()
+        let contents = client.GetStringAsync(uri)
+        System.Text.Json.JsonDocument.Parse contents.Result
+        
+    let conversion = Provider.convertSchema uri schema.RootElement
+
+    Assert.NotNull(conversion)
+    writeSdk conversion.Schema "pulumi"
+
+    // What's "fun" is that this is the schema for pulumi schema,
+    // and so we've generated a pulumi schema for pulumi schema,
+    // which means it should be able to read itself
+    let pulumiSchemaDocument = conversion.Schema.Deserialize<JsonElement>()
+    let dom = conversion.Reader pulumiSchemaDocument
+    Assert.NotNull(dom)
+    
