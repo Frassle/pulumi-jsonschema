@@ -535,6 +535,30 @@ let ``Test simple type union`` () =
     fromJson "\"testing\""
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue "testing")
+
+[<Fact>]
+let ``Test description`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "number",
+        "description": "This is a number"
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (simpleSchema """{
+        "type":"number",
+        "description": "This is a number"
+    }""")
+
+    Pulumi.Provider.PropertyValue(14.512)
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual "14.512"
+
+    fromJson "53.42"
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue 53.42)
         
 [<Fact>]
 let ``Test githhub`` () =

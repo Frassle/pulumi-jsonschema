@@ -42,12 +42,19 @@ type SchemaConversion = {
     Schema : JsonObject
     Writer : Pulumi.Provider.PropertyValue -> JsonNode option
     Reader : JsonElement ->  Pulumi.Provider.PropertyValue
+    Description : string option
 }
 
 type Conversion =
-    | Any // Also known as Any
+    | Any of string option // Also known as Any
     | TypeSpec of SchemaConversion
     | ComplexTypeSpec of SchemaConversion
+
+    member this.Description = 
+        match this with 
+        | Any desc -> desc
+        | TypeSpec c -> c.Description
+        | ComplexTypeSpec c -> c.Description
 
     member this.IsComplexType = 
         match this with 
@@ -56,7 +63,7 @@ type Conversion =
 
     member this.Schema = 
         match this with 
-        | Any ->
+        | Any _ ->
             let schema = JsonObject()
             schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
             schema
@@ -65,7 +72,7 @@ type Conversion =
         
     member this.Writer = 
         match this with 
-        | Any -> 
+        | Any _ -> 
             fun (value : Pulumi.Provider.PropertyValue) ->
                 value.Match<JsonNode>(
                     (fun () -> null),
@@ -86,7 +93,7 @@ type Conversion =
 
     member this.Reader = 
         match this with 
-        | Any -> 
+        | Any _ -> 
             fun (value : JsonElement) ->
                 if value.ValueKind = JsonValueKind.Null then
                     Pulumi.Provider.PropertyValue.Null
@@ -133,6 +140,11 @@ let isSimpleUnion (keywords : KeywordCollection) : bool =
         not (typ.Type.HasFlag Json.Schema.SchemaValueType.Array)
     ) |> Option.defaultValue false
         
+let description keywords = 
+    match pickKeyword<Json.Schema.DescriptionKeyword> keywords with 
+    | Some desc -> Some desc.Value
+    | None -> None
+
 let convertNullSchema (keywords : KeywordCollection) : Conversion =
     let schema = JsonObject()
     schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
@@ -161,6 +173,7 @@ let convertNullSchema (keywords : KeywordCollection) : Conversion =
             failwithf "Invalid JSON document expected null got %O" value.ValueKind
 
     TypeSpec {
+        Description = description keywords
         Schema = schema
         Writer = writer
         Reader = reader
@@ -200,6 +213,7 @@ let convertBoolSchema (keywords : KeywordCollection) : Conversion =
             failwithf "Invalid JSON document expected bool got %O" value.ValueKind
 
     TypeSpec {
+        Description = description keywords
         Schema = schema
         Writer = writer
         Reader = reader
@@ -237,6 +251,7 @@ let convertStringSchema (keywords : KeywordCollection) : Conversion =
             failwithf "Invalid JSON document expected string got %O" value.ValueKind
 
     TypeSpec {
+        Description = description keywords
         Schema = schema
         Writer = writer
         Reader = reader
@@ -274,6 +289,7 @@ let convertNumberSchema (keywords : KeywordCollection) : Conversion =
             failwithf "Invalid JSON document expected number got %O" value.ValueKind
 
     TypeSpec {
+        Description = description keywords
         Schema = schema
         Writer = writer
         Reader = reader
@@ -362,6 +378,7 @@ let convertSimpleUnion (keywords : KeywordCollection) : Conversion =
             failwithf "Invalid JSON document expected %s got %O" expectedTypes value.ValueKind
 
     TypeSpec {
+        Description = description keywords
         Schema = schema
         Writer = writer
         Reader = reader
@@ -429,7 +446,7 @@ and convertArraySchema (root : RootInformation) (keywords : IReadOnlyCollection<
         |> Option.map (fun ik ->
             convertSubSchema root (JsonSchema.Of ik.SingleSchema)
         )
-        |> Option.defaultValue (Some Any)
+        |> Option.defaultValue (Some (Any None))
 
     match items with 
     | None -> failwith "array with false items not yet supported"
@@ -479,6 +496,7 @@ and convertArraySchema (root : RootInformation) (keywords : IReadOnlyCollection<
             failwithf "Invalid JSON document expected array got %O" value.ValueKind
 
     TypeSpec {
+        Description = description keywords
         Schema = schema
         Writer = writer
         Reader = reader
@@ -510,7 +528,7 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
     let additionalProperties =
         match additionalPropertiesKeyword with 
         | Some apk -> convertSubSchema root (JsonSchema.Of apk.Schema)
-        | None -> Some Any
+        | None -> Some (Any None)
 
     let properties = 
         match additionalProperties, properties with
@@ -658,27 +676,29 @@ and convertObjectSchema (root : RootInformation) (keywords : IReadOnlyCollection
 
     if properties.IsSome then 
         ComplexTypeSpec {
+            Description = description keywords
             Schema = schema
             Writer = writer
             Reader = reader
         }
     else
         TypeSpec {
+            Description = description keywords
             Schema = schema
             Writer = writer
             Reader = reader
         }
         
 and convertAllOf (schema : JsonSchema) (allof : Json.Schema.AllOfKeyword) : Conversion =
-    Any
+    Any (Some "default any for allOf")
 
 and convertOneOf (schema : JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
-    Any
+    Any (Some "default any for oneOf")
 
 and convertSubSchema (root : RootInformation) (schema : JsonSchema) : Conversion option =
     match schema with 
     | JsonSchema.Bool false -> None
-    | JsonSchema.Bool true ->  Some Any
+    | JsonSchema.Bool true ->  Some (Any None)
     | JsonSchema.Keywords keywords ->
         let allOf = pickKeyword<Json.Schema.AllOfKeyword> keywords
         let oneOf = pickKeyword<Json.Schema.OneOfKeyword> keywords
@@ -710,7 +730,7 @@ and convertSubSchema (root : RootInformation) (schema : JsonSchema) : Conversion
                 |> Seq.map (fun kw -> kw.ToString())
                 |> String.concat ", "
                 |> sprintf "unhandled schema: %s"
-            Some Any
+            Some (Any (Some msg))
 
 type RootConversion = {
     Schema: JsonObject
@@ -753,13 +773,19 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         if conversion.IsComplexType then
             let types = JsonObject()
             schema.Add("types", types)
-            types.Add("jsonschema:index:root", conversion.Schema)
+            let complexTypeSpec = conversion.Schema.Deserialize<JsonObject>()
+            conversion.Description
+            |> Option.iter (fun desc -> complexTypeSpec.Add("description", desc))
+            types.Add("jsonschema:index:root", complexTypeSpec)
 
-            let ref = JsonObject()
-            ref.Add("$ref", "#/types/jsonschema:index:root")
-            ref
-        else 
-            conversion.Schema
+            let propertySpec = JsonObject()
+            propertySpec.Add("$ref", "#/types/jsonschema:index:root")
+            propertySpec
+        else
+            let propertySpec = conversion.Schema.Deserialize<JsonObject>()
+            conversion.Description
+            |> Option.iter (fun desc -> propertySpec.Add("description", desc))
+            propertySpec
     // Use Deserialize to clone
     let writeObjectType = readObjectType.Deserialize<JsonNode>()
 
