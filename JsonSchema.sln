@@ -7,6 +7,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Provider", "Provider\Provid
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Tests", "Tests\Tests.fsproj", "{75F87F95-32E3-489A-A8AB-8696CE895739}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pulumi.Jsonschema", "sdk\dotnet\Pulumi.Jsonschema.csproj", "{B1DA7F07-ABAD-4718-A19E-0DC6050283CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{75F87F95-32E3-489A-A8AB-8696CE895739}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75F87F95-32E3-489A-A8AB-8696CE895739}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75F87F95-32E3-489A-A8AB-8696CE895739}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1DA7F07-ABAD-4718-A19E-0DC6050283CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1DA7F07-ABAD-4718-A19E-0DC6050283CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1DA7F07-ABAD-4718-A19E-0DC6050283CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1DA7F07-ABAD-4718-A19E-0DC6050283CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

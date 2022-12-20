@@ -753,10 +753,10 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         if conversion.IsComplexType then
             let types = JsonObject()
             schema.Add("types", types)
-            types.Add("root", conversion.Schema)
+            types.Add("jsonschema:index:root", conversion.Schema)
 
             let ref = JsonObject()
-            ref.Add("$ref", "#/types/root")
+            ref.Add("$ref", "#/types/jsonschema:index:root")
             ref
         else 
             conversion.Schema

@@ -142,14 +142,14 @@ let complexSchema (types : (string*string) list) : string =
             },
             "outputs":{
                 "required": ["value"],
-                "properties": {"value": {"$ref":"#/types/root"}}
+                "properties": {"value": {"$ref":"#/types/jsonschema:index:root"}}
             }
         },
         "jsonschema:index:write":{
             "description":"Read the given JSON into the object model",
             "inputs":{
                 "required": ["value"],
-                "properties": {"value": {"$ref":"#/types/root"}}
+                "properties": {"value": {"$ref":"#/types/jsonschema:index:root"}}
             },
             "outputs":{
                 "required": ["json"],
@@ -345,7 +345,7 @@ let ``Test object with properties`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (complexSchema ["root", """{"type":"object","properties":{"foo":{"type":"string"}}}"""])
+    |> shouldJsonEqual (complexSchema ["jsonschema:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}"""])
     
     Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [
         KeyValuePair.Create("foo", Pulumi.Provider.PropertyValue("a"));
@@ -384,7 +384,7 @@ let ``Test object with required properties`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (complexSchema ["root", """{
+    |> shouldJsonEqual (complexSchema ["jsonschema:index:root", """{
         "type":"object",
         "properties":{"foo":{"type":"string"}},
         "required": ["foo"]
@@ -425,7 +425,7 @@ let ``Test object with properties and additionalProperties`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (complexSchema ["root", """{
+    |> shouldJsonEqual (complexSchema ["jsonschema:index:root", """{
         "type":"object",
         "properties":{
             "foo":{"type":"string"},
@@ -478,7 +478,7 @@ let ``Test refs`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (complexSchema ["root", """{"type":"object","properties":{"foo":{"type":"number"}}}"""])
+    |> shouldJsonEqual (complexSchema ["jsonschema:index:root", """{"type":"object","properties":{"foo":{"type":"number"}}}"""])
     
     Pulumi.Provider.PropertyValue(listToDict [
         "foo", Pulumi.Provider.PropertyValue(123)
@@ -566,3 +566,19 @@ let ``Test pulumi`` () =
     let pulumiSchemaDocument = conversion.Schema.Deserialize<JsonElement>()
     let dom = conversion.Reader pulumiSchemaDocument
     Assert.NotNull(dom)
+    
+    // And now we can re-generate the SDK for this!
+    System.IO.File.WriteAllText("pulumi.json", conversion.Schema.ToJsonString())
+
+    let si = System.Diagnostics.ProcessStartInfo("pulumi")
+    for arg in ["package"; "gen-sdk"; "--langauge"; "dotnet"; System.IO.Path.GetFullPath("pulumi.json")] do
+        si.ArgumentList.Add arg
+    // Find the root directory
+    let mutable cwd = System.Environment.CurrentDirectory
+    while System.IO.Path.GetFileName cwd <> "Tests" do
+        cwd <- System.IO.Path.GetDirectoryName cwd
+    // Go up one more directory
+    cwd <- System.IO.Path.GetDirectoryName cwd
+    si.WorkingDirectory <- cwd
+    let proc = System.Diagnostics.Process.Start si
+    proc.WaitForExit()
