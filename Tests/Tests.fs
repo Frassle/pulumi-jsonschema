@@ -1026,3 +1026,36 @@ let ``Test oneOf objects`` () =
             Pulumi.Provider.PropertyValue("testing")
         ])
     ]))
+
+[<Fact>]
+let ``Test string pattern`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "string",
+        "pattern": "\\d+"
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (simpleSchema """{"type":"string"}""")
+
+    Pulumi.Provider.PropertyValue("123")
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual "\"123\""
+
+    fromJson "\"456\""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue "456")
+
+    let exc = Assert.Throws<exn>(fun () ->
+        Pulumi.Provider.PropertyValue("hello")
+        |> conversion.Writer
+        |> ignore)
+    exc.Message |> shouldEqual "The string value was not a match for the indicated regular expression"
+    
+    let exc = Assert.Throws<exn>(fun () ->
+        fromJson "\"bob\""
+        |> conversion.Reader
+        |> ignore)
+    exc.Message |> shouldEqual "The string value was not a match for the indicated regular expression"
