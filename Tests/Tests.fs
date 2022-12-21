@@ -1005,10 +1005,16 @@ let ``Test oneOf objects`` () =
               "type": "number"
             },
             "choice2Of3": {
-              "type": "array"
+              "type": "array",
+              "items": {
+                "$ref": "pulumi.json#/Any"
+              }
             },
             "choice3Of3": {
-              "type": "object"
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "pulumi.json#/Any"
+              }
             }
         }
     }"""])
