@@ -57,6 +57,56 @@
     }
   },
   "types": {
+    "pulumi:index:meta": {
+      "type": "object",
+      "description": "Format metadata about this package.",
+      "required": [
+        "moduleFormat"
+      ],
+      "properties": {
+        "moduleFormat": {
+          "type": "string",
+          "description": "A regex that is used by the importer to extract a module name from the module portion of a type token. Packages that use the module format \u0022namespace1/namespace2/.../namespaceN\u0022 do not need to specify a format. The regex must define one capturing group that contains the module name, which must be formatted as \u0022namespace1/namespace2/...namespaceN\u0022."
+        }
+      }
+    },
+    "pulumi:index:FunctionDefinition": {
+      "type": "object",
+      "description": "Describes a function.",
+      "properties": {
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          }
+        },
+        "deprecationMessage": {
+          "type": "string",
+          "description": "Indicates whether the function is deprecated"
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the function, if any. Interpreted as Markdown."
+        },
+        "inputs": {
+          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
+        },
+        "isOverlay": {
+          "type": "boolean",
+          "description": "Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author"
+        },
+        "language": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          },
+          "description": "Additional language-specific data about the function."
+        },
+        "outputs": {
+          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
+        }
+      }
+    },
     "pulumi:index:config": {
       "type": "object",
       "description": "The package\u0027s configuration variables.",
@@ -74,19 +124,6 @@
             "$ref": "pulumi.json#/Any"
           },
           "description": "A map from variable name to propertySpec that describes a package\u0027s configuration variables."
-        }
-      }
-    },
-    "pulumi:index:meta": {
-      "type": "object",
-      "description": "Format metadata about this package.",
-      "required": [
-        "moduleFormat"
-      ],
-      "properties": {
-        "moduleFormat": {
-          "type": "string",
-          "description": "A regex that is used by the importer to extract a module name from the module portion of a type token. Packages that use the module format \u0022namespace1/namespace2/.../namespaceN\u0022 do not need to specify a format. The regex must define one capturing group that contains the module name, which must be formatted as \u0022namespace1/namespace2/...namespaceN\u0022."
         }
       }
     },
@@ -210,43 +247,6 @@
             "type": "string"
           },
           "description": "A list of the names of an object type\u0027s required properties. These properties must be set for inputs and will always be set for outputs."
-        }
-      }
-    },
-    "pulumi:index:FunctionDefinition": {
-      "type": "object",
-      "description": "Describes a function.",
-      "properties": {
-        "additionalProperties": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          }
-        },
-        "deprecationMessage": {
-          "type": "string",
-          "description": "Indicates whether the function is deprecated"
-        },
-        "description": {
-          "type": "string",
-          "description": "The description of the function, if any. Interpreted as Markdown."
-        },
-        "inputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
-        },
-        "isOverlay": {
-          "type": "boolean",
-          "description": "Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author"
-        },
-        "language": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          },
-          "description": "Additional language-specific data about the function."
-        },
-        "outputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
         }
       }
     }

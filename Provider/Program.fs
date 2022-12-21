@@ -34,6 +34,11 @@ let isValidationKeyword (keyword : Json.Schema.IJsonSchemaKeyword) : bool =
     | :? Json.Schema.DefsKeyword -> false
     | _ -> true
 
+let optionOfTry<'T> (tryResult : bool * 'T) : 'T option =
+    match tryResult with 
+    | false, _ -> None
+    | true, value -> Some value
+
 [<RequireQualifiedAccess>]
 type PrimitiveType = Boolean | Integer | Number | String
 with 
@@ -317,13 +322,9 @@ type ArrayConversion = {
         
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
         let maybeArr = 
-            value
-            |> Pulumi.Provider.PropertyValue.Unwrap
-            |> Option.ofObj
-            |> Option.bind (fun v -> 
-                match v.TryGetArray() with
-                | false, _ -> None
-                | true, a -> Some a)
+            value.TryUnwrap ()
+            |> optionOfTry
+            |> Option.bind (fun v -> v.TryGetArray() |> optionOfTry)
 
         match maybeArr with 
         | None -> failwithf "Invalid type expected array got %O" value.Type
@@ -371,13 +372,9 @@ and MapConversion = {
         
     member this.Writer (value : Pulumi.Provider.PropertyValue) =
         let maybeObj = 
-            value
-            |> Pulumi.Provider.PropertyValue.Unwrap
-            |> Option.ofObj
-            |> Option.bind (fun v -> 
-                match v.TryGetObject() with
-                | false, _ -> None
-                | true, o -> Some o)
+            value.TryUnwrap ()
+            |> optionOfTry
+            |> Option.bind (fun v -> v.TryGetObject() |> optionOfTry)
                 
         match maybeObj with 
         | None -> failwithf "Invalid type expected object got %O" value.Type
@@ -550,13 +547,9 @@ and ObjectConversion = {
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) =
         let maybeObj = 
-            value
-            |> Pulumi.Provider.PropertyValue.Unwrap
-            |> Option.ofObj
-            |> Option.bind (fun v -> 
-                match v.TryGetObject() with
-                | false, _ -> None
-                | true, o -> Some o)
+            value.TryUnwrap ()
+            |> optionOfTry
+            |> Option.bind (fun v -> v.TryGetObject() |> optionOfTry)
                 
         match maybeObj with 
         | None -> failwithf "Invalid type expected object got %O" value.Type
@@ -677,13 +670,9 @@ and TupleConversion = {
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) =
         let maybeObj = 
-            value
-            |> Pulumi.Provider.PropertyValue.Unwrap
-            |> Option.ofObj
-            |> Option.bind (fun v -> 
-                match v.TryGetObject() with
-                | false, _ -> None
-                | true, o -> Some o)
+            value.TryUnwrap ()
+            |> optionOfTry
+            |> Option.bind (fun v -> v.TryGetObject() |> optionOfTry)
                 
         match maybeObj with 
         | None -> failwithf "Invalid type expected object got %O" value.Type
@@ -698,13 +687,9 @@ and TupleConversion = {
                     | None, "rest", _ -> failwith "unexpected property key 'rest'"
                     | Some ais , "rest", [||] ->
                         let maybeArr =
-                            property.Value
-                            |> Pulumi.Provider.PropertyValue.Unwrap
-                            |> Option.ofObj
-                            |> Option.bind (fun v -> 
-                                match v.TryGetArray() with
-                                | false, _ -> None
-                                | true, a -> Some a)
+                            property.Value.TryUnwrap()
+                            |> optionOfTry
+                            |> Option.bind (fun v -> v.TryGetArray() |> optionOfTry)
 
                         match maybeArr with 
                         | None -> failwithf "Invalid type expected array got %O" value.Type
