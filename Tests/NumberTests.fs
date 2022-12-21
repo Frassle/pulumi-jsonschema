@@ -80,3 +80,36 @@ let ``Test integer`` () =
         |> conversion.Reader
         |> ignore)
     exc.Message |> Test.shouldEqual "Value is \"boolean\" but should be \"integer\""
+
+[<Fact>]
+let ``Test integer multipleOf`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "integer",
+        "multipleOf": 4
+    }"""
+    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
+    
+    conversion
+    |> Test.conversionToJson
+    |> Test.shouldJsonEqual (Test.simpleSchema """{"type":"integer"}""")
+
+    Pulumi.Provider.PropertyValue(8)
+    |> conversion.Writer
+    |> Test.toJson
+    |> Test.shouldJsonEqual "8"
+
+    Test.fromJson "16"
+    |> conversion.Reader
+    |> Test.shouldEqual (Pulumi.Provider.PropertyValue 16)
+
+    let exc = Assert.Throws<exn>(fun () ->
+        Test.fromJson "2"
+        |> conversion.Reader
+        |> ignore)
+    exc.Message |> Test.shouldEqual "2 is not a multiple of 4"
+
+    let exc = Assert.Throws<exn>(fun () ->
+        Pulumi.Provider.PropertyValue(3)
+        |> conversion.Writer
+        |> ignore)
+    exc.Message |> Test.shouldEqual "3 is not a multiple of 4"
