@@ -230,32 +230,32 @@ type UnionConversion = {
           |> String.concat " or "      
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        let raise (typ : string) = failwithf "Invalid type expected %s got %s" this.expectedTypes typ
+        let raise () = failwithf "Invalid type expected %s got %O" this.expectedTypes value.Type
         value.Match(
-            (fun _ -> raise "null"),
+            (fun _ -> raise ()),
             (fun _ -> 
                 match this.BooleanConversion with 
-                | None -> raise "bool"
+                | None -> raise ()
                 | Some conversion -> conversion.Writer value
             ),
             (fun _ -> 
                 match this.NumberConversion with 
-                | None -> raise "number"
+                | None -> raise ()
                 | Some conversion -> conversion.Writer value
             ),
             (fun _ -> 
                 match this.StringConversion with 
-                | None -> raise "string"
+                | None -> raise ()
                 | Some conversion -> conversion.Writer value
             ),
-            (fun _ -> raise "array"),
-            (fun _ -> raise "object"),
-            (fun _ -> raise "asset"),
-            (fun _ -> raise "archive"),
+            (fun _ -> raise ()),
+            (fun _ -> raise ()),
+            (fun _ -> raise ()),
+            (fun _ -> raise ()),
             (fun secret -> this.Writer secret),
-            (fun _ -> raise "resource"),            
+            (fun _ -> raise ()),
             (fun output -> this.Writer output.Value),
-            (fun _ -> raise "computed")
+            (fun _ -> raise ())
         )
 
     member this.Reader (value : JsonElement) = 
@@ -295,7 +295,6 @@ type EnumConversion = {
 
     member this.Reader (value : JsonElement) = 
         readPrimitive this.Type value
-
                 
 type ArrayConversion = {
     Description : string option
@@ -317,31 +316,27 @@ type ArrayConversion = {
         schema
         
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        let raise (typ : string) = failwithf "Invalid type expected array got %s" typ
-        value.Match(
-            (fun _ -> raise "null"),
-            (fun _ -> raise "bool"),
-            (fun _ -> raise "number"),
-            (fun _ -> raise "string"),
-            (fun obj -> 
-                obj
-                |> Seq.map (fun item ->
-                    this.Items.Writer item
-                    |> Option.toObj
-                )
-                |> Seq.toArray
-                |> JsonArray
-                :> JsonNode
-                |> Some
-            ),
-            (fun _ -> raise "object"),
-            (fun _ -> raise "asset"),
-            (fun _ -> raise "archive"),
-            (fun secret -> this.Writer secret),
-            (fun _ -> raise "resource"),            
-            (fun output -> this.Writer output.Value),
-            (fun _ -> raise "computed")
-        )
+        let maybeArr = 
+            value
+            |> Pulumi.Provider.PropertyValue.Unwrap
+            |> Option.ofObj
+            |> Option.bind (fun v -> 
+                match v.TryGetArray() with
+                | false, _ -> None
+                | true, a -> Some a)
+
+        match maybeArr with 
+        | None -> failwithf "Invalid type expected array got %O" value.Type
+        | Some arr ->
+            arr
+            |> Seq.map (fun item ->
+                this.Items.Writer item
+                |> Option.toObj
+            )
+            |> Seq.toArray
+            |> JsonArray
+            :> JsonNode
+            |> Some
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Array then
@@ -374,33 +369,29 @@ and MapConversion = {
         this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
         schema
         
-    member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        let raise (typ : string) = failwithf "Invalid type expected object got %s" typ
-        value.Match(
-            (fun _ -> raise "null"),
-            (fun _ -> raise "bool"),
-            (fun _ -> raise "number"),
-            (fun _ -> raise "string"),
-            (fun _ -> raise "array"),
-            (fun obj ->
-                obj
-                |> Seq.map (fun kv ->
-                    let node = this.AdditionalProperties.Writer kv.Value
-                    match node with
-                    | Some node -> KeyValuePair.Create(kv.Key, node)
-                    | None -> KeyValuePair.Create(kv.Key, null)
-                )
-                |> JsonObject
-                :> JsonNode
-                |> Some
-            ),
-            (fun _ -> raise "asset"),
-            (fun _ -> raise "archive"),
-            (fun secret -> this.Writer secret),
-            (fun _ -> raise "resource"),            
-            (fun output -> this.Writer output.Value),
-            (fun _ -> raise "computed")
-        )
+    member this.Writer (value : Pulumi.Provider.PropertyValue) =
+        let maybeObj = 
+            value
+            |> Pulumi.Provider.PropertyValue.Unwrap
+            |> Option.ofObj
+            |> Option.bind (fun v -> 
+                match v.TryGetObject() with
+                | false, _ -> None
+                | true, o -> Some o)
+                
+        match maybeObj with 
+        | None -> failwithf "Invalid type expected object got %O" value.Type
+        | Some obj ->
+            obj
+            |> Seq.map (fun kv ->
+                let node = this.AdditionalProperties.Writer kv.Value
+                match node with
+                | Some node -> KeyValuePair.Create(kv.Key, node)
+                | None -> KeyValuePair.Create(kv.Key, null)
+            )
+            |> JsonObject
+            :> JsonNode
+            |> Some
 
     member this.Reader (value : JsonElement) = 
         if value.ValueKind = JsonValueKind.Object then
@@ -416,11 +407,11 @@ and MapConversion = {
 
 and [<RequireQualifiedAccess>] TypeSpec = 
     | Any of string option
-    | NullConversion of NullConversion
-    | PrimitiveConversion of PrimitiveConversion
-    | ArrayConversion of ArrayConversion
-    | MapConversion of MapConversion
-    | UnionConversion of UnionConversion
+    | Null of NullConversion
+    | Primitive of PrimitiveConversion
+    | Array of ArrayConversion
+    | Map of MapConversion
+    | Union of UnionConversion
 
     member this.BuildTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) = 
         match this with 
@@ -428,11 +419,11 @@ and [<RequireQualifiedAccess>] TypeSpec =
             let schema = JsonObject()
             schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
             schema, desc
-        | NullConversion c -> c.BuildTypeSpec()
-        | PrimitiveConversion c -> c.BuildTypeSpec()
-        | ArrayConversion c -> c.BuildTypeSpec packageName names
-        | MapConversion c -> c.BuildTypeSpec packageName names
-        | UnionConversion c -> c.BuildTypeSpec()
+        | Null c -> c.BuildTypeSpec()
+        | Primitive c -> c.BuildTypeSpec()
+        | Array c -> c.BuildTypeSpec packageName names
+        | Map c -> c.BuildTypeSpec packageName names
+        | Union c -> c.BuildTypeSpec()
 
     member this.BuildPropertySpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) = 
         match this with 
@@ -441,11 +432,11 @@ and [<RequireQualifiedAccess>] TypeSpec =
             schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
             desc |> Option.iter (fun desc -> schema.Add("description", desc))
             schema
-        | NullConversion c -> c.BuildPropertySpec()
-        | PrimitiveConversion c -> c.BuildPropertySpec()
-        | ArrayConversion c -> c.BuildPropertySpec packageName names
-        | MapConversion c -> c.BuildPropertySpec packageName names
-        | UnionConversion c -> c.BuildPropertySpec()
+        | Null c -> c.BuildPropertySpec()
+        | Primitive c -> c.BuildPropertySpec()
+        | Array c -> c.BuildPropertySpec packageName names
+        | Map c -> c.BuildPropertySpec packageName names
+        | Union c -> c.BuildPropertySpec()
         
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
         match this with 
@@ -482,11 +473,11 @@ and [<RequireQualifiedAccess>] TypeSpec =
                     (fun _ ->failwith "not implemented")
                 )
             getValue value
-        | NullConversion c -> c.Writer value
-        | PrimitiveConversion c -> c.Writer value
-        | ArrayConversion c -> c.Writer value
-        | MapConversion c -> c.Writer value        
-        | UnionConversion c -> c.Writer value
+        | Null c -> c.Writer value
+        | Primitive c -> c.Writer value
+        | Array c -> c.Writer value
+        | Map c -> c.Writer value        
+        | Union c -> c.Writer value
         
     member this.Reader (value : JsonElement) = 
         match this with 
@@ -513,20 +504,20 @@ and [<RequireQualifiedAccess>] TypeSpec =
                 |> Pulumi.Provider.PropertyValue
             else 
                 failwithf "unexpected JsonValueKind: %O" value.ValueKind
-        | NullConversion c -> c.Reader value
-        | PrimitiveConversion c -> c.Reader value
-        | ArrayConversion c -> c.Reader value
-        | MapConversion c -> c.Reader value 
-        | UnionConversion c -> c.Reader value
+        | Null c -> c.Reader value
+        | Primitive c -> c.Reader value
+        | Array c -> c.Reader value
+        | Map c -> c.Reader value 
+        | Union c -> c.Reader value
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         match this with 
         | Any _ -> ImmutableHashSet.Empty
-        | NullConversion c -> ImmutableHashSet.Empty
-        | PrimitiveConversion c -> ImmutableHashSet.Empty
-        | ArrayConversion c -> c.CollectComplexTypes()
-        | MapConversion c -> c.CollectComplexTypes()
-        | UnionConversion c -> ImmutableHashSet.Empty
+        | Null c -> ImmutableHashSet.Empty
+        | Primitive c -> ImmutableHashSet.Empty
+        | Array c -> c.CollectComplexTypes()
+        | Map c -> c.CollectComplexTypes()
+        | Union c -> ImmutableHashSet.Empty
 
 and ObjectConversion = {
     Path : string list
@@ -557,64 +548,60 @@ and ObjectConversion = {
 
         schema
 
-    member this.Writer (value : Pulumi.Provider.PropertyValue) =        
-        let raise (typ : string) = failwithf "Invalid type expected object got %s" typ
-        value.Match(
-            (fun _ -> raise "null"),
-            (fun _ -> raise "bool"),
-            (fun _ -> raise "number"),
-            (fun _ -> raise "string"),
-            (fun _ -> raise "array"),
-            (fun obj ->
-                // Check all the required keys are present
-                for key in this.Required do 
-                    if not (obj.ContainsKey key) then
-                        failwithf "property '%s' is required" key
+    member this.Writer (value : Pulumi.Provider.PropertyValue) =
+        let maybeObj = 
+            value
+            |> Pulumi.Provider.PropertyValue.Unwrap
+            |> Option.ofObj
+            |> Option.bind (fun v -> 
+                match v.TryGetObject() with
+                | false, _ -> None
+                | true, o -> Some o)
+                
+        match maybeObj with 
+        | None -> failwithf "Invalid type expected object got %O" value.Type
+        | Some obj ->
+            // Check all the required keys are present
+            for key in this.Required do 
+                if not (obj.ContainsKey key) then
+                    failwithf "property '%s' is required" key
 
-                obj
-                |> Seq.collect (fun kv ->
-                    match this.AdditionalProperties with
-                    | None -> 
+            obj
+            |> Seq.collect (fun kv ->
+                match this.AdditionalProperties with
+                | None -> 
+                    match this.Properties.TryFind kv.Key with 
+                    | Some conversion ->
+                        let node = conversion.Writer kv.Value
+                        match node with 
+                        | Some node -> [KeyValuePair.Create(kv.Key, node)] :> seq<_>
+                        | None -> [KeyValuePair.Create(kv.Key, null)]
+                    | None -> failwithf "unexpected property '%s'" kv.Key
+                | Some additionalProperties ->
+                    if kv.Key = "additionalProperties" then
+                        // This _should_ be an object
+                        match kv.Value.TryGetObject() with
+                        | false, _ -> failwithf "Invalid type expected object got %O" kv.Value
+                        | true, additionalObj ->
+                            additionalObj
+                            |> Seq.map (fun kv ->
+                                let node = additionalProperties.Writer kv.Value
+                                match node with 
+                                | Some node -> KeyValuePair.Create(kv.Key, node)
+                                | None -> KeyValuePair.Create(kv.Key, null)
+                            )
+                    else 
                         match this.Properties.TryFind kv.Key with 
                         | Some conversion ->
                             let node = conversion.Writer kv.Value
                             match node with 
-                            | Some node -> [KeyValuePair.Create(kv.Key, node)] :> seq<_>
+                            | Some node -> [KeyValuePair.Create(kv.Key, node)]
                             | None -> [KeyValuePair.Create(kv.Key, null)]
                         | None -> failwithf "unexpected property '%s'" kv.Key
-                    | Some additionalProperties ->
-                        if kv.Key = "additionalProperties" then
-                            // This _should_ be an object
-                            match kv.Value.TryGetObject() with
-                            | false, _ -> failwithf "Invalid type expected object got %O" kv.Value
-                            | true, additionalObj ->
-                                additionalObj
-                                |> Seq.map (fun kv ->
-                                    let node = additionalProperties.Writer kv.Value
-                                    match node with 
-                                    | Some node -> KeyValuePair.Create(kv.Key, node)
-                                    | None -> KeyValuePair.Create(kv.Key, null)
-                                )
-                        else 
-                            match this.Properties.TryFind kv.Key with 
-                            | Some conversion ->
-                                let node = conversion.Writer kv.Value
-                                match node with 
-                                | Some node -> [KeyValuePair.Create(kv.Key, node)]
-                                | None -> [KeyValuePair.Create(kv.Key, null)]
-                            | None -> failwithf "unexpected property '%s'" kv.Key
-                )
-                |> JsonObject
-                :> JsonNode
-                |> Some
-            ),
-            (fun _ -> raise "asset"),
-            (fun _ -> raise "archive"),
-            (fun secret -> this.Writer secret),
-            (fun _ -> raise "resource"),            
-            (fun output -> this.Writer output.Value),
-            (fun _ -> raise "computed")
-        )
+            )
+            |> JsonObject
+            :> JsonNode
+            |> Some
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Object then            
@@ -659,39 +646,174 @@ and ObjectConversion = {
         | None -> complexTypes
         | Some aps -> aps.CollectComplexTypes().Union(complexTypes)
 
+        
+and TupleConversion = {
+    Path : string list
+    Title : string option
+    Description : string option
+    PrefixItems : Conversion list
+    AdditionalItems : Conversion option
+} with 
+
+    member this.BuildComplexTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
+        let schema = JsonObject()
+        schema.Add("type", JsonValue.Create("object"))
+        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
+        let propertiesSchema = JsonObject()
+        schema.Add("properties", propertiesSchema)
+        
+        this.PrefixItems
+        |> Seq.iteri (fun i s -> 
+            let key = sprintf "item%d" (i+1)
+            propertiesSchema.Add(key, s.BuildPropertySpec packageName names)
+        )
+
+        match this.AdditionalItems with
+        | None -> ()
+        | Some ais ->
+            propertiesSchema.Add("additionalItems", ais.BuildPropertySpec packageName names)
+
+        schema
+
+    member this.Writer (value : Pulumi.Provider.PropertyValue) =
+        let maybeObj = 
+            value
+            |> Pulumi.Provider.PropertyValue.Unwrap
+            |> Option.ofObj
+            |> Option.bind (fun v -> 
+                match v.TryGetObject() with
+                | false, _ -> None
+                | true, o -> Some o)
+                
+        match maybeObj with 
+        | None -> failwithf "Invalid type expected object got %O" value.Type
+        | Some obj ->
+            let keyRegex = System.Text.RegularExpressions.Regex("^item(\d+)$")
+
+            // First write out an array of the prefix items
+            let items, rest = 
+                obj 
+                |> Seq.fold (fun (items, rest) property ->
+                    match this.AdditionalItems, property.Key, rest with
+                    | None, "rest", _ -> failwith "unexpected property key 'rest'"
+                    | Some ais , "rest", [||] ->
+                        let maybeArr =
+                            property.Value
+                            |> Pulumi.Provider.PropertyValue.Unwrap
+                            |> Option.ofObj
+                            |> Option.bind (fun v -> 
+                                match v.TryGetArray() with
+                                | false, _ -> None
+                                | true, a -> Some a)
+
+                        match maybeArr with 
+                        | None -> failwithf "Invalid type expected array got %O" value.Type
+                        | Some arr -> (items, arr |> Seq.map ais.Writer |> Seq.toArray)
+                    | Some _, "rest", _ -> failwith "unexpected duplicate property 'rest'"
+                    | _, key, rest ->
+                        let reMatch = keyRegex.Match key
+                        if not reMatch.Success then
+                            failwithf "unexpected property key '%s'" key
+
+                        let index = System.Int32.Parse(reMatch.Groups[1].Value) - 1
+                        match List.tryItem index this.PrefixItems with 
+                        | None -> failwithf "unexpected property key '%s'" key
+                        | Some item -> (Map.add index (item.Writer property.Value) items, rest)
+                ) (Map.empty, [||])
+
+            Array.init (items.Count + rest.Length) (fun i ->
+                match Map.tryFind i items with 
+                | Some item -> item
+                | None -> Array.item (i - items.Count) rest
+                |> Option.toObj
+            )
+            |> JsonArray
+            :> JsonNode
+            |> Some
+
+    member this.Reader (value : JsonElement) =
+        if value.ValueKind = JsonValueKind.Array then
+            let properties, rest =
+                value.EnumerateArray()
+                |> Seq.mapi (fun i item -> (i, item))
+                |> Seq.fold (fun (properties : Map<_,_>, rest) (i, item) ->
+                    match List.tryItem i this.PrefixItems, this.AdditionalItems with 
+                    | None, None -> failwithf "unexpected item %d in tuple" i
+                    | None, Some ais -> properties, ais.Reader item :: rest
+                    | Some property, _ -> properties.Add(i+1, property.Reader item), rest
+                ) (Map.empty, [])
+                
+            // If we have any additionalItems we'll add them to the properties
+            let rest = 
+                match this.AdditionalItems, rest with 
+                | Some _, rest -> 
+                    let arr = rest |> List.rev |> ImmutableArray.CreateRange
+                    Some (KeyValuePair.Create("rest", Pulumi.Provider.PropertyValue(arr)))
+                | None, [] -> None
+                | None, rest -> failwith "AdditionalItems isn't set, but we got values in rest"
+
+            let properties = 
+                properties
+                |> Seq.map (fun kv -> 
+                    KeyValuePair.Create(sprintf "item%d" kv.Key, kv.Value)
+                )
+                |> match rest with | None -> id | Some rest -> Seq.append [rest]
+
+            properties
+            |> ImmutableDictionary.CreateRange
+            |> Pulumi.Provider.PropertyValue
+        else 
+            failwithf "Invalid JSON document expected array got %O" value.ValueKind
+
+    member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
+        let complexTypes = 
+            this.PrefixItems
+            |> Seq.fold (fun types item -> item.CollectComplexTypes().Union(types)
+            ) ImmutableHashSet.Empty
+        match this.AdditionalItems with
+        | None -> complexTypes
+        | Some ais -> ais.CollectComplexTypes().Union(complexTypes)
+
 and [<RequireQualifiedAccess>] ComplexTypeSpec =
     | Enum of EnumConversion
     | Object of ObjectConversion
+    | Tuple of TupleConversion
 
     member this.Path = 
         match this with 
         | ComplexTypeSpec.Enum spec -> spec.Path
         | ComplexTypeSpec.Object spec -> spec.Path
+        | ComplexTypeSpec.Tuple spec -> spec.Path
     
     member this.Title = 
         match this with 
         | ComplexTypeSpec.Enum spec -> spec.Title
         | ComplexTypeSpec.Object spec -> spec.Title
+        | ComplexTypeSpec.Tuple spec -> spec.Title
     
     member this.BuildComplexTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with 
         | ComplexTypeSpec.Enum spec -> spec.BuildComplexTypeSpec()
         | ComplexTypeSpec.Object spec -> spec.BuildComplexTypeSpec packageName names
+        | ComplexTypeSpec.Tuple spec -> spec.BuildComplexTypeSpec packageName names
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) =
         match this with 
         | ComplexTypeSpec.Enum spec -> spec.Writer value
         | ComplexTypeSpec.Object spec -> spec.Writer value
+        | ComplexTypeSpec.Tuple spec -> spec.Writer value
 
     member this.Reader (value : JsonElement) =
         match this with 
         | ComplexTypeSpec.Enum spec -> spec.Reader value
         | ComplexTypeSpec.Object spec -> spec.Reader value
+        | ComplexTypeSpec.Tuple spec -> spec.Reader value
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         match this with 
         | ComplexTypeSpec.Enum _ -> ImmutableHashSet.Create(this)
         | ComplexTypeSpec.Object spec -> spec.CollectComplexTypes().Add(this)
+        | ComplexTypeSpec.Tuple spec -> spec.CollectComplexTypes().Add(this)
 
 and [<RequireQualifiedAccess>] Conversion =
     | TypeSpec of TypeSpec
@@ -783,7 +905,7 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
             Type = PrimitiveType.String
             Description = getDescription jsonSchema.Keywords
         }
-        |> TypeSpec.PrimitiveConversion
+        |> TypeSpec.Primitive
         |> Conversion.TypeSpec
     | Some enum ->
         let enumValues =
@@ -819,7 +941,7 @@ let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
             match convertStringSchema [] jsonSchema with 
             | Conversion.TypeSpec spec -> 
                 match spec with 
-                | TypeSpec.PrimitiveConversion p -> Some p
+                | TypeSpec.Primitive p -> Some p
                 | _ -> failwith "Expected convertStringSchema to return a PrimitiveConversion"
             | _ -> failwith "Expected convertStringSchema to return a PrimitiveConversion"
         else None
@@ -895,21 +1017,62 @@ let rec convertRef (root : RootInformation) (ref : Json.Schema.RefKeyword) : Con
 //		throw new JsonSchemaException($"Cannot resolve schema `{newUri}`");
 //
 
-and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.JsonSchema) : ArrayConversion =
-    let itemsKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.ItemsKeyword>
+and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.JsonSchema) : Conversion option =    
+    let prefixItems =
+        jsonSchema.Keywords
+        |> pickKeyword<Json.Schema.PrefixItemsKeyword>
+        |> Option.map (fun kw -> 
+            kw.ArraySchemas
+            |> Seq.mapi (fun i s -> convertSubSchema root (sprintf "item%d" (i+1) :: path) s)
+        )
+
+    match prefixItems with
+    | Some items when Seq.exists Option.isNone items -> 
+        // One of the tuple types is `false` so this tuple can't ever be constructed, so this object can't be constructed
+        None
+    | _ ->
 
     let items =
-        itemsKeyword
+        jsonSchema.Keywords
+        |> pickKeyword<Json.Schema.ItemsKeyword>
         |> Option.map (fun ik -> convertSubSchema root ("item" :: path) ik.SingleSchema)
         |> Option.defaultValue (Some (Conversion.TypeSpec (TypeSpec.Any None)))
-        |> function  
-        | None -> failwith "array with false items not yet supported"
-        | Some items -> items
 
-    {
-        Description = getDescription jsonSchema.Keywords
-        Items = items
-    }
+    let description = getDescription jsonSchema.Keywords
+    match prefixItems, items with 
+    | None, None -> 
+        // Forced empty array, just make an array of any but nothing can go in it
+        {
+            Description = description
+            Items = Conversion.TypeSpec (TypeSpec.Any None)
+        } |> TypeSpec.Array |> Conversion.TypeSpec
+    | Some prefixItems, None -> 
+        // Tuple type!
+        let prefixItems = prefixItems |> Seq.map Option.get |> Seq.toList
+        {
+            Path = path
+            Title = getTitle jsonSchema.Keywords
+            Description = description
+            PrefixItems = prefixItems
+            AdditionalItems = None
+        } |> ComplexTypeSpec.Tuple |> Conversion.ComplexTypeSpec
+    | None, Some items ->
+        // Basic array
+        {
+            Description = getDescription jsonSchema.Keywords
+            Items = items
+        } |> TypeSpec.Array |> Conversion.TypeSpec
+    | Some prefixItems, Some items -> 
+        // A tuple with rest
+        let prefixItems = prefixItems |> Seq.map Option.get |> Seq.toList
+        {
+            Path = path
+            Title = getTitle jsonSchema.Keywords
+            Description = description
+            PrefixItems = prefixItems
+            AdditionalItems = Some items
+        } |> ComplexTypeSpec.Tuple |> Conversion.ComplexTypeSpec
+    |> Some
 
 and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.JsonSchema) : Conversion =
     let propertiesKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.PropertiesKeyword>
@@ -979,7 +1142,7 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
             Description = description
             AdditionalProperties = aps
         }
-        |> TypeSpec.MapConversion
+        |> TypeSpec.Map
         |> Conversion.TypeSpec
     | Some props, aps ->
         {
@@ -1090,19 +1253,19 @@ and convertSubSchema (root : RootInformation) (path : string list) (schema : Jso
         elif oneOf.IsSome then
             Some (convertOneOf schema oneOf.Value)
         elif isSimpleType Json.Schema.SchemaValueType.Null keywords then 
-            convertNullSchema schema |> TypeSpec.NullConversion |> Conversion.TypeSpec |> Some
+            convertNullSchema schema |> TypeSpec.Null |> Conversion.TypeSpec |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Boolean keywords then 
-            convertBoolSchema schema |> TypeSpec.PrimitiveConversion |> Conversion.TypeSpec |> Some
+            convertBoolSchema schema |> TypeSpec.Primitive |> Conversion.TypeSpec |> Some
         elif isSimpleType Json.Schema.SchemaValueType.String keywords then 
             convertStringSchema path schema |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Number keywords then 
-            convertNumberSchema schema |> TypeSpec.PrimitiveConversion |> Conversion.TypeSpec |> Some
+            convertNumberSchema schema |> TypeSpec.Primitive |> Conversion.TypeSpec |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Object keywords then 
             convertObjectSchema root path schema |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Array keywords then 
-            convertArraySchema root path schema |> TypeSpec.ArrayConversion |> Conversion.TypeSpec |> Some
+            convertArraySchema root path schema
         elif isSimpleUnion keywords then
-            convertSimpleUnion schema |> TypeSpec.UnionConversion |> Conversion.TypeSpec |> Some
+            convertSimpleUnion schema |> TypeSpec.Union |> Conversion.TypeSpec |> Some
         else 
             let msg =
                 keywords

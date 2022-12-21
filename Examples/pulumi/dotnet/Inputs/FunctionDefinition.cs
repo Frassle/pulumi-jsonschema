@@ -56,18 +56,6 @@ namespace Pulumi.Pulumi.Inputs
             set => _language = value;
         }
 
-        [Input("multiArgumentInputs")]
-        private List<string>? _multiArgumentInputs;
-
-        /// <summary>
-        /// A list of parameter names that determines whether the input bag should be treated as a single argument or as multiple arguments. The list corresponds to the order in which the parameters should be passed to the function.
-        /// </summary>
-        public List<string> MultiArgumentInputs
-        {
-            get => _multiArgumentInputs ?? (_multiArgumentInputs = new List<string>());
-            set => _multiArgumentInputs = value;
-        }
-
         [Input("outputs")]
         public Inputs.ObjectTypeDetails? Outputs { get; set; }
 

@@ -34,10 +34,6 @@ namespace Pulumi.Pulumi.Outputs
         /// Additional language-specific data about the function.
         /// </summary>
         public readonly ImmutableDictionary<string, object>? Language;
-        /// <summary>
-        /// A list of parameter names that determines whether the input bag should be treated as a single argument or as multiple arguments. The list corresponds to the order in which the parameters should be passed to the function.
-        /// </summary>
-        public readonly ImmutableArray<string> MultiArgumentInputs;
         public readonly Outputs.ObjectTypeDetails? Outputs;
 
         [OutputConstructor]
@@ -54,8 +50,6 @@ namespace Pulumi.Pulumi.Outputs
 
             ImmutableDictionary<string, object>? language,
 
-            ImmutableArray<string> multiArgumentInputs,
-
             Outputs.ObjectTypeDetails? outputs)
         {
             AdditionalProperties = additionalProperties;
@@ -64,7 +58,6 @@ namespace Pulumi.Pulumi.Outputs
             Inputs = inputs;
             IsOverlay = isOverlay;
             Language = language;
-            MultiArgumentInputs = multiArgumentInputs;
             Outputs = outputs;
         }
     }

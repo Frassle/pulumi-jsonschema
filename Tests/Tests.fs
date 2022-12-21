@@ -351,7 +351,7 @@ let ``Test tuple`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
         "type": "array",
         "prefixItems": [
-            { "type": "string" }
+            { "type": "string" },
             { "type": "number" }
         ],
         "items": false
@@ -361,21 +361,27 @@ let ``Test tuple`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (simpleSchema """{"type":"array","items":{"type":"string"}}""")
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
+        "type":"object",
+        "properties":{
+            "item1" : { "type":"string" },
+            "item2" : { "type":"number" }
+        }
+    }"""])
     
-    Pulumi.Provider.PropertyValue(ImmutableArray.CreateRange [
-        Pulumi.Provider.PropertyValue("a");
-        Pulumi.Provider.PropertyValue("b");
+    Pulumi.Provider.PropertyValue(listToDict [
+        "item1", Pulumi.Provider.PropertyValue("a")
+        "item2", Pulumi.Provider.PropertyValue(123)
     ])
     |> conversion.Writer
     |> toJson
-    |> shouldJsonEqual """["a","b"]"""
+    |> shouldJsonEqual """["a",123]"""
 
-    fromJson """["foo","bar"]"""
+    fromJson """["foo",-345]"""
     |> conversion.Reader
-    |> shouldEqual (Pulumi.Provider.PropertyValue (ImmutableArray.CreateRange [
-        Pulumi.Provider.PropertyValue("foo")
-        Pulumi.Provider.PropertyValue("bar")
+    |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
+        "item1", Pulumi.Provider.PropertyValue("foo")
+        "item2", Pulumi.Provider.PropertyValue(-345)
     ]))
 
 [<Fact>]
