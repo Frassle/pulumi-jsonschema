@@ -16,11 +16,10 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class Config
     {
-        public readonly ImmutableDictionary<string, object>? AdditionalProperties;
         /// <summary>
-        /// A list of the names of the package's required configuration variables.
+        /// A list of the names of the package's non-required configuration variables.
         /// </summary>
-        public readonly ImmutableArray<string> Required;
+        public readonly ImmutableArray<string> Defaults;
         /// <summary>
         /// A map from variable name to propertySpec that describes a package's configuration variables.
         /// </summary>
@@ -28,14 +27,11 @@ namespace Pulumi.Pulumi.Outputs
 
         [OutputConstructor]
         private Config(
-            ImmutableDictionary<string, object>? additionalProperties,
-
-            ImmutableArray<string> required,
+            ImmutableArray<string> defaults,
 
             ImmutableDictionary<string, object>? variables)
         {
-            AdditionalProperties = additionalProperties;
-            Required = required;
+            Defaults = defaults;
             Variables = variables;
         }
     }

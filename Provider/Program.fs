@@ -26,6 +26,14 @@ let pickKeyword<'T when 'T :> Json.Schema.IJsonSchemaKeyword> (keywords : Keywor
     else 
         None
 
+let isValidationKeyword (keyword : Json.Schema.IJsonSchemaKeyword) : bool =
+    match keyword with
+    | :? Json.Schema.TitleKeyword
+    | :? Json.Schema.CommentKeyword
+    | :? Json.Schema.DescriptionKeyword
+    | :? Json.Schema.DefsKeyword -> false
+    | _ -> true
+
 [<RequireQualifiedAccess>]
 type PrimitiveType = Boolean | Integer | Number | String
 with 
@@ -407,7 +415,7 @@ and MapConversion = {
         this.AdditionalProperties.CollectComplexTypes()
 
 and [<RequireQualifiedAccess>] TypeSpec = 
-    | Any of string option // Also known as Any
+    | Any of string option
     | NullConversion of NullConversion
     | PrimitiveConversion of PrimitiveConversion
     | ArrayConversion of ArrayConversion
@@ -1046,6 +1054,15 @@ and convertSubSchema (root : RootInformation) (path : string list) (schema : Jso
     | Some true -> TypeSpec.Any None |> Conversion.TypeSpec |> Some
     | None ->
         let keywords = schema.Keywords
+
+        // If there are no validation keywords this is a simple any
+        match keywords |> Seq.forall (isValidationKeyword >> not) with 
+        | true -> 
+            TypeSpec.Any (getDescription keywords)
+            |> Conversion.TypeSpec
+            |> Some
+        | false -> 
+
         let allOf = pickKeyword<Json.Schema.AllOfKeyword> keywords
         let oneOf = pickKeyword<Json.Schema.OneOfKeyword> keywords
         let ref = pickKeyword<Json.Schema.RefKeyword> keywords

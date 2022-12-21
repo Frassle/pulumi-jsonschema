@@ -164,6 +164,45 @@ let listToDict<'K, 'V> (list : ('K * 'V) list) : ImmutableDictionary<'K, 'V> =
     |> Seq.map (fun (k, v) -> KeyValuePair.Create(k, v))
     |> ImmutableDictionary.CreateRange
 
+let testRoundTrip (schema : System.Text.Json.JsonElement) (conversion : Provider.RootConversion) =
+    // Use Json.Schema.Data to generate some json, check we can read and write it
+    let jsonSchema = Json.Schema.JsonSchema.FromText (schema.GetRawText())
+    let data = Json.Schema.DataGeneration.JsonSchemaExtensions.GenerateData(jsonSchema)
+    if not data.IsSuccess then
+        failwithf "Could not generate JSON data: %s" data.ErrorMessage
+
+    let element = data.Result.Deserialize<System.Text.Json.JsonElement>()
+    
+    let dom = conversion.Reader element
+    let rt = conversion.Writer dom
+    
+    match rt with 
+    | None -> "null"
+    | Some rt -> rt.ToJsonString()
+    |> shouldJsonEqual (element.GetRawText())
+
+
+[<Fact>]
+let ``Test empty`` () =
+    let schema = System.Text.Json.JsonDocument.Parse "{}"
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+
+    // Pulumi schema doesn't support null, so we say it's an anything but only allow null as a value
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (simpleSchema """{"$ref":"pulumi.json#/Any"}""")
+
+    Pulumi.Provider.PropertyValue.Null
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual "null"
+
+    fromJson "null"
+    |> conversion.Reader
+    |> shouldEqual Pulumi.Provider.PropertyValue.Null
+
+    testRoundTrip schema.RootElement conversion
+
 [<Fact>]
 let ``Test null`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
@@ -274,7 +313,7 @@ let ``Test number`` () =
     fromJson "53.42"
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue 53.42)
-        
+
 [<Fact>]
 let ``Test array`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
