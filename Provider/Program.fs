@@ -274,6 +274,7 @@ let readPrimitive (typ: PrimitiveType) (stringValidation : StringValidation)  (v
 
 type PrimitiveConversion = {
     Description : string option
+    Const : Choice<unit, bool, double, string>
     Type : PrimitiveType
     StringValidation : StringValidation
 } with
@@ -286,6 +287,11 @@ type PrimitiveConversion = {
         let schema = JsonObject()
         schema.Add("type", this.Type.JsonValue)
         this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
+        match this.Const with 
+        | Choice1Of4 () -> ()
+        | Choice2Of4 b -> schema.Add("const", b)
+        | Choice3Of4 n -> schema.Add("const", n)
+        | Choice4Of4 s -> schema.Add("const", s)
         schema
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
@@ -1156,6 +1162,7 @@ let convertBoolSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversio
         Type = PrimitiveType.Boolean
         Description = getDescription jsonSchema.Keywords
         StringValidation = StringValidation.None
+        Const = Choice1Of4 ()
     }
 
 let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion =
@@ -1166,6 +1173,7 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
             Type = PrimitiveType.String
             Description = getDescription jsonSchema.Keywords
             StringValidation = StringValidation.FromKeywords jsonSchema.Keywords
+            Const = Choice1Of4 ()
         }
         |> TypeSpec.Primitive
         |> Conversion.Type
@@ -1189,6 +1197,7 @@ let convertNumberSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConvers
         Type = PrimitiveType.Number
         Description = getDescription jsonSchema.Keywords
         StringValidation = StringValidation.None
+        Const = Choice1Of4 ()
     }
 
 let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
@@ -1220,6 +1229,35 @@ let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
         StringConversion = stringConversion
         BooleanConversion = boolConversion
     }
+
+let convertConst (root : RootInformation) path (schema : Json.Schema.JsonSchema) (constKeyword : Json.Schema.ConstKeyword) : Conversion =
+    // if we've got a "const" we can fill in the type
+    match constKeyword.Value with 
+    | :? JsonValue as value ->
+        let typ, constant = 
+            match value.TryGetValue<bool>() |> optionOfTry with
+            | Some b -> PrimitiveType.Boolean, Choice2Of4 b 
+            | None ->
+                match value.TryGetValue<double>() |> optionOfTry with
+                | Some n -> PrimitiveType.Number, Choice3Of4 n
+                | None ->                    
+                    match value.TryGetValue<string>() |> optionOfTry with
+                    | Some s -> PrimitiveType.String, Choice4Of4 s
+                    | None -> failwith "constant value wasn't a bool, number or string"
+
+        { 
+            Description = getDescription schema.Keywords
+            Type = typ
+            StringValidation = StringValidation.None
+            Const = constant
+        }
+        |> TypeSpec.Primitive
+        |> Conversion.Type
+    | constValue -> 
+        sprintf "unhandled const schema value: %O" constValue
+        |>  Some
+        |> TypeSpec.Any
+        |> Conversion.Type
 
 let readRef  (root : RootInformation) (ref : Json.Schema.RefKeyword) : Json.Schema.JsonSchema * string list =
     //let newUri = Uri("schema.json", ref.Reference)
@@ -1649,8 +1687,11 @@ and convertSubSchema (root : RootInformation) (path : string list) (schema : Jso
         let allOf = pickKeyword<Json.Schema.AllOfKeyword> keywords
         let oneOf = pickKeyword<Json.Schema.OneOfKeyword> keywords
         let ref = pickKeyword<Json.Schema.RefKeyword> keywords
+        let constKeyword = pickKeyword<Json.Schema.ConstKeyword> keywords
         
-        if ref.IsSome then
+        if constKeyword.IsSome then 
+            convertConst root path schema constKeyword.Value |> Some
+        elif ref.IsSome then
             convertRef root path schema ref.Value
         elif allOf.IsSome then
             convertAllOf root path schema allOf.Value

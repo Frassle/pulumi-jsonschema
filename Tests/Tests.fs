@@ -1202,3 +1202,49 @@ let ``Test inline oneOf`` () =
             Pulumi.Provider.PropertyValue("testing")
         ])
     ]))
+        
+[<Fact>]
+let ``Test object const property`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "object",
+        "properties": {
+            "foo": { "type": "string" },
+            "bar": { "const": "ba ba black sheep" }
+        },
+        "additionalProperties": false
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
+        "type":"object",
+        "properties":{
+            "foo":{"type":"string"},
+            "bar":{"type":"string", "const": "ba ba black sheep"}
+        }
+    }"""])
+    
+    Pulumi.Provider.PropertyValue(listToDict [
+        "foo", Pulumi.Provider.PropertyValue("a")
+    ])
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """{"foo":"a"}"""
+    
+    // Properties are optional by default
+    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """{}"""
+
+    fromJson """{"foo":"string"}"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
+        "foo", Pulumi.Provider.PropertyValue("string")
+    ]))
+
+    fromJson """{}"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
