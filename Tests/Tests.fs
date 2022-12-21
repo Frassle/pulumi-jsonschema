@@ -806,12 +806,10 @@ let ``Test allOf`` () =
 let ``Test merged refs`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
         "type": "object",
-        "properties": {              
-            "$ref": "#/$defs/basicType",
-            "properties": {
-                "extra": { "type": "number" }
-            }
+        "properties": {
+            "extra": { "type": "number" }
         },
+        "$ref": "#/$defs/basicType",
         "$defs": {
             "basicType": { 
                 "properties": {
@@ -828,17 +826,23 @@ let ``Test merged refs`` () =
     |> shouldJsonEqual (complexSchema ["schema:index:root", """{
         "type":"object",
         "properties":{
-            "extra":{"type":"number"}
-            "basic":{"type":"number"}
+            "extra":{"type":"number"},
+            "basic":{"type":"number"},
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                    "$ref": "pulumi.json#/Any"
+                }
+            }
         }
     }"""])
     
     Pulumi.Provider.PropertyValue(listToDict [
-        "foo", Pulumi.Provider.PropertyValue(123)
+        "extra", Pulumi.Provider.PropertyValue(123)
     ])
     |> conversion.Writer
     |> toJson
-    |> shouldJsonEqual """{"foo":123}"""
+    |> shouldJsonEqual """{"extra":123}"""
     
     // Properties are optional by default
     Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
@@ -846,10 +850,10 @@ let ``Test merged refs`` () =
     |> toJson
     |> shouldJsonEqual """{}"""
 
-    fromJson """{"foo":456.789}"""
+    fromJson """{"basic":456.789}"""
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
-        "foo", Pulumi.Provider.PropertyValue(456.789)
+        "basic", Pulumi.Provider.PropertyValue(456.789)
     ]))
 
     fromJson """{}"""

@@ -539,9 +539,20 @@ and ObjectConversion = {
             schema.Add("required", requiredArray)
 
         let propertiesSchema = JsonObject()
+        schema.Add("properties", propertiesSchema)
         for kv in this.Properties do
             propertiesSchema.Add(kv.Key, kv.Value.BuildPropertySpec packageName names)
-        schema.Add("properties", propertiesSchema)
+            
+        match this.AdditionalProperties with 
+        | None -> ()
+        | Some aps ->
+            // additionalProperties is always just a map
+            let additionalPropertiesSchema = JsonObject()
+            additionalPropertiesSchema.Add("type", "object")
+            let items, _ = aps.BuildTypeSpec packageName names
+            additionalPropertiesSchema.Add("additionalProperties", items)
+            propertiesSchema.Add("additionalProperties", additionalPropertiesSchema)
+
 
         schema
 
@@ -664,7 +675,12 @@ and TupleConversion = {
         match this.AdditionalItems with
         | None -> ()
         | Some ais ->
-            propertiesSchema.Add("additionalItems", ais.BuildPropertySpec packageName names)
+            // additionalItems is always just an array
+            let additionalItemsSchema = JsonObject()
+            additionalItemsSchema.Add("type", "array")
+            let items, _ = ais.BuildTypeSpec packageName names
+            additionalItemsSchema.Add("items", items)
+            propertiesSchema.Add("additionalItems", additionalItemsSchema)
 
         schema
 
@@ -842,7 +858,7 @@ and [<RequireQualifiedAccess>] Conversion =
         | Conversion.ComplexTypeSpec spec -> spec.CollectComplexTypes()
 
 type RootInformation = {
-    Uri : Uri
+    BaseUri : Uri
     Document : JsonElement
 }
 
@@ -942,8 +958,8 @@ let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
         StringConversion = stringConversion
         BooleanConversion = boolConversion
     }
-    
-let rec convertRef (root : RootInformation) (ref : Json.Schema.RefKeyword) : Conversion option =
+
+let readRef  (root : RootInformation) (ref : Json.Schema.RefKeyword) : Json.Schema.JsonSchema * string list =
     //let newUri = Uri("schema.json", ref.Reference)
 // var newUri = new Uri(context.Scope.LocalScope, Reference);
 // var navigation = (newUri.OriginalString, context.InstanceLocation);
@@ -960,24 +976,14 @@ let rec convertRef (root : RootInformation) (ref : Json.Schema.RefKeyword) : Con
     if ref.Reference.IsAbsoluteUri then
         failwith "Absoloute $refs are not implemented"
 
-    let newUri = Uri(root.Uri, ref.Reference)
+    let newUri = Uri(root.BaseUri, ref.Reference)
     match Json.Pointer.JsonPointer.TryParse newUri.Fragment with 
     | true, pointerFragment -> 
         match pointerFragment.Evaluate(root.Document) |> Option.ofNullable with
         | None -> failwithf "failed to find $ref %O" ref.Reference
         | Some subelement ->
-            let subschema = Json.Schema.JsonSchema.FromText(subelement.GetRawText())
-            // We need a new path here because this _ref_ could be seen by multiple paths
-            let path = 
-                pointerFragment.Segments
-                |> Seq.map (fun s -> s.Value)
-                |> Seq.toList
-                |> function
-                // Trim "$defs" off
-                | "$defs" :: path -> path
-                | path -> path
-
-            convertSubSchema root (List.rev path) subschema
+            Json.Schema.JsonSchema.FromText(subelement.GetRawText()), 
+            pointerFragment.Segments |> Array.map (fun seg -> seg.Value) |> Array.toList
     | _ ->
         failwithf "failed to parse ref %s" newUri.Fragment
 
@@ -1001,6 +1007,85 @@ let rec convertRef (root : RootInformation) (ref : Json.Schema.RefKeyword) : Con
 //	if (targetSchema == null)
 //		throw new JsonSchemaException($"Cannot resolve schema `{newUri}`");
 //
+    
+let rec convertRef (root : RootInformation) path (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion option =
+    // If this is a simple $ref by itself just convert the inner type    
+    let simpleRef = 
+        schema.Keywords 
+        |> Seq.forall (fun kw ->
+            kw.Equals ref || not (isValidationKeyword kw)
+        )
+        
+    let subschema, segments = readRef root ref
+
+    if simpleRef then 
+        // We need a new path here because this _ref_ could be seen by multiple paths
+        convertSubSchema root (List.rev segments) subschema
+    else 
+        // This isn't a simple ref, we need to do a schema merge
+        // we build a new _schema_ that merges the subschemas in ways that are possible to express in the type system (falling back to just any if we can't merge them)
+        // then we send that newly built schema to be converted
+        
+        // If the subschema is just bool then we can just return Any or None
+        match subschema.BoolValue |> Option.ofNullable with
+        | Some false -> None
+        | Some true -> TypeSpec.Any None |> Conversion.TypeSpec |> Some
+        | None ->
+
+        let allKeywords = 
+            [schema; subschema]
+            |> List.fold (fun keywords schema ->
+                schema.Keywords
+                |> Seq.fold (fun keywords keyword ->
+                    // Don't add the current ref keyword we're dealing with 
+                    if keyword.Equals ref then keywords
+                    else 
+                        let key = keyword.GetType().FullName
+                        keywords |> Map.change key (function 
+                            | None -> Some [keyword] 
+                            | Some others -> Some (keyword :: others))
+                ) keywords
+            ) Map.empty
+
+        // First go through any keywords that are unique, these can just be added to the new schema
+        let newSchema = Json.Schema.JsonSchemaBuilder()
+        let allKeywords =
+            allKeywords
+            |> Map.filter (fun _ list -> 
+                match list with 
+                | [] -> false
+                | [x] -> newSchema.Add(x); false
+                | _ -> true)
+
+        // At this point allKeywords is made of keywords that are in multiple schemas
+    
+        // First find the "properties" keyword
+        let allKeywords = 
+            allKeywords
+            |> Map.filter (fun _ list -> 
+                match list with 
+                | (:? Json.Schema.PropertiesKeyword) :: _ -> 
+                    list 
+                    |> Seq.cast<Json.Schema.PropertiesKeyword>
+                    |> Seq.map (fun kw -> kw.Properties)
+                    |> Seq.fold (fun properties next ->
+                        next 
+                        |> Seq.fold (fun properties property -> 
+                            match Map.tryFind property.Key properties with 
+                            | None -> Map.add property.Key property.Value properties
+                            | Some _ -> failwith "Property key conflict in allOf"
+                        ) properties
+                    ) Map.empty
+                    |> fun properties -> 
+                        newSchema.Add(Json.Schema.PropertiesKeyword(properties))
+                    false
+                | _ -> true)
+
+        if allKeywords.Count <> 0 then
+            sprintf "Needs more translation %O" allKeywords
+            |> Some |> TypeSpec.Any |> Conversion.TypeSpec |> Some
+        else 
+            convertSubSchema root path (newSchema.Build())
 
 and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.JsonSchema) : Conversion option =    
     let prefixItems =
@@ -1083,21 +1168,6 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
         match additionalPropertiesKeyword with 
         | Some apk -> convertSubSchema root ("additionalProperties" :: path) apk.Schema
         | None -> Some (Conversion.TypeSpec (TypeSpec.Any None))
-
-    let properties = 
-        match additionalProperties, properties with
-        | Some apk, Some properties -> 
-            // Make a fresh map conversion, this is dumb but we just reconvert the apk schema to get the mapping schema
-            let mappingSchema = Json.Schema.JsonSchemaBuilder()
-            mappingSchema.Add (Json.Schema.TypeKeyword Json.Schema.SchemaValueType.Object)
-            match additionalPropertiesKeyword with 
-            | Some apk -> mappingSchema.Add (Json.Schema.AdditionalPropertiesKeyword apk.Schema)
-            | None -> ()
-
-            let mapConversion = convertObjectSchema root ("additionalProperties" :: path) (mappingSchema.Build())
-
-            Some (properties.Add ("additionalProperties", mapConversion))
-        | _, properties -> properties
 
     let required = 
         match requiredKeyword with
@@ -1232,7 +1302,7 @@ and convertSubSchema (root : RootInformation) (path : string list) (schema : Jso
         let ref = pickKeyword<Json.Schema.RefKeyword> keywords
         
         if ref.IsSome then
-            convertRef root ref.Value
+            convertRef root path schema ref.Value
         elif allOf.IsSome then
             convertAllOf root path schema allOf.Value
         elif oneOf.IsSome then
@@ -1292,7 +1362,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     functions.Add(packageName + ":index:write", writeFunction)
 
     let root = {
-        Uri = uri
+        BaseUri = uri
         Document = jsonSchema
     }
     let jsonSchema = Json.Schema.JsonSchema.FromText (jsonSchema.GetRawText())
