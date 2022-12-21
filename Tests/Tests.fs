@@ -1013,20 +1013,16 @@ let ``Test oneOf objects`` () =
         }
     }"""])
 
-    Pulumi.Provider.PropertyValue(45)
-    |> conversion.Writer
-    |> toJson
-    |> shouldJsonEqual "45"
-
-    Pulumi.Provider.PropertyValue("hello")
-    |> conversion.Writer
-    |> toJson
-    |> shouldJsonEqual "\"hello\""
-
     fromJson "123"
     |> conversion.Reader
-    |> shouldEqual (Pulumi.Provider.PropertyValue 123)
+    |> shouldEqual (Pulumi.Provider.PropertyValue( listToDict [
+        "choice1Of3", Pulumi.Provider.PropertyValue(123)
+    ]))
 
-    fromJson "\"testing\""
+    fromJson "[\"testing\"]"
     |> conversion.Reader
-    |> shouldEqual (Pulumi.Provider.PropertyValue "testing")
+    |> shouldEqual (Pulumi.Provider.PropertyValue( listToDict [
+        "choice2Of3", Pulumi.Provider.PropertyValue(ImmutableArray.CreateRange [
+            Pulumi.Provider.PropertyValue("testing")
+        ])
+    ]))
