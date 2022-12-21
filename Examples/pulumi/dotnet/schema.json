@@ -57,6 +57,89 @@
     }
   },
   "types": {
+    "pulumi:index:ObjectTypeDetails": {
+      "type": "object",
+      "description": "Describes an object type",
+      "properties": {
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          },
+          "description": "A map from property name to propertySpec that describes the object\u0027s properties."
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of the names of an object type\u0027s required properties. These properties must be set for inputs and will always be set for outputs."
+        },
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          }
+        }
+      }
+    },
+    "pulumi:index:FunctionDefinition": {
+      "type": "object",
+      "description": "Describes a function.",
+      "properties": {
+        "deprecationMessage": {
+          "type": "string",
+          "description": "Indicates whether the function is deprecated"
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the function, if any. Interpreted as Markdown."
+        },
+        "inputs": {
+          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
+        },
+        "isOverlay": {
+          "type": "boolean",
+          "description": "Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author"
+        },
+        "language": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          },
+          "description": "Additional language-specific data about the function."
+        },
+        "outputs": {
+          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
+        },
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          }
+        }
+      }
+    },
+    "pulumi:index:config": {
+      "type": "object",
+      "description": "The package\u0027s configuration variables.",
+      "properties": {
+        "defaults": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of the names of the package\u0027s non-required configuration variables."
+        },
+        "variables": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          },
+          "description": "A map from variable name to propertySpec that describes a package\u0027s configuration variables."
+        }
+      }
+    },
     "pulumi:index:meta": {
       "type": "object",
       "description": "Format metadata about this package.",
@@ -167,52 +250,6 @@
         }
       }
     },
-    "pulumi:index:config": {
-      "type": "object",
-      "description": "The package\u0027s configuration variables.",
-      "properties": {
-        "defaults": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "A list of the names of the package\u0027s non-required configuration variables."
-        },
-        "variables": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          },
-          "description": "A map from variable name to propertySpec that describes a package\u0027s configuration variables."
-        }
-      }
-    },
-    "pulumi:index:ObjectTypeDetails": {
-      "type": "object",
-      "description": "Describes an object type",
-      "properties": {
-        "properties": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          },
-          "description": "A map from property name to propertySpec that describes the object\u0027s properties."
-        },
-        "required": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "A list of the names of an object type\u0027s required properties. These properties must be set for inputs and will always be set for outputs."
-        },
-        "additionalProperties": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          }
-        }
-      }
-    },
     "pulumi:index:ResourceDefinition": {
       "type": "object",
       "description": "Describes a resource or component.",
@@ -276,43 +313,6 @@
           "description": "A list of the names of the resource\u0027s required input properties."
         },
         "stateInputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
-        },
-        "additionalProperties": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          }
-        }
-      }
-    },
-    "pulumi:index:FunctionDefinition": {
-      "type": "object",
-      "description": "Describes a function.",
-      "properties": {
-        "deprecationMessage": {
-          "type": "string",
-          "description": "Indicates whether the function is deprecated"
-        },
-        "description": {
-          "type": "string",
-          "description": "The description of the function, if any. Interpreted as Markdown."
-        },
-        "inputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
-        },
-        "isOverlay": {
-          "type": "boolean",
-          "description": "Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author"
-        },
-        "language": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          },
-          "description": "Additional language-specific data about the function."
-        },
-        "outputs": {
           "$ref": "#/types/pulumi:index:ObjectTypeDetails"
         },
         "additionalProperties": {

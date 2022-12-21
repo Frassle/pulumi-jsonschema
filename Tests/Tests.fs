@@ -898,3 +898,84 @@ let ``Test oneOf primitives`` () =
     |> shouldEqual (Pulumi.Provider.PropertyValue "testing")
 
 
+[<Fact>]
+let ``Test properties are Pulumi-ized`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "object",
+        "properties": {
+            "foo": { "type": "string" },
+            "Bar": { "type": "string" },
+            "foo-bar": { "type": "string" },
+            "The-Frober": { "type": "string" },
+            "TheMusic": { "type": "string" },
+            "aLongName": { "type": "string" },
+            "a_snake_name": { "type": "string" },
+            "a spacey name": { "type": "string" },
+            "a-dashy-name": { "type": "string" },
+            "anHTTPClient": { "type": "string" }
+        },
+        "additionalProperties": false
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
+        "type":"object",
+        "properties":{
+            "bar": {
+              "type": "string"
+            },
+            "theFrober": {
+              "type": "string"
+            },
+            "theMusic": {
+              "type": "string"
+            },
+            "aSpaceyName": {
+              "type": "string"
+            },
+            "aDashyName": {
+              "type": "string"
+            },
+            "aLongName": {
+              "type": "string"
+            },
+            "aSnakeName": {
+              "type": "string"
+            },
+            "anHTTPClient": {
+              "type": "string"
+            },
+            "foo": {
+              "type": "string"
+            },
+            "fooBar": {
+              "type": "string"
+            }
+        }
+    }"""])
+    
+    Pulumi.Provider.PropertyValue(listToDict [
+        "foo", Pulumi.Provider.PropertyValue("a")
+    ])
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """{"foo":"a"}"""
+    
+    // Properties are optional by default
+    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """{}"""
+
+    fromJson """{"foo":"string"}"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
+        "foo", Pulumi.Provider.PropertyValue("string")
+    ]))
+
+    fromJson """{}"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
