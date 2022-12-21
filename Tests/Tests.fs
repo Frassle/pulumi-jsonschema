@@ -1129,3 +1129,76 @@ let ``Test string pattern with oneOf`` () =
         |> conversion.Reader
         |> ignore)
     exc.Message |> shouldEqual "Expected 1 matching subschema but found 0"
+
+[<Fact>]
+let ``Test inline oneOf`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "object",
+        "properties": {
+            "topKey": { "type": "boolean" }
+        },
+        "oneOf": [
+            {
+                "properties": {
+                    "keyA": { "type": "string" }
+                }
+            },
+            {
+                "properties": {
+                    "keyB": { "type": "string" }
+                }
+            }
+        ]
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
+        "type":"object",
+        "properties":{
+            "topKey": {
+              "type": "boolean"
+            },
+            "choice1Of2": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "pulumi.json#/Any"
+              }
+            },
+            "choice2Of2": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "pulumi.json#/Any"
+              }
+            }
+        }
+    }"""])
+
+    fromJson """{
+        "topKey": true,
+        "keyA": "bob"
+    }"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue( listToDict [
+        "topKey", Pulumi.Provider.PropertyValue(true)
+        "choice1Of3", Pulumi.Provider.PropertyValue(123)
+    ]))
+
+    fromJson """{
+        "topKey": true,
+        "keyB": "charlie"
+    }"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue( listToDict [
+        "topKey", Pulumi.Provider.PropertyValue(true)
+        "choice1Of3", Pulumi.Provider.PropertyValue(123)
+    ]))
+
+    fromJson "[\"testing\"]"
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue( listToDict [
+        "choice2Of3", Pulumi.Provider.PropertyValue(ImmutableArray.CreateRange [
+            Pulumi.Provider.PropertyValue("testing")
+        ])
+    ]))

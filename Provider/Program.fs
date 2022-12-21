@@ -95,6 +95,51 @@ with
         | Number -> JsonValue.Create("number")
         | String -> JsonValue.Create("string")
 
+// The schema keywords that can apply to string validation
+type StringValidation = {
+    MinLength : uint option
+    MaxLength : uint option
+    Pattern : string option
+} with 
+    static member None = 
+        {
+            MinLength = None
+            MaxLength = None
+            Pattern = None
+        }
+
+    static member FromKeywords (keywords : KeywordCollection) =
+        {
+            MinLength = pickKeyword<Json.Schema.MinLengthKeyword> keywords |> Option.map (fun kw -> kw.Value)
+            MaxLength = pickKeyword<Json.Schema.MaxLengthKeyword> keywords |> Option.map (fun kw -> kw.Value)
+            Pattern = pickKeyword<Json.Schema.PatternKeyword> keywords |> Option.map (fun kw -> kw.Value.ToString())
+        }
+
+    member this.Validate (value : string) =
+        let minCheck =
+            match this.MinLength with 
+            | Some l when uint value.Length < l -> 
+                sprintf "Value is not longer than or equal to %d characters" l
+                |> Some
+            | _ -> None
+        let maxCheck =
+            match this.MaxLength with 
+            | Some l when uint value.Length >= l -> 
+                sprintf "Value is not shorter than or equal to %d characters" l
+                |> Some
+            | _ -> None
+        let patternCheck =
+            match this.Pattern with 
+            | Some pattern ->
+                let re = System.Text.RegularExpressions.Regex(pattern, System.Text.RegularExpressions.RegexOptions.ECMAScript)
+                if re.IsMatch value |> not then 
+                    Some "The string value was not a match for the indicated regular expression"
+                else 
+                    None
+            | _ -> None
+
+        Option.orElse patternCheck (Option.orElse maxCheck minCheck)
+
 type NullConversion = {
     Description : string option
 } with     
@@ -132,7 +177,7 @@ type NullConversion = {
         else 
             errorf "Invalid JSON document expected null got %O" value.ValueKind
 
-let writePrimitive (typ : PrimitiveType) pattern (value : Pulumi.Provider.PropertyValue) = 
+let writePrimitive (typ : PrimitiveType) (stringValidation : StringValidation) (value : Pulumi.Provider.PropertyValue) = 
     let rec getNode (value : Pulumi.Provider.PropertyValue) =
         match typ with 
         | PrimitiveType.Boolean ->
@@ -183,11 +228,9 @@ let writePrimitive (typ : PrimitiveType) pattern (value : Pulumi.Provider.Proper
                 (fun _ -> raise "bool"),
                 (fun _ -> raise "number"),
                 (fun s -> 
-                    match pattern with 
+                    match stringValidation.Validate s with
+                    | Some err -> failwith err
                     | None -> ()
-                    | Some pattern ->
-                        let re = System.Text.RegularExpressions.Regex(pattern)
-                        if re.IsMatch s |> not then failwith "The string value was not a match for the indicated regular expression"
 
                     JsonValue.Create(s) 
                     :> JsonNode
@@ -204,7 +247,7 @@ let writePrimitive (typ : PrimitiveType) pattern (value : Pulumi.Provider.Proper
             )
     getNode value
 
-let readPrimitive (typ: PrimitiveType) pattern (value : JsonElement) =
+let readPrimitive (typ: PrimitiveType) (stringValidation : StringValidation)  (value : JsonElement) =
     match typ with 
     | PrimitiveType.Boolean ->
         if value.ValueKind = JsonValueKind.True then
@@ -222,13 +265,8 @@ let readPrimitive (typ: PrimitiveType) pattern (value : JsonElement) =
     | PrimitiveType.String ->
         if value.ValueKind = JsonValueKind.String then
             let str = value.GetString()
-            match pattern with 
-            | Some pattern ->
-                let re = System.Text.RegularExpressions.Regex(pattern)
-                if re.IsMatch str |> not then
-                    Error "The string value was not a match for the indicated regular expression"
-                else 
-                    Ok str
+            match stringValidation.Validate str with
+            | Some err -> Error err
             | None -> Ok str
             |> Result.map Pulumi.Provider.PropertyValue
         else 
@@ -237,7 +275,7 @@ let readPrimitive (typ: PrimitiveType) pattern (value : JsonElement) =
 type PrimitiveConversion = {
     Description : string option
     Type : PrimitiveType
-    Pattern : string option
+    StringValidation : StringValidation
 } with
     member this.BuildTypeSpec() = 
         let schema = JsonObject()
@@ -251,10 +289,10 @@ type PrimitiveConversion = {
         schema
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        writePrimitive this.Type this.Pattern value
+        writePrimitive this.Type this.StringValidation value
 
     member this.Reader (value : JsonElement) = 
-        readPrimitive this.Type this.Pattern value
+        readPrimitive this.Type this.StringValidation value
 
 type UnionConversion = {
     Description : string option
@@ -382,10 +420,10 @@ type EnumConversion = {
         schema
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        writePrimitive this.Type None value
+        writePrimitive this.Type StringValidation.None value
 
     member this.Reader (value : JsonElement) = 
-        readPrimitive this.Type None value
+        readPrimitive this.Type StringValidation.None value
                 
 type ArrayConversion = {
     Description : string option
@@ -1108,11 +1146,6 @@ let getTitle keywords =
     | Some kw -> Some kw.Value
     | None -> None
 
-let getPattern keywords = 
-    match pickKeyword<Json.Schema.PatternKeyword> keywords with 
-    | Some kw -> Some (kw.Value.ToString())
-    | None -> None
-
 let convertNullSchema (jsonSchema : Json.Schema.JsonSchema) : NullConversion =
     { 
         Description = getDescription jsonSchema.Keywords
@@ -1122,7 +1155,7 @@ let convertBoolSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversio
     {
         Type = PrimitiveType.Boolean
         Description = getDescription jsonSchema.Keywords
-        Pattern = None
+        StringValidation = StringValidation.None
     }
 
 let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion =
@@ -1132,7 +1165,7 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
         {
             Type = PrimitiveType.String
             Description = getDescription jsonSchema.Keywords
-            Pattern = getPattern jsonSchema.Keywords
+            StringValidation = StringValidation.FromKeywords jsonSchema.Keywords
         }
         |> TypeSpec.Primitive
         |> Conversion.Type
@@ -1155,7 +1188,7 @@ let convertNumberSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConvers
     {
         Type = PrimitiveType.Number
         Description = getDescription jsonSchema.Keywords
-        Pattern = None
+        StringValidation = StringValidation.None
     }
 
 let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
