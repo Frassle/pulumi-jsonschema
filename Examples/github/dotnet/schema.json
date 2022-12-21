@@ -57,6 +57,14 @@
     }
   },
   "types": {
+    "github-workflow:index:definitions_defaults": {
+      "type": "object",
+      "properties": {
+        "run": {
+          "$ref": "#/types/github-workflow:index:definitions_defaults_run"
+        }
+      }
+    },
     "github-workflow:index:definitions_defaults_run": {
       "type": "object",
       "properties": {
@@ -106,14 +114,6 @@
         "run-name": {
           "type": "string",
           "description": "The name for workflow runs generated from the workflow. GitHub displays the workflow run name in the list of workflow runs on your repository\u0027s \u0027Actions\u0027 tab."
-        }
-      }
-    },
-    "github-workflow:index:definitions_defaults": {
-      "type": "object",
-      "properties": {
-        "run": {
-          "$ref": "#/types/github-workflow:index:definitions_defaults_run"
         }
       }
     },

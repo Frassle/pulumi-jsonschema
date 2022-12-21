@@ -181,11 +181,11 @@ let testRoundTrip (schema : System.Text.Json.JsonElement) (conversion : Provider
     | Some rt -> rt.ToJsonString()
     |> shouldJsonEqual (element.GetRawText())
 
-
 [<Fact>]
 let ``Test empty`` () =
     let schema = System.Text.Json.JsonDocument.Parse "{}"
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
 
     // Pulumi schema doesn't support null, so we say it's an anything but only allow null as a value
     conversion
@@ -201,7 +201,6 @@ let ``Test empty`` () =
     |> conversion.Reader
     |> shouldEqual Pulumi.Provider.PropertyValue.Null
 
-    testRoundTrip schema.RootElement conversion
 
 [<Fact>]
 let ``Test null`` () =
@@ -209,6 +208,7 @@ let ``Test null`` () =
         "type": "null" 
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
 
     // Pulumi schema doesn't support null, so we say it's an anything but only allow null as a value
     conversion
@@ -230,6 +230,7 @@ let ``Test bool`` () =
         "type": "boolean" 
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -250,6 +251,7 @@ let ``Test string`` () =
         "type": "string" 
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -271,6 +273,7 @@ let ``Test string enum`` () =
         "enum": ["info", "warn", "error"]
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -300,6 +303,7 @@ let ``Test number`` () =
         "type": "number" 
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -321,6 +325,7 @@ let ``Test array`` () =
         "items": { "type": "string" }
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -347,6 +352,7 @@ let ``Test empty object`` () =
         "type": "object" 
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -381,6 +387,7 @@ let ``Test object with additional properties`` () =
         "additionalProperties": { "type": "string" }
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -411,6 +418,7 @@ let ``Test object with properties`` () =
         "additionalProperties": false
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -450,6 +458,7 @@ let ``Test object with required properties`` () =
         "required": ["foo"]
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -491,6 +500,7 @@ let ``Test object with properties and additionalProperties`` () =
         "additionalProperties": { "type": "number" }
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -544,6 +554,7 @@ let ``Test refs`` () =
         }
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -578,6 +589,7 @@ let ``Test simple type union`` () =
         "type": ["boolean", "string"]
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -612,6 +624,7 @@ let ``Test simple description`` () =
         "description": "This is a number"
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -633,6 +646,7 @@ let ``Test property description`` () =
         "additionalProperties": false
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -663,6 +677,7 @@ let ``Test complex object`` () =
         "additionalProperties": false
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
@@ -706,6 +721,7 @@ let ``Test allOf`` () =
         "allOf": [ { "properties": { "bar": { "type": "number" } } } ]
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
     
     conversion
     |> conversionToJson
