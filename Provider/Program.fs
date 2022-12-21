@@ -850,16 +850,20 @@ and ObjectConversion = {
                 )
 
             let choice = 
-                this.Choices
-                |> List.mapi (fun i choice -> i, choice)
-                |> List.choose (fun (i, choice) ->
-                    match choice.Reader value with 
-                    | Ok v -> Some (KeyValuePair.Create(sprintf "choice%dOf%d" (i+1) this.Choices.Length, v))
-                    | Error e -> None
-                )
-                |> function 
-                   | [result] -> Ok result
-                   | results -> errorf "Expected 1 matching subschema but found %d" results.Length
+                match this.Choices with
+                | [] -> None 
+                | choices -> 
+                    choices
+                    |> List.mapi (fun i choice -> i, choice)
+                    |> List.choose (fun (i, choice) ->
+                        match choice.Reader value with 
+                        | Ok v -> Some (KeyValuePair.Create(sprintf "choice%dOf%d" (i+1) this.Choices.Length, v))
+                        | Error e -> None
+                    )
+                    |> function 
+                       | [result] -> Ok result
+                       | results -> errorf "Expected 1 matching subschema but found %d" results.Length
+                    |> Some
 
             let propertiesAdditionalProperties =
                 value.EnumerateObject()
@@ -897,12 +901,19 @@ and ObjectConversion = {
                 | [] -> properties
                 | additionalProperties ->
                     let arr = Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange additionalProperties)
-                    KeyValuePair.Create("additionalProperties", arr) ::  properties
+                    KeyValuePair.Create("additionalProperties", arr) :: properties
+            
+            // Add the choice to properties
+            let properties = 
+                match choice with
+                | None -> Ok properties
+                | Some (Ok choice) -> Ok (choice :: properties)
+                | Some (Error err) -> Error err
 
             properties
-            |> ImmutableDictionary.CreateRange
-            |> Pulumi.Provider.PropertyValue
-            |> Ok
+            |> Result.map (
+                ImmutableDictionary.CreateRange
+                >> Pulumi.Provider.PropertyValue)
         else 
             failwithf "Invalid JSON document expected object got %O" value.ValueKind
 
