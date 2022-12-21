@@ -39,6 +39,28 @@ let optionOfTry<'T> (tryResult : bool * 'T) : 'T option =
     | false, _ -> None
     | true, value -> Some value
 
+let split (l : list<'T>) (splitter : 'T -> Choice<'U, 'V>) : 'U list * 'V list = 
+    List.foldBack (fun item (us, vs) -> 
+        match splitter item with
+        | Choice1Of2 u -> (u :: us, vs)
+        | Choice2Of2 v -> (us, v :: vs)
+    ) l ([], [])
+
+// Given a list of results, either return an OK of the seq or an Error
+let okList (l : list<Result<'T,'TError>>) : Result<list<'T>, list<'TError>> =
+    let oks, errors = 
+        split l (fun r -> 
+            match r with 
+            | Result.Ok ok -> Choice1Of2 ok
+            | Result.Error err -> Choice2Of2 err
+        )
+    match errors with 
+    | [] -> Result.Ok oks
+    | errors -> Result.Error errors
+
+let errorf format =
+    Printf.kprintf Result<'t, string>.Error format
+
 let cleanTextForName (text : string) : string =
     // replace all "bad chars" with _, then do a snake case to camel case, then normalize
     let text = text.Replace(" ", "_").Replace("-", "_").Trim('_')
@@ -106,9 +128,9 @@ type NullConversion = {
 
     member this.Reader (value : JsonElement) = 
         if value.ValueKind = JsonValueKind.Null then
-            Pulumi.Provider.PropertyValue.Null
+            Ok (Pulumi.Provider.PropertyValue.Null)
         else 
-            failwithf "Invalid JSON document expected null got %O" value.ValueKind
+            errorf "Invalid JSON document expected null got %O" value.ValueKind
 
 let writePrimitive (typ : PrimitiveType) (value : Pulumi.Provider.PropertyValue) = 
     let rec getNode (value : Pulumi.Provider.PropertyValue) =
@@ -176,26 +198,26 @@ let writePrimitive (typ : PrimitiveType) (value : Pulumi.Provider.PropertyValue)
             )
     getNode value
 
-let readPrimitive (typ: PrimitiveType) (value : JsonElement) =    
+let readPrimitive (typ: PrimitiveType) (value : JsonElement) =
     match typ with 
     | PrimitiveType.Boolean ->
         if value.ValueKind = JsonValueKind.True then
-            Pulumi.Provider.PropertyValue(true)
+            Ok (Pulumi.Provider.PropertyValue true)
         elif value.ValueKind = JsonValueKind.False then
-            Pulumi.Provider.PropertyValue(false)
+            Ok (Pulumi.Provider.PropertyValue false)
         else 
-            failwithf "Invalid JSON document expected bool got %O" value.ValueKind
+            errorf "Invalid JSON document expected bool got %O" value.ValueKind
     | PrimitiveType.Integer
     | PrimitiveType.Number ->
         if value.ValueKind = JsonValueKind.Number then
-            Pulumi.Provider.PropertyValue(value.GetDouble())
+            Ok (Pulumi.Provider.PropertyValue(value.GetDouble()))
         else 
-            failwithf "Invalid JSON document expected number got %O" value.ValueKind
+            errorf "Invalid JSON document expected number got %O" value.ValueKind
     | PrimitiveType.String ->
         if value.ValueKind = JsonValueKind.String then
-            Pulumi.Provider.PropertyValue(value.GetString())
+            Ok (Pulumi.Provider.PropertyValue(value.GetString()))
         else 
-            failwithf "Invalid JSON document expected number got %O" value.ValueKind
+            errorf "Invalid JSON document expected number got %O" value.ValueKind
 
 type PrimitiveConversion = {
     Description : string option
@@ -391,10 +413,15 @@ type ArrayConversion = {
         if value.ValueKind = JsonValueKind.Array then
             value.EnumerateArray()
             |> Seq.map (fun item -> this.Items.Reader item)
-            |> ImmutableArray.CreateRange
-            |> Pulumi.Provider.PropertyValue
+            |> Seq.toList
+            |> okList
+            |> Result.mapError (fun errs -> String.concat ", " errs)
+            |> Result.map (fun items ->
+                items
+                |> ImmutableArray.CreateRange
+                |> Pulumi.Provider.PropertyValue)
         else 
-            failwithf "Invalid JSON document expected array got %O" value.ValueKind
+            errorf "Invalid JSON document expected array got %O" value.ValueKind
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         this.Items.CollectComplexTypes()
@@ -441,11 +468,19 @@ and MapConversion = {
     member this.Reader (value : JsonElement) = 
         if value.ValueKind = JsonValueKind.Object then
             value.EnumerateObject()
-            |> Seq.map (fun kv -> KeyValuePair.Create(kv.Name, this.AdditionalProperties.Reader kv.Value))
-            |> ImmutableDictionary.CreateRange
-            |> Pulumi.Provider.PropertyValue
+            |> Seq.map (fun kv -> 
+                match this.AdditionalProperties.Reader kv.Value with 
+                | Ok ok -> Ok (KeyValuePair.Create(kv.Name, ok))
+                | Error err -> Error err)
+            |> Seq.toList
+            |> okList
+            |> Result.mapError (fun errs -> String.concat ", " errs)
+            |> Result.map (fun items -> 
+                items
+                |> ImmutableDictionary.CreateRange
+                |> Pulumi.Provider.PropertyValue)
         else 
-            failwithf "Invalid JSON document expected object got %O" value.ValueKind
+            errorf "Invalid JSON document expected object got %O" value.ValueKind
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         this.AdditionalProperties.CollectComplexTypes()
@@ -528,27 +563,40 @@ and [<RequireQualifiedAccess>] TypeSpec =
         match this with 
         | Any _ -> 
             if value.ValueKind = JsonValueKind.Null then
-                Pulumi.Provider.PropertyValue.Null
+                Ok (Pulumi.Provider.PropertyValue.Null)
             elif value.ValueKind = JsonValueKind.False then 
-                Pulumi.Provider.PropertyValue(false)
+                Ok (Pulumi.Provider.PropertyValue false)
             elif value.ValueKind = JsonValueKind.True then 
-                Pulumi.Provider.PropertyValue(true)
+                Ok (Pulumi.Provider.PropertyValue true)
             elif value.ValueKind = JsonValueKind.Number then 
-                Pulumi.Provider.PropertyValue(value.GetDouble())
+                Ok (Pulumi.Provider.PropertyValue(value.GetDouble()))
             elif value.ValueKind = JsonValueKind.String then 
-                Pulumi.Provider.PropertyValue(value.GetString())
+                Ok (Pulumi.Provider.PropertyValue(value.GetString()))
             elif value.ValueKind = JsonValueKind.Array then 
                 value.EnumerateArray()
                 |> Seq.map (fun item -> this.Reader item)
-                |> ImmutableArray.CreateRange
-                |> Pulumi.Provider.PropertyValue
+                |> Seq.toList
+                |> okList
+                |> Result.mapError (fun errs -> String.concat ", " errs)
+                |> Result.map (fun items -> 
+                    items 
+                    |> ImmutableArray.CreateRange
+                    |> Pulumi.Provider.PropertyValue)
             elif value.ValueKind = JsonValueKind.Object then 
                 value.EnumerateObject()
-                |> Seq.map (fun item -> KeyValuePair.Create(item.Name, this.Reader item.Value))
-                |> ImmutableDictionary.CreateRange
-                |> Pulumi.Provider.PropertyValue
+                |> Seq.map (fun item -> 
+                    match this.Reader item.Value with 
+                    | Ok v -> Ok (KeyValuePair.Create(item.Name, v))
+                    | Error err -> Error err)
+                |> Seq.toList
+                |> okList
+                |> Result.mapError (fun errs -> String.concat ", " errs)
+                |> Result.map (fun items -> 
+                    items
+                    |> ImmutableDictionary.CreateRange
+                    |> Pulumi.Provider.PropertyValue)
             else 
-                failwithf "unexpected JsonValueKind: %O" value.ValueKind
+                Error (sprintf "unexpected JsonValueKind: %O" value.ValueKind)
         | Null c -> c.Reader value
         | Primitive c -> c.Reader value
         | Array c -> c.Reader value
@@ -610,10 +658,14 @@ and DiscriminateUnionConversion = {
                 | Some conversion -> conversion.Writer item.Value
 
     member this.Reader (value : JsonElement) =
-        if value.ValueKind = JsonValueKind.Object then           
-            failwith "boom"
-        else 
-            failwithf "Invalid JSON document expected object got %O" value.ValueKind
+        this.Choices
+        |> Seq.choose (fun choice ->
+            try 
+                Some (choice.Reader value)
+            with 
+            | _ -> None
+        )
+        |> Seq.exactlyOne
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         this.Choices
@@ -720,22 +772,35 @@ and ObjectConversion = {
                     else None
                 )
 
-            let properties, additionalProperties =
+            let propertiesAdditionalProperties =
                 value.EnumerateObject()
-                |> Seq.fold (fun (propsSoFar, addPropsSoFar) kv ->
-                    match this.AdditionalProperties with
-                    | None -> 
-                        match tryFindName kv.Name with 
-                        | Some (pulumiName, conversion) ->
-                            KeyValuePair.Create(pulumiName, conversion.Reader kv.Value) :: propsSoFar, []
-                        | None -> failwithf "unexpected property '%s'" kv.Name
-                    | Some additionalProperties ->
-                        match tryFindName kv.Name with
-                        | Some (pulumiName, conversion) ->
-                            KeyValuePair.Create(pulumiName, conversion.Reader kv.Value) :: propsSoFar, addPropsSoFar
-                        | None ->                         
-                            propsSoFar, KeyValuePair.Create(kv.Name, additionalProperties.Reader kv.Value) :: addPropsSoFar
-                ) ([], [])
+                |> Seq.fold (fun props kv ->
+                    match props with 
+                    | Error err -> Error err
+                    | Ok (propsSoFar, addPropsSoFar) ->
+                        match this.AdditionalProperties with
+                        | None -> 
+                            match tryFindName kv.Name with 
+                            | Some (pulumiName, conversion) ->
+                                match conversion.Reader kv.Value with
+                                | Ok ok -> Ok (KeyValuePair.Create(pulumiName, ok) :: propsSoFar, [])
+                                | Error err -> Error err
+                            | None -> errorf "unexpected property '%s'" kv.Name
+                        | Some additionalProperties ->
+                            match tryFindName kv.Name with
+                            | Some (pulumiName, conversion) ->
+                                match conversion.Reader kv.Value with 
+                                | Ok ok -> Ok (KeyValuePair.Create(pulumiName, ok) :: propsSoFar, addPropsSoFar)
+                                | Error err -> Error err
+                            | None ->                        
+                                match additionalProperties.Reader kv.Value with  
+                                | Ok ok -> Ok (propsSoFar, KeyValuePair.Create(kv.Name, ok) :: addPropsSoFar)
+                                | Error err -> Error err
+                ) (Ok ([], []))
+
+            match propertiesAdditionalProperties with 
+            | Error err -> Error err
+            | Ok (properties, additionalProperties) ->
 
             // If we have any additionalProperties add them to the properties
             let properties = 
@@ -748,6 +813,7 @@ and ObjectConversion = {
             properties
             |> ImmutableDictionary.CreateRange
             |> Pulumi.Provider.PropertyValue
+            |> Ok
         else 
             failwithf "Invalid JSON document expected object got %O" value.ValueKind
 
@@ -846,24 +912,41 @@ and TupleConversion = {
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Array then
-            let properties, rest =
+            let propertiesRest =
                 value.EnumerateArray()
                 |> Seq.mapi (fun i item -> (i, item))
-                |> Seq.fold (fun (properties : Map<_,_>, rest) (i, item) ->
-                    match List.tryItem i this.PrefixItems, this.AdditionalItems with 
-                    | None, None -> failwithf "unexpected item %d in tuple" i
-                    | None, Some ais -> properties, ais.Reader item :: rest
-                    | Some property, _ -> properties.Add(i+1, property.Reader item), rest
-                ) (Map.empty, [])
+                |> Seq.fold (fun propertiesRest (i, item) ->
+                    match propertiesRest with 
+                    | Error err -> Error err
+                    | Ok (properties, rest) ->
+                        match List.tryItem i this.PrefixItems, this.AdditionalItems with 
+                        | None, None -> errorf "unexpected item %d in tuple" i
+                        | None, Some ais -> 
+                            match ais.Reader item with 
+                            | Ok ok -> Ok (properties, ok :: rest)
+                            | Error err -> Error err
+                        | Some property, _ -> 
+                            match property.Reader item with 
+                            | Ok ok -> Ok (Map.add (i+1) ok properties, rest)
+                            | Error err -> Error err
+                ) (Ok (Map.empty, []))
+
+            match propertiesRest with
+            | Error err -> Error err
+            | Ok (properties, rest) ->
                 
             // If we have any additionalItems we'll add them to the properties
             let rest = 
                 match this.AdditionalItems, rest with 
                 | Some _, rest -> 
                     let arr = rest |> List.rev |> ImmutableArray.CreateRange
-                    Some (KeyValuePair.Create("rest", Pulumi.Provider.PropertyValue(arr)))
-                | None, [] -> None
-                | None, rest -> failwith "AdditionalItems isn't set, but we got values in rest"
+                    Ok (Some (KeyValuePair.Create("rest", Pulumi.Provider.PropertyValue(arr))))
+                | None, [] -> Ok None
+                | None, rest -> errorf "AdditionalItems isn't set, but we got values in rest"
+
+            match rest with
+            | Error err -> Error err
+            | Ok rest ->
 
             let properties = 
                 properties
@@ -875,8 +958,9 @@ and TupleConversion = {
             properties
             |> ImmutableDictionary.CreateRange
             |> Pulumi.Provider.PropertyValue
+            |> Ok
         else 
-            failwithf "Invalid JSON document expected array got %O" value.ValueKind
+            errorf "Invalid JSON document expected array got %O" value.ValueKind
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         let complexTypes = 
@@ -966,7 +1050,7 @@ and [<RequireQualifiedAccess>] Conversion =
         | Conversion.Type spec -> spec.Writer value
         | Conversion.ComplexType spec -> spec.Writer value
 
-    member this.Reader (value : JsonElement) : Pulumi.Provider.PropertyValue =
+    member this.Reader (value : JsonElement) : Result<Pulumi.Provider.PropertyValue, string> =
         match this with 
         | Conversion.Type spec -> spec.Reader value
         | Conversion.ComplexType spec -> spec.Reader value
@@ -1662,7 +1746,9 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         if not validation.IsValid then 
             failwith validation.Message
         else 
-            conversion.Reader element
+            match conversion.Reader element with 
+            | Ok ok -> ok
+            | Error msg -> failwith msg
 
     {
         Schema = schema
