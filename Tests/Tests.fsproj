@@ -8,8 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="SdkTests.fs" />
-    <Compile Include="Tests.fs" />
+	  <Compile Include="Test.fs" />
+	  <Compile Include="Tests.fs" />
+	  <Compile Include="StringTests.fs" />
+	  <Compile Include="SdkTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
