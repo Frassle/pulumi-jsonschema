@@ -990,6 +990,16 @@ and ObjectConversion = {
                     else None
                 )
 
+            let obj = 
+                value.EnumerateObject()
+                |> Seq.map (fun p -> p.Name, p.Value)
+                |> Map.ofSeq
+                
+            // Check all the required keys are present
+            for key in this.Required do 
+                if obj.ContainsKey key |> not then
+                    failwithf "property '%s' is required" key
+
             let choice = 
                 match this.Choices with
                 | [] -> None 
@@ -1007,28 +1017,28 @@ and ObjectConversion = {
                     |> Some
 
             let propertiesAdditionalProperties =
-                value.EnumerateObject()
+                obj
                 |> Seq.fold (fun props kv ->
                     match props with 
                     | Error err -> Error err
                     | Ok (propsSoFar, addPropsSoFar) ->
                         match this.AdditionalProperties with
                         | None -> 
-                            match tryFindName kv.Name with 
+                            match tryFindName kv.Key with 
                             | Some (pulumiName, conversion) ->
                                 match conversion.Reader kv.Value with
                                 | Ok ok -> Ok (KeyValuePair.Create(pulumiName, ok) :: propsSoFar, [])
                                 | Error err -> Error err
-                            | None -> errorf "unexpected property '%s'" kv.Name
+                            | None -> errorf "unexpected property '%s'" kv.Key
                         | Some additionalProperties ->
-                            match tryFindName kv.Name with
+                            match tryFindName kv.Key with
                             | Some (pulumiName, conversion) ->
                                 match conversion.Reader kv.Value with 
                                 | Ok ok -> Ok (KeyValuePair.Create(pulumiName, ok) :: propsSoFar, addPropsSoFar)
                                 | Error err -> Error err
                             | None ->                        
                                 match additionalProperties.Reader kv.Value with  
-                                | Ok ok -> Ok (propsSoFar, KeyValuePair.Create(kv.Name, ok) :: addPropsSoFar)
+                                | Ok ok -> Ok (propsSoFar, KeyValuePair.Create(kv.Key, ok) :: addPropsSoFar)
                                 | Error err -> Error err
                 ) (Ok ([], []))
 
