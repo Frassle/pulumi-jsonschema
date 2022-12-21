@@ -1096,7 +1096,7 @@ let ``Test string pattern with oneOf`` () =
     ])
     |> conversion.Writer
     |> toJson
-    |> shouldJsonEqual "\"123\""
+    |> shouldJsonEqual "\"test\""
 
     fromJson "\"456\""
     |> conversion.Reader

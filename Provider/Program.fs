@@ -594,8 +594,20 @@ and DiscriminateUnionConversion = {
                 
         match maybeObj with 
         | None -> failwithf "Invalid type expected object got %O" value.Type
-        | Some obj ->            
-            failwith "boom"
+        | Some obj ->
+            // Only 1 of our fields should be set, we can just write that field out directly
+            if obj.Count <> 1 then
+                failwith "Multiple properties were set for oneOf"
+            else 
+                let choiceRegex = System.Text.RegularExpressions.Regex("^choice(\d+)Of(\d)$")
+                let item = Seq.head obj
+                let reMatch = choiceRegex.Match item.Key
+                if not reMatch.Success then
+                    failwithf "unexpected property '%s'" item.Key
+
+                match List.tryItem (Int32.Parse(reMatch.Groups[1].Value) - 1) this.Choices with 
+                | None -> failwithf "unexpected property '%s'" item.Key
+                | Some conversion -> conversion.Writer item.Value
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Object then           
