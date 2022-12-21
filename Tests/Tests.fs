@@ -1031,7 +1031,7 @@ let ``Test oneOf objects`` () =
 let ``Test string pattern`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
         "type": "string",
-        "pattern": "\\d+"
+        "pattern": "^\\d+$"
     }"""
     let conversion = Provider.convertSchema testBaseUri schema.RootElement
     
@@ -1047,6 +1047,68 @@ let ``Test string pattern`` () =
     fromJson "\"456\""
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue "456")
+
+    let exc = Assert.Throws<exn>(fun () ->
+        Pulumi.Provider.PropertyValue("hello")
+        |> conversion.Writer
+        |> ignore)
+    exc.Message |> shouldEqual "The string value was not a match for the indicated regular expression"
+    
+    let exc = Assert.Throws<exn>(fun () ->
+        fromJson "\"bob\""
+        |> conversion.Reader
+        |> ignore)
+    exc.Message |> shouldEqual "The string value was not a match for the indicated regular expression"
+
+[<Fact>]
+let ``Test string pattern with oneOf`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "oneOf": [
+            { "type": "string", "pattern": "^\\d+$" },
+            { "type": "string", "pattern": "^test$" }
+        ]
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
+        "type":"object",
+        "properties":{
+            "choice1Of2": {
+              "type": "string"
+            },
+            "choice2Of2": {
+              "type": "string"
+            }
+        }
+    }"""])
+
+    Pulumi.Provider.PropertyValue( listToDict [
+        "choice1Of2", Pulumi.Provider.PropertyValue("123")
+    ])
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual "\"123\""
+
+    Pulumi.Provider.PropertyValue( listToDict [
+        "choice2Of2", Pulumi.Provider.PropertyValue("test")
+    ])
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual "\"123\""
+
+    fromJson "\"456\""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue( listToDict [
+        "choice1Of2", Pulumi.Provider.PropertyValue("456")
+    ]))
+
+    fromJson "\"test\""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue( listToDict [
+        "choice2Of2", Pulumi.Provider.PropertyValue("test")
+    ]))
 
     let exc = Assert.Throws<exn>(fun () ->
         Pulumi.Provider.PropertyValue("hello")
