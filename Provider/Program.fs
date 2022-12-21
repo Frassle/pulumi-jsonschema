@@ -1581,8 +1581,8 @@ and convertAllOf (root : RootInformation) (path : string list) (schema : Json.Sc
 
     convertSubSchema root path (newSchema.Build())
 
-and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion option =
-    // Check to see if all the oneOf schemas are _simple_ and we don't have any extra validation if so we can just make this a type union    
+and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion option =    
+    // See if there's any validation keywords at this level or if it's just a simple oneOf
     let simpleOneOf = 
         schema.Keywords 
         |> Seq.forall (fun kw ->
@@ -1595,7 +1595,8 @@ and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema)
             let path = sprintf "oneOf%d" i :: path
             convertSubSchema root path subschema)
         |> Seq.toList
-
+        
+    // Check to see if all the oneOf schemas are _simple_ and we don't have any extra validation if so we can just make this a type union
     let simpleUnion = 
         if not simpleOneOf then None 
         else
@@ -1614,10 +1615,10 @@ and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema)
                     | _ -> None
             ) (Some { Description = None; BooleanConversion = None; NumberConversion = None; StringConversion = None })
 
-    match simpleUnion with
-    | Some union -> union |> TypeSpec.Union |> Conversion.Type |> Some
-    | None ->
-        // Emit an object with a property for each choice
+    match simpleOneOf, simpleUnion with
+    | _, Some union -> union |> TypeSpec.Union |> Conversion.Type |> Some
+    | true, _ ->
+        // Emit a DU for each of the choices
         {
             Path = path
             Title = getTitle schema.Keywords
@@ -1627,6 +1628,8 @@ and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema)
         |> ComplexTypeSpec.DU
         |> Conversion.ComplexType
         |> Some
+    | false, _ -> 
+        failwith "Complex DU-ish type"
 
 and convertSubSchema (root : RootInformation) (path : string list) (schema : Json.Schema.JsonSchema) : Conversion option =
     match schema.BoolValue |> Option.ofNullable with
