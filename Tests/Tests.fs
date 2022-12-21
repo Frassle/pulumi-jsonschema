@@ -50,27 +50,6 @@ let ``Test null`` () =
     |> Test.shouldEqual Pulumi.Provider.PropertyValue.Null
 
 [<Fact>]
-let ``Test bool`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
-        "type": "boolean" 
-    }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
-    Test.roundTrip schema.RootElement conversion
-    
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.simpleSchema """{"type":"boolean"}""")
-
-    Pulumi.Provider.PropertyValue(true)
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual "true"
-
-    Test.fromJson "true"
-    |> conversion.Reader
-    |> Test.shouldEqual (Pulumi.Provider.PropertyValue true)
-
-[<Fact>]
 let ``Test string enum`` () =
     let schema = System.Text.Json.JsonDocument.Parse """{
         "type": "string",
@@ -100,27 +79,6 @@ let ``Test string enum`` () =
         |> ignore
     )
     exc.Message |> Test.shouldEqual "Expected value to match one of the values specified by the enum"
-
-[<Fact>]
-let ``Test number`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
-        "type": "number" 
-    }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
-    Test.roundTrip schema.RootElement conversion
-    
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.simpleSchema """{"type":"number"}""")
-
-    Pulumi.Provider.PropertyValue(14.512)
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual "14.512"
-
-    Test.fromJson "53.42"
-    |> conversion.Reader
-    |> Test.shouldEqual (Pulumi.Provider.PropertyValue 53.42)
 
 [<Fact>]
 let ``Test array`` () =
