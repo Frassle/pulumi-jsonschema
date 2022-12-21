@@ -224,6 +224,30 @@ type UnionConversion = {
     NumberConversion : PrimitiveConversion option
     StringConversion : PrimitiveConversion option
 } with
+    static member OfPrimitive (conversion : PrimitiveConversion) =
+        match conversion.Type with
+        | PrimitiveType.Boolean -> { Description = None; BooleanConversion = Some conversion; NumberConversion = None; StringConversion = None }
+        | PrimitiveType.Integer
+        | PrimitiveType.Number -> { Description = None; BooleanConversion = None; NumberConversion = Some conversion; StringConversion = None }
+        | PrimitiveType.String -> { Description = None; BooleanConversion = None; NumberConversion = None; StringConversion = Some conversion }
+
+    member this.TryMerge (other : UnionConversion) =
+        let unique a b = 
+            match a, b with 
+            | None, None -> Result.Ok None
+            | Some a, None -> Result.Ok (Some a)
+            | None, Some b -> Result.Ok (Some b)
+            | _, _ -> Result.Error ()
+        
+        let boolean = unique this.BooleanConversion other.BooleanConversion 
+        let number = unique this.NumberConversion other.NumberConversion 
+        let str = unique this.StringConversion other.StringConversion
+
+        match boolean, number, str with 
+        | Ok b, Ok n, Ok s -> 
+            Some { Description = this.Description; BooleanConversion = b; NumberConversion = n; StringConversion = s }
+        | _ -> None
+
     member this.BuildTypeSpec () =
         let schema = JsonObject()
 
@@ -1375,20 +1399,16 @@ and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema)
         else
             subConversions 
             |> List.fold (fun (overall : UnionConversion option) subconversion -> 
-                match overall with 
-                | None -> None
-                | Some overall ->
+                match overall, subconversion with 
+                | None, _ -> None
+                | _, None -> overall
+                | Some overall, Some subconversion ->
                     match subconversion with 
-                    | None -> None
-                    | Some (Conversion.Type (TypeSpec.Primitive p)) ->
-                        if p.Type = PrimitiveType.Boolean then 
-                            Some { overall with BooleanConversion = Some p }
-                        elif p.Type = PrimitiveType.Number then 
-                            Some { overall with NumberConversion = Some p }
-                        elif p.Type = PrimitiveType.String then 
-                            Some { overall with StringConversion = Some p }
-                        else 
-                            None
+                    | Conversion.Type (TypeSpec.Primitive p) ->
+                        let conversion = UnionConversion.OfPrimitive p
+                        overall.TryMerge conversion
+                    | Conversion.Type (TypeSpec.Union u) ->
+                        overall.TryMerge u
                     | _ -> None
             ) (Some { Description = None; BooleanConversion = None; NumberConversion = None; StringConversion = None })
 
