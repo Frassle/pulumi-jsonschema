@@ -365,10 +365,10 @@ let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (valu
     | PrimitiveType.Integer
     | PrimitiveType.Number ->
         if value.ValueKind = JsonValueKind.Number then
-            let num = value.GetDecimal()
-            match validation.Numeric.Validate num with
+            let num = value.GetDouble()
+            match validation.Numeric.Validate (decimal num) with
             | Some err -> Error err
-            | None -> Ok (float num)
+            | None -> Ok num
             |> Result.map Pulumi.Provider.PropertyValue
         else 
             errorf "Invalid JSON document expected number got %O" value.ValueKind
