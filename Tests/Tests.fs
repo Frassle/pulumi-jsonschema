@@ -1140,11 +1140,13 @@ let ``Test inline oneOf`` () =
         "oneOf": [
             {
                 "properties": {
-                    "keyA": { "type": "string" }
+                    "keyA": { "type": "string" },
+                    "keyB": false
                 }
             },
             {
                 "properties": {
+                    "keyA": false,
                     "keyB": { "type": "string" }
                 }
             }
@@ -1154,26 +1156,49 @@ let ``Test inline oneOf`` () =
     
     conversion
     |> conversionToJson
-    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
-        "type":"object",
-        "properties":{
-            "topKey": {
-              "type": "boolean"
-            },
-            "choice1Of2": {
-              "type": "object",
-              "additionalProperties": {
-                "$ref": "pulumi.json#/Any"
-              }
-            },
-            "choice2Of2": {
-              "type": "object",
-              "additionalProperties": {
-                "$ref": "pulumi.json#/Any"
-              }
+    |> shouldJsonEqual (complexSchema [
+        "schema:index:oneOf0", """{
+            "type": "object",
+            "properties": {
+                "keyA": { "type": "string" },
+                "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "pulumi.json#/Any"
+                    }
+                }
             }
-        }
-    }"""])
+        }"""
+        "schema:index:oneOf1", """{
+            "type": "object",
+            "properties": {
+                "keyB": { "type": "string" },
+                "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "pulumi.json#/Any"
+                    }
+                }
+            }
+        }"""
+        "schema:index:root", """{
+            "type": "object",
+            "properties": {
+                "topKey": { "type": "boolean" },
+                "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "pulumi.json#/Any"
+                    }
+                },
+                "choice1Of2": {
+                    "$ref": "#/types/schema:index:oneOf0"
+                },
+                "choice2Of2": {
+                    "$ref": "#/types/schema:index:oneOf1"
+                }
+            }
+        }"""])
 
     fromJson """{
         "topKey": true,
@@ -1182,7 +1207,9 @@ let ``Test inline oneOf`` () =
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue( listToDict [
         "topKey", Pulumi.Provider.PropertyValue(true)
-        "choice1Of3", Pulumi.Provider.PropertyValue(123)
+        "choice1Of2", Pulumi.Provider.PropertyValue( listToDict [
+            "keyA", Pulumi.Provider.PropertyValue("bob")
+        ])
     ]))
 
     fromJson """{
@@ -1192,15 +1219,15 @@ let ``Test inline oneOf`` () =
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue( listToDict [
         "topKey", Pulumi.Provider.PropertyValue(true)
-        "choice1Of3", Pulumi.Provider.PropertyValue(123)
+        "choice2Of2", Pulumi.Provider.PropertyValue( listToDict [
+            "keyA", Pulumi.Provider.PropertyValue("bob")
+        ])
     ]))
 
-    fromJson "[\"testing\"]"
+    fromJson """{"topKey": false }"""
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue( listToDict [
-        "choice2Of3", Pulumi.Provider.PropertyValue(ImmutableArray.CreateRange [
-            Pulumi.Provider.PropertyValue("testing")
-        ])
+        "topKey", Pulumi.Provider.PropertyValue(false)
     ]))
         
 [<Fact>]
