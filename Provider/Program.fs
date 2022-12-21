@@ -356,7 +356,7 @@ type EnumConversion = {
         let values = 
             this.Values
             |> Seq.map (fun v -> 
-                let value = v.Deserialize<JsonNode>()
+                let value = Json.More.JsonNodeExtensions.Copy(v)
                 JsonObject([KeyValuePair.Create("value", value)]) :> JsonNode
             )
             |> Seq.toArray
@@ -1741,7 +1741,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
             result
 
     let reader (element : JsonElement) =
-        let node = element.Deserialize<JsonNode>()
+        let node = Json.More.JsonElementExtensions.AsNode(element)
         let validation = jsonSchema.Validate(node, validationOptions)
         if not validation.IsValid then 
             failwith validation.Message
