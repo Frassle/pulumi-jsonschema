@@ -181,7 +181,7 @@ let writePrimitive (typ : PrimitiveType) (stringValidation : StringValidation) (
     let rec getNode (value : Pulumi.Provider.PropertyValue) =
         match typ with 
         | PrimitiveType.Boolean ->
-            let raise  (typ : string) = failwithf "Invalid type expected boolean got %s" typ
+            let raise  (typ : string) = failwithf "Value is \"%s\" but should be \"boolean\"" typ
             value.Match(
                 (fun _ -> raise "null"),
                 (fun b -> 
@@ -200,9 +200,29 @@ let writePrimitive (typ : PrimitiveType) (stringValidation : StringValidation) (
                 (fun output -> getNode output.Value),
                 (fun _ -> raise "computed")
             )
-        | PrimitiveType.Integer
+        | PrimitiveType.Integer -> 
+            let raise  (typ : string) = failwithf "Value is \"%s\" but should be \"integer\"" typ
+            value.Match(
+                (fun _ -> raise "null"),
+                (fun _ -> raise "bool"),
+                (fun n -> 
+                    if floor n <> n then raise "number"
+                    JsonValue.Create(n) 
+                    :> JsonNode
+                    |> Some
+                ),
+                (fun _ -> raise "string"),
+                (fun _ -> raise "array"),
+                (fun _ -> raise "object"),
+                (fun _ -> raise "asset"),
+                (fun _ -> raise "archive"),
+                (fun secret -> getNode secret),
+                (fun _ -> raise "resource"),            
+                (fun output -> getNode output.Value),
+                (fun _ -> raise "computed")
+            )
         | PrimitiveType.Number ->
-            let raise  (typ : string) = failwithf "Invalid type expected number got %s" typ
+            let raise  (typ : string) = failwithf "Value is \"%s\" but should be \"number\"" typ
             value.Match(
                 (fun _ -> raise "null"),
                 (fun _ -> raise "bool"),
@@ -222,11 +242,14 @@ let writePrimitive (typ : PrimitiveType) (stringValidation : StringValidation) (
                 (fun _ -> raise "computed")
             )
         | PrimitiveType.String ->
-            let raise  (typ : string) = failwithf "Invalid type expected string got %s" typ
+            let raise  (typ : string) = failwithf "Value is \"%s\" but should be \"string\"" typ
             value.Match(
                 (fun _ -> raise "null"),
                 (fun _ -> raise "bool"),
-                (fun _ -> raise "number"),
+                (fun n -> 
+                    if floor n = n then raise "integer"
+                    else raise "number"
+                ),
                 (fun s -> 
                     match stringValidation.Validate s with
                     | Some err -> failwith err
@@ -1243,9 +1266,9 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
         |> ComplexTypeSpec.Enum
         |> Conversion.ComplexType
 
-let convertNumberSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversion =
+let convertNumberSchema isInteger (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversion =
     {
-        Type = PrimitiveType.Number
+        Type = if isInteger then PrimitiveType.Integer else PrimitiveType.Number
         Description = getDescription jsonSchema.Keywords
         StringValidation = StringValidation.None
         Const = Choice1Of4 ()
@@ -1256,7 +1279,7 @@ let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
     
     let numberConversion =
         if typ.Type.HasFlag Json.Schema.SchemaValueType.Number then
-            Some (convertNumberSchema jsonSchema)
+            Some (convertNumberSchema false jsonSchema)
         else None
 
     let stringConversion =
@@ -1802,8 +1825,10 @@ and convertSubSchema (root : RootInformation) (path : string list) (context : Co
             convertBoolSchema schema |> TypeSpec.Primitive |> Conversion.Type |> Some
         elif isSimpleType Json.Schema.SchemaValueType.String then 
             convertStringSchema path schema |> Some
+        elif isSimpleType Json.Schema.SchemaValueType.Integer then 
+            convertNumberSchema true schema |> TypeSpec.Primitive |> Conversion.Type |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Number then 
-            convertNumberSchema schema |> TypeSpec.Primitive |> Conversion.Type |> Some
+            convertNumberSchema false schema |> TypeSpec.Primitive |> Conversion.Type |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Object then 
             convertObjectSchema root path context schema |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Array then 

@@ -22,6 +22,18 @@ let ``Test plain string`` () =
     Test.fromJson "\"test\""
     |> conversion.Reader
     |> Test.shouldEqual (Pulumi.Provider.PropertyValue "test")
+    
+    let exc = Assert.Throws<exn>(fun () ->
+        Pulumi.Provider.PropertyValue(45)
+        |> conversion.Writer
+        |> ignore)
+    exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"string\""
+
+    let exc = Assert.Throws<exn>(fun () ->
+        Test.fromJson "44"
+        |> conversion.Reader
+        |> ignore)
+    exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"string\""
 
 [<Fact>]
 let ``Test string pattern`` () =
