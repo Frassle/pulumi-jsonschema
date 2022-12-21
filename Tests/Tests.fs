@@ -1160,25 +1160,13 @@ let ``Test inline oneOf`` () =
         "schema:index:oneOf0", """{
             "type": "object",
             "properties": {
-                "keyA": { "type": "string" },
-                "additionalProperties": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "pulumi.json#/Any"
-                    }
-                }
+                "keyA": { "type": "string" }
             }
         }"""
         "schema:index:oneOf1", """{
             "type": "object",
             "properties": {
-                "keyB": { "type": "string" },
-                "additionalProperties": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "pulumi.json#/Any"
-                    }
-                }
+                "keyB": { "type": "string" }
             }
         }"""
         "schema:index:root", """{

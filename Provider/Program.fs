@@ -430,6 +430,14 @@ type EnumConversion = {
 
     member this.Reader (value : JsonElement) = 
         readPrimitive this.Type StringValidation.None value
+
+type ConversionContext = {
+    Type : Json.Schema.SchemaValueType option
+    // True if object types should default to additional properties
+    AdditionalProperties : bool
+} with 
+    static member Default = { Type = None; AdditionalProperties = true }
+
                 
 type ArrayConversion = {
     Description : string option
@@ -1351,7 +1359,7 @@ let handleKeyword<'T when 'T : not struct> func keywordsMap =
             false
         | _ -> true)
 
-let rec convertRef (root : RootInformation) path contextualType (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion option =
+let rec convertRef (root : RootInformation) path context (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion option =
     // If this is a simple $ref by itself just convert the inner type    
     let simpleRef = 
         schema.Keywords 
@@ -1363,7 +1371,7 @@ let rec convertRef (root : RootInformation) path contextualType (schema : Json.S
 
     if simpleRef then 
         // We need a new path here because this _ref_ could be seen by multiple paths
-        convertSubSchema root (List.rev segments) contextualType subschema
+        convertSubSchema root (List.rev segments) context subschema
     else 
         // This isn't a simple ref, we need to do a schema merge
         // we build a new _schema_ that merges the subschemas in ways that are possible to express in the type system (falling back to just any if we can't merge them)
@@ -1445,7 +1453,7 @@ let rec convertRef (root : RootInformation) path contextualType (schema : Json.S
             sprintf "Needs more translation %O" allKeywords
             |> Some |> TypeSpec.Any |> Conversion.Type |> Some
         else 
-            convertSubSchema root path None (newSchema.Build())
+            convertSubSchema root path context (newSchema.Build())
 
 and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.JsonSchema) : Conversion option =    
     let prefixItems =
@@ -1453,7 +1461,7 @@ and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.J
         |> pickKeyword<Json.Schema.PrefixItemsKeyword>
         |> Option.map (fun kw -> 
             kw.ArraySchemas
-            |> Seq.mapi (fun i s -> convertSubSchema root (sprintf "item%d" (i+1) :: path) None s)
+            |> Seq.mapi (fun i s -> convertSubSchema root (sprintf "item%d" (i+1) :: path) ConversionContext.Default s)
         )
 
     match prefixItems with
@@ -1465,7 +1473,7 @@ and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.J
     let items =
         jsonSchema.Keywords
         |> pickKeyword<Json.Schema.ItemsKeyword>
-        |> Option.map (fun ik -> convertSubSchema root ("item" :: path) None ik.SingleSchema)
+        |> Option.map (fun ik -> convertSubSchema root ("item" :: path) ConversionContext.Default ik.SingleSchema)
         |> Option.defaultValue (Some (Conversion.Type (TypeSpec.Any None)))
 
     let description = getDescription jsonSchema.Keywords
@@ -1504,7 +1512,7 @@ and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.J
         } |> ComplexTypeSpec.Tuple |> Conversion.ComplexType
     |> Some
 
-and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.JsonSchema) : Conversion =
+and convertObjectSchema (root : RootInformation) path (context : ConversionContext) (jsonSchema : Json.Schema.JsonSchema) : Conversion =
     let propertiesKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.PropertiesKeyword>
     let additionalPropertiesKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.AdditionalPropertiesKeyword>
     let requiredKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.RequiredKeyword>
@@ -1515,7 +1523,7 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
         |> Option.map (fun pk ->
             pk.Properties
             |> Seq.choose (fun kv ->
-                match convertSubSchema root (kv.Key :: path) None kv.Value  with 
+                match convertSubSchema root (kv.Key :: path) ConversionContext.Default kv.Value  with 
                 | Some subConversion -> Some (kv.Key, subConversion)
                 | None -> None
             )
@@ -1525,9 +1533,10 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
     // Pulumi schema only directly supports maps (i.e additionalProperties is Some and properties = []) or fixed property bags (i.e. additionalProperties is None)
     // If we have both we need to add an extra "additionalProperties" property to the object
     let additionalProperties =
-        match additionalPropertiesKeyword with 
-        | Some apk -> convertSubSchema root ("additionalProperties" :: path) None apk.Schema
-        | None -> Some (Conversion.Type (TypeSpec.Any None))
+        match context.AdditionalProperties, additionalPropertiesKeyword with 
+        | true, Some apk -> convertSubSchema root ("additionalProperties" :: path) ConversionContext.Default apk.Schema
+        | true, None -> Some (Conversion.Type (TypeSpec.Any None))
+        | false, _ -> None
 
     let required = 
         match requiredKeyword with
@@ -1590,8 +1599,7 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
         |> ComplexTypeSpec.Object
         |> Conversion.ComplexType
 
-and convertAllOf (root : RootInformation) (path : string list) (schema : Json.Schema.JsonSchema) (allOf : Json.Schema.AllOfKeyword): Conversion option =
-    let contextualType = getType schema.Keywords
+and convertAllOf (root : RootInformation) (path : string list) context (schema : Json.Schema.JsonSchema) (allOf : Json.Schema.AllOfKeyword): Conversion option =
 
     // allOf is a union of all the subschemas
     // we build a new _schema_ that merges the subschemas in ways that are possible to express in the type system (falling back to just any if we can't merge them)
@@ -1653,10 +1661,9 @@ and convertAllOf (root : RootInformation) (path : string list) (schema : Json.Sc
     if allKeywords.Count <> 0 then
         failwithf "Needs more translation %O" allKeywords
 
-    convertSubSchema root path contextualType (newSchema.Build()) 
+    convertSubSchema root path context (newSchema.Build()) 
 
-and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion option =    
-    let contextualType = getType schema.Keywords
+and convertOneOf (root : RootInformation) path context (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion option =
 
     // See if there's any validation keywords at this level or if it's just a simple oneOf
     let simpleOneOf = 
@@ -1669,7 +1676,7 @@ and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema)
         oneOf.Schemas 
         |> Seq.mapi (fun i subschema -> 
             let path = sprintf "oneOf%d" i :: path
-            convertSubSchema root path contextualType subschema)
+            convertSubSchema root path context subschema)
         |> Seq.choose id
         |> Seq.toList
         
@@ -1712,11 +1719,18 @@ and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema)
             if keyword.Equals oneOf then ()
             else newSchema.Add keyword
         )
-        let root = convertSubSchema root path contextualType (newSchema.Build()) 
+        let obj = convertSubSchema root path context (newSchema.Build()) 
 
-        match root with 
+        match obj with 
         | Some (Conversion.ComplexType (ComplexTypeSpec.Object obj)) ->
-            // root _should_ be an object now, 
+            // this _should_ be an object now, 
+            let subConversions = 
+                oneOf.Schemas 
+                |> Seq.mapi (fun i subschema -> 
+                    let path = sprintf "oneOf%d" i :: path
+                    convertSubSchema root path { context with AdditionalProperties = false } subschema)
+                |> Seq.choose id
+                |> Seq.toList
 
             { obj with Choices = subConversions }
             |> ComplexTypeSpec.Object
@@ -1730,7 +1744,7 @@ and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema)
             |> Some
 
 
-and convertSubSchema (root : RootInformation) (path : string list) contextualType (schema : Json.Schema.JsonSchema)  : Conversion option =
+and convertSubSchema (root : RootInformation) (path : string list) (context : ConversionContext) (schema : Json.Schema.JsonSchema)  : Conversion option =
     match schema.BoolValue |> Option.ofNullable with
     | Some false -> None
     | Some true -> TypeSpec.Any None |> Conversion.Type |> Some
@@ -1746,11 +1760,12 @@ and convertSubSchema (root : RootInformation) (path : string list) contextualTyp
         | false -> 
 
         let typ = 
-            match getType keywords, contextualType with 
+            match getType keywords, context.Type with 
             | None, None -> None
             | Some t, None -> Some t
             | None, Some t -> Some t
             | Some a, Some b -> Some (a ||| b)
+        let context = { Type = typ; AdditionalProperties = context.AdditionalProperties }
 
         let allOf = pickKeyword<Json.Schema.AllOfKeyword> keywords
         let oneOf = pickKeyword<Json.Schema.OneOfKeyword> keywords
@@ -1765,11 +1780,11 @@ and convertSubSchema (root : RootInformation) (path : string list) contextualTyp
         if constKeyword.IsSome then 
             convertConst root path schema constKeyword.Value |> Some
         elif ref.IsSome then
-            convertRef root path typ schema ref.Value
+            convertRef root path context schema ref.Value
         elif allOf.IsSome then
-            convertAllOf root path schema allOf.Value
+            convertAllOf root path context schema allOf.Value
         elif oneOf.IsSome then
-            convertOneOf root path schema oneOf.Value
+            convertOneOf root path context schema oneOf.Value
         elif isSimpleType Json.Schema.SchemaValueType.Null then 
             convertNullSchema schema |> TypeSpec.Null |> Conversion.Type |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Boolean then 
@@ -1779,7 +1794,7 @@ and convertSubSchema (root : RootInformation) (path : string list) contextualTyp
         elif isSimpleType Json.Schema.SchemaValueType.Number then 
             convertNumberSchema schema |> TypeSpec.Primitive |> Conversion.Type |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Object then 
-            convertObjectSchema root path schema |> Some
+            convertObjectSchema root path context schema |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Array then 
             convertArraySchema root path schema
         elif isSimpleUnion keywords then
@@ -1825,7 +1840,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         Document = jsonSchema
     }
     let jsonSchema = Json.Schema.JsonSchema.FromText (jsonSchema.GetRawText())
-    let conversion = convertSubSchema root [] None jsonSchema 
+    let conversion = convertSubSchema root [] { Type = None; AdditionalProperties = true } jsonSchema 
 
     let conversion = 
         match conversion with 
