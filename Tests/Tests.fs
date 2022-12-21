@@ -912,7 +912,8 @@ let ``Test properties are Pulumi-ized`` () =
             "a_snake_name": { "type": "string" },
             "a spacey name": { "type": "string" },
             "a-dashy-name": { "type": "string" },
-            "anHTTPClient": { "type": "string" }
+            "anHTTPClient": { "type": "string" },
+            "choice1of2": { "type": "string" }
         },
         "additionalProperties": false
     }"""
@@ -953,6 +954,9 @@ let ``Test properties are Pulumi-ized`` () =
             },
             "fooBar": {
               "type": "string"
+            },
+            "choice1Of2": {
+              "type": "string"
             }
         }
     }"""])
@@ -979,3 +983,50 @@ let ``Test properties are Pulumi-ized`` () =
     fromJson """{}"""
     |> conversion.Reader
     |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+
+[<Fact>]
+let ``Test oneOf objects`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "oneOf": [
+            { "type": "number" },
+            { "type": "array" },
+            { "type": "object" }
+        ]
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
+        "type":"object",
+        "properties":{
+            "choice1Of3": {
+              "type": "number"
+            },
+            "choice2Of3": {
+              "type": "array"
+            },
+            "choice3Of3": {
+              "type": "object"
+            }
+        }
+    }"""])
+
+    Pulumi.Provider.PropertyValue(45)
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual "45"
+
+    Pulumi.Provider.PropertyValue("hello")
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual "\"hello\""
+
+    fromJson "123"
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue 123)
+
+    fromJson "\"testing\""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue "testing")

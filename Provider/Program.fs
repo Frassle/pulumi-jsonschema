@@ -47,13 +47,16 @@ let cleanTextForName (text : string) : string =
     let mutable first = true
     for ch in text do 
         if first then 
-            result.Append (string (System.Char.ToLower ch)) |> ignore
+            result.Append (string (Char.ToLower ch)) |> ignore
             first <- false
         else 
             if ch = '_' then
                 case <- true
+            elif Char.IsDigit ch then
+                result.Append (string ch) |> ignore
+                case <- true
             elif case then
-                result.Append (string (System.Char.ToUpper ch)) |> ignore
+                result.Append (string (Char.ToUpper ch)) |> ignore
                 case <- false
             else 
                 result.Append (string ch) |> ignore
