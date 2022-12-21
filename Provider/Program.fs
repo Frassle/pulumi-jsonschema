@@ -139,6 +139,81 @@ type StringValidation = {
             | _ -> None
 
         Option.orElse patternCheck (Option.orElse maxCheck minCheck)
+        
+// The schema keywords that can apply to numeric validation
+type NumericValidation = {
+    MultipleOf : decimal option
+    Maximum : decimal option
+    ExclusiveMaximum : decimal option
+    Minimum : decimal option
+    ExclusiveMinimum : decimal option
+} with 
+    static member None = 
+        {
+            MultipleOf = None
+            Maximum = None
+            ExclusiveMaximum = None
+            Minimum = None
+            ExclusiveMinimum = None
+        }
+
+    static member FromKeywords (keywords : KeywordCollection) =
+        {
+            MultipleOf = pickKeyword<Json.Schema.MultipleOfKeyword> keywords |> Option.map (fun kw -> kw.Value)
+            Maximum = pickKeyword<Json.Schema.MaximumKeyword> keywords |> Option.map (fun kw -> kw.Value)
+            ExclusiveMaximum = pickKeyword<Json.Schema.ExclusiveMaximumKeyword> keywords |> Option.map (fun kw -> kw.Value)
+            Minimum = pickKeyword<Json.Schema.MinimumKeyword> keywords |> Option.map (fun kw -> kw.Value)
+            ExclusiveMinimum = pickKeyword<Json.Schema.ExclusiveMinimumKeyword> keywords |> Option.map (fun kw -> kw.Value)
+        }
+
+    member this.Validate (value : decimal) =
+        let mulCheck =
+            match this.MultipleOf with 
+            | Some m when Decimal.Remainder(value, m) <> 0 -> 
+                sprintf "%M is not a multiple of %M" value m
+                |> Some
+            | _ -> None
+
+        let maxCheck =
+            match this.Maximum with 
+            | Some m when value > m ->
+                sprintf "%M is not less than or equal to %M" value m
+                |> Some
+            | _ -> None
+
+        let emaxCheck =
+            match this.ExclusiveMaximum with 
+            | Some m when value >= m ->
+                sprintf "%M is not less than %M" value m
+                |> Some
+            | _ -> None
+
+        let minCheck =
+            match this.Minimum with 
+            | Some m when value < m ->
+                sprintf "%M is not greater than or equal to  %M" value m
+                |> Some
+            | _ -> None
+            
+        let eminCheck =
+            match this.ExclusiveMinimum with 
+            | Some m when value <= m ->
+                sprintf "%M is not greater than %M" value m
+                |> Some
+            | _ -> None
+
+        None 
+        |> Option.orElse mulCheck 
+        |> Option.orElse maxCheck 
+        |> Option.orElse emaxCheck 
+        |> Option.orElse minCheck 
+        |> Option.orElse eminCheck 
+
+type PrimitiveValidation = {
+    String : StringValidation
+    Numeric : NumericValidation
+} with 
+    static member None = { String = StringValidation.None; Numeric = NumericValidation.None }
 
 type NullConversion = {
     Description : string option
@@ -177,7 +252,7 @@ type NullConversion = {
         else 
             errorf "Invalid JSON document expected null got %O" value.ValueKind
 
-let writePrimitive (typ : PrimitiveType) (stringValidation : StringValidation) (value : Pulumi.Provider.PropertyValue) = 
+let writePrimitive (typ : PrimitiveType) (validation : PrimitiveValidation) (value : Pulumi.Provider.PropertyValue) = 
     let rec getNode (value : Pulumi.Provider.PropertyValue) =
         match typ with 
         | PrimitiveType.Boolean ->
@@ -206,6 +281,10 @@ let writePrimitive (typ : PrimitiveType) (stringValidation : StringValidation) (
                 (fun _ -> raise "null"),
                 (fun _ -> raise "bool"),
                 (fun n -> 
+                    match validation.Numeric.Validate (decimal n) with
+                    | Some err -> failwith err
+                    | None -> ()
+
                     if floor n <> n then raise "number"
                     JsonValue.Create(n) 
                     :> JsonNode
@@ -227,6 +306,10 @@ let writePrimitive (typ : PrimitiveType) (stringValidation : StringValidation) (
                 (fun _ -> raise "null"),
                 (fun _ -> raise "bool"),
                 (fun n -> 
+                    match validation.Numeric.Validate (decimal n) with
+                    | Some err -> failwith err
+                    | None -> ()
+
                     JsonValue.Create(n) 
                     :> JsonNode
                     |> Some
@@ -251,7 +334,7 @@ let writePrimitive (typ : PrimitiveType) (stringValidation : StringValidation) (
                     else raise "number"
                 ),
                 (fun s -> 
-                    match stringValidation.Validate s with
+                    match validation.String.Validate s with
                     | Some err -> failwith err
                     | None -> ()
 
@@ -270,7 +353,7 @@ let writePrimitive (typ : PrimitiveType) (stringValidation : StringValidation) (
             )
     getNode value
 
-let readPrimitive (typ: PrimitiveType) (stringValidation : StringValidation)  (value : JsonElement) =
+let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (value : JsonElement) =
     match typ with 
     | PrimitiveType.Boolean ->
         if value.ValueKind = JsonValueKind.True then
@@ -282,24 +365,33 @@ let readPrimitive (typ: PrimitiveType) (stringValidation : StringValidation)  (v
     | PrimitiveType.Integer
     | PrimitiveType.Number ->
         if value.ValueKind = JsonValueKind.Number then
-            Ok (Pulumi.Provider.PropertyValue(value.GetDouble()))
+            let num = value.GetDecimal()
+            match validation.Numeric.Validate num with
+            | Some err -> Error err
+            | None -> Ok (float num)
+            |> Result.map Pulumi.Provider.PropertyValue
         else 
             errorf "Invalid JSON document expected number got %O" value.ValueKind
     | PrimitiveType.String ->
         if value.ValueKind = JsonValueKind.String then
             let str = value.GetString()
-            match stringValidation.Validate str with
+            match validation.String.Validate str with
             | Some err -> Error err
             | None -> Ok str
             |> Result.map Pulumi.Provider.PropertyValue
         else 
             errorf "Invalid JSON document expected number got %O" value.ValueKind
 
+type AnyConversion = {
+    Description : string option
+    Type : PrimitiveType    
+}
+
 type PrimitiveConversion = {
     Description : string option
     Const : Choice<unit, bool, double, string>
     Type : PrimitiveType
-    StringValidation : StringValidation
+    Validation : PrimitiveValidation
 } with
     member this.BuildTypeSpec() = 
         let schema = JsonObject()
@@ -318,10 +410,10 @@ type PrimitiveConversion = {
         schema
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        writePrimitive this.Type this.StringValidation value
+        writePrimitive this.Type this.Validation value
 
     member this.Reader (value : JsonElement) = 
-        readPrimitive this.Type this.StringValidation value
+        readPrimitive this.Type this.Validation value
 
 type UnionConversion = {
     Description : string option
@@ -449,10 +541,10 @@ type EnumConversion = {
         schema
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        writePrimitive this.Type StringValidation.None value
+        writePrimitive this.Type PrimitiveValidation.None value
 
     member this.Reader (value : JsonElement) = 
-        readPrimitive this.Type StringValidation.None value
+        readPrimitive this.Type PrimitiveValidation.None value
 
 type ConversionContext = {
     Type : Json.Schema.SchemaValueType option
@@ -1235,7 +1327,7 @@ let convertBoolSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversio
     {
         Type = PrimitiveType.Boolean
         Description = getDescription jsonSchema.Keywords
-        StringValidation = StringValidation.None
+        Validation = PrimitiveValidation.None
         Const = Choice1Of4 ()
     }
 
@@ -1246,7 +1338,10 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
         {
             Type = PrimitiveType.String
             Description = getDescription jsonSchema.Keywords
-            StringValidation = StringValidation.FromKeywords jsonSchema.Keywords
+            Validation = {
+                String = StringValidation.FromKeywords jsonSchema.Keywords
+                Numeric = NumericValidation.None
+            }
             Const = Choice1Of4 ()
         }
         |> TypeSpec.Primitive
@@ -1270,7 +1365,10 @@ let convertNumberSchema isInteger (jsonSchema : Json.Schema.JsonSchema) : Primit
     {
         Type = if isInteger then PrimitiveType.Integer else PrimitiveType.Number
         Description = getDescription jsonSchema.Keywords
-        StringValidation = StringValidation.None
+        Validation = {
+            String = StringValidation.None
+            Numeric = NumericValidation.FromKeywords jsonSchema.Keywords
+        }
         Const = Choice1Of4 ()
     }
 
@@ -1322,7 +1420,7 @@ let convertConst (root : RootInformation) path (schema : Json.Schema.JsonSchema)
         { 
             Description = getDescription schema.Keywords
             Type = typ
-            StringValidation = StringValidation.None
+            Validation = PrimitiveValidation.None
             Const = constant
         }
         |> TypeSpec.Primitive
