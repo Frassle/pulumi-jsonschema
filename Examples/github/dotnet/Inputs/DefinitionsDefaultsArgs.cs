@@ -10,14 +10,14 @@ using Pulumi.Serialization;
 namespace Pulumi.GithubWorkflow.Inputs
 {
 
-    public sealed class Definitions_defaultsArgs : global::Pulumi.ResourceArgs
+    public sealed class DefinitionsDefaultsArgs : global::Pulumi.ResourceArgs
     {
         [Input("run")]
-        public Input<Inputs.Definitions_defaults_runArgs>? Run { get; set; }
+        public Input<Inputs.DefinitionsDefaultsRunArgs>? Run { get; set; }
 
-        public Definitions_defaultsArgs()
+        public DefinitionsDefaultsArgs()
         {
         }
-        public static new Definitions_defaultsArgs Empty => new Definitions_defaultsArgs();
+        public static new DefinitionsDefaultsArgs Empty => new DefinitionsDefaultsArgs();
     }
 }

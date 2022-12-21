@@ -19,7 +19,7 @@ namespace Pulumi.GithubWorkflow.Inputs
         public object? Concurrency { get; set; }
 
         [Input("defaults")]
-        public Inputs.Definitions_defaults? Defaults { get; set; }
+        public Inputs.DefinitionsDefaults? Defaults { get; set; }
 
         /// <summary>
         /// default any for anyOf
@@ -51,8 +51,8 @@ namespace Pulumi.GithubWorkflow.Inputs
         /// <summary>
         /// The name for workflow runs generated from the workflow. GitHub displays the workflow run name in the list of workflow runs on your repository's 'Actions' tab.
         /// </summary>
-        [Input("run-name")]
-        public string? Run-name { get; set; }
+        [Input("runName")]
+        public string? RunName { get; set; }
 
         public Root()
         {

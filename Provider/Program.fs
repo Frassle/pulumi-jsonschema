@@ -39,6 +39,27 @@ let optionOfTry<'T> (tryResult : bool * 'T) : 'T option =
     | false, _ -> None
     | true, value -> Some value
 
+let cleanTextForName (text : string) : string =
+    // replace all "bad chars" with _, then do a snake case to camel case, then normalize
+    let text = text.Replace(" ", "_").Replace("-", "_").Trim('_')
+    let result = System.Text.StringBuilder()
+    let mutable case = false
+    let mutable first = true
+    for ch in text do 
+        if first then 
+            result.Append (string (System.Char.ToLower ch)) |> ignore
+            first <- false
+        else 
+            if ch = '_' then
+                case <- true
+            elif case then
+                result.Append (string (System.Char.ToUpper ch)) |> ignore
+                case <- false
+            else 
+                result.Append (string ch) |> ignore
+
+    result.ToString()
+
 [<RequireQualifiedAccess>]
 type PrimitiveType = Boolean | Integer | Number | String
 with 
@@ -520,7 +541,7 @@ and ObjectConversion = {
     Path : string list
     Title : string option
     Description : string option
-    Properties : Map<string, Conversion>
+    Properties : Map<string, string * Conversion>
     AdditionalProperties : Conversion option
     Required : Set<string>
 } with 
@@ -541,7 +562,8 @@ and ObjectConversion = {
         let propertiesSchema = JsonObject()
         schema.Add("properties", propertiesSchema)
         for kv in this.Properties do
-            propertiesSchema.Add(kv.Key, kv.Value.BuildPropertySpec packageName names)
+            let (_, prop) = kv.Value
+            propertiesSchema.Add(kv.Key, prop.BuildPropertySpec packageName names)
             
         match this.AdditionalProperties with 
         | None -> ()
@@ -575,11 +597,11 @@ and ObjectConversion = {
                 match this.AdditionalProperties with
                 | None -> 
                     match this.Properties.TryFind kv.Key with 
-                    | Some conversion ->
+                    | Some (jsonName, conversion) ->
                         let node = conversion.Writer kv.Value
                         match node with 
-                        | Some node -> [KeyValuePair.Create(kv.Key, node)] :> seq<_>
-                        | None -> [KeyValuePair.Create(kv.Key, null)]
+                        | Some node -> [KeyValuePair.Create(jsonName, node)] :> seq<_>
+                        | None -> [KeyValuePair.Create(jsonName, null)]
                     | None -> failwithf "unexpected property '%s'" kv.Key
                 | Some additionalProperties ->
                     if kv.Key = "additionalProperties" then
@@ -596,11 +618,11 @@ and ObjectConversion = {
                             )
                     else 
                         match this.Properties.TryFind kv.Key with 
-                        | Some conversion ->
+                        | Some (jsonName, conversion) ->
                             let node = conversion.Writer kv.Value
                             match node with 
-                            | Some node -> [KeyValuePair.Create(kv.Key, node)]
-                            | None -> [KeyValuePair.Create(kv.Key, null)]
+                            | Some node -> [KeyValuePair.Create(jsonName, node)]
+                            | None -> [KeyValuePair.Create(jsonName, null)]
                         | None -> failwithf "unexpected property '%s'" kv.Key
             )
             |> JsonObject
@@ -609,19 +631,26 @@ and ObjectConversion = {
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Object then            
+            let tryFindName (name : string) = 
+                this.Properties
+                |> Map.tryPick (fun pulumiName (jsonName, conversion) -> 
+                    if jsonName = name then Some (pulumiName, conversion)
+                    else None
+                )
+
             let properties, additionalProperties =
                 value.EnumerateObject()
                 |> Seq.fold (fun (propsSoFar, addPropsSoFar) kv ->
                     match this.AdditionalProperties with
                     | None -> 
-                        match this.Properties.TryFind kv.Name with 
-                        | Some conversion ->
-                            KeyValuePair.Create(kv.Name, conversion.Reader kv.Value) :: propsSoFar, []
+                        match tryFindName kv.Name with 
+                        | Some (pulumiName, conversion) ->
+                            KeyValuePair.Create(pulumiName, conversion.Reader kv.Value) :: propsSoFar, []
                         | None -> failwithf "unexpected property '%s'" kv.Name
                     | Some additionalProperties ->
-                        match this.Properties.TryFind kv.Name with
-                        | Some conversion ->
-                            KeyValuePair.Create(kv.Name, conversion.Reader kv.Value) :: propsSoFar, addPropsSoFar
+                        match tryFindName kv.Name with
+                        | Some (pulumiName, conversion) ->
+                            KeyValuePair.Create(pulumiName, conversion.Reader kv.Value) :: propsSoFar, addPropsSoFar
                         | None ->                         
                             propsSoFar, KeyValuePair.Create(kv.Name, additionalProperties.Reader kv.Value) :: addPropsSoFar
                 ) ([], [])
@@ -644,7 +673,8 @@ and ObjectConversion = {
         let complexTypes = 
             this.Properties
             |> Seq.fold (fun types kv -> 
-                kv.Value.CollectComplexTypes().Union(types)
+                let (_, prop) = kv.Value
+                prop.CollectComplexTypes().Union(types)
             ) ImmutableHashSet.Empty
         match this.AdditionalProperties with
         | None -> complexTypes
@@ -1228,6 +1258,23 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
         |> TypeSpec.Map
         |> Conversion.TypeSpec
     | Some props, aps ->
+        // We need to find unique Pulumified names for each property
+        let props =
+            Map.fold (fun (names, newProps) key value -> 
+                let pulumiName = 
+                    let name = cleanTextForName key
+                    if Set.contains name names |> not then 
+                        name
+                    else 
+                        let mutable index = 0
+                        while Set.contains (sprintf "%s%d" name index) names do
+                            index <- index + 1
+                        sprintf "%s%d" name index                
+
+                Set.add pulumiName names, Map.add pulumiName (key, value) newProps
+            ) (Set.empty, Map.empty) props
+            |> snd
+
         {
             Path = path
             Description = description
@@ -1402,10 +1449,6 @@ type RootConversion = {
     Reader : JsonElement ->  Pulumi.Provider.PropertyValue
 }
 
-let cleanTitleForTypeName (title : string) : string =
-    // Just remove any invalid chars for now
-    title.Replace(" ", "").Replace("-", "_")
-
 // Generate a full pulumi schema using the conversion as the function to generate
 let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     let schema = JsonObject()
@@ -1445,13 +1488,13 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         let name = 
             // If we have a title use that
             complexType.Title
-            |> Option.map cleanTitleForTypeName
+            |> Option.map cleanTextForName
             |> Option.defaultWith (fun () ->
                 // Else use the path of the type
                 complexType.Path
                 |> List.rev
                 |> String.concat "_"
-                |> cleanTitleForTypeName
+                |> cleanTextForName
             )
             // Default the empty string to "root"
             |> fun name -> if name = "" then "root" else name

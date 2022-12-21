@@ -27,7 +27,7 @@
         ],
         "properties": {
           "value": {
-            "$ref": "#/types/pulumi:index:PulumiPackageMetaschema"
+            "$ref": "#/types/pulumi:index:pulumiPackageMetaschema"
           }
         }
       }
@@ -40,7 +40,7 @@
         ],
         "properties": {
           "value": {
-            "$ref": "#/types/pulumi:index:PulumiPackageMetaschema"
+            "$ref": "#/types/pulumi:index:pulumiPackageMetaschema"
           }
         }
       },
@@ -57,69 +57,6 @@
     }
   },
   "types": {
-    "pulumi:index:ObjectTypeDetails": {
-      "type": "object",
-      "description": "Describes an object type",
-      "properties": {
-        "properties": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          },
-          "description": "A map from property name to propertySpec that describes the object\u0027s properties."
-        },
-        "required": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "A list of the names of an object type\u0027s required properties. These properties must be set for inputs and will always be set for outputs."
-        },
-        "additionalProperties": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          }
-        }
-      }
-    },
-    "pulumi:index:FunctionDefinition": {
-      "type": "object",
-      "description": "Describes a function.",
-      "properties": {
-        "deprecationMessage": {
-          "type": "string",
-          "description": "Indicates whether the function is deprecated"
-        },
-        "description": {
-          "type": "string",
-          "description": "The description of the function, if any. Interpreted as Markdown."
-        },
-        "inputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
-        },
-        "isOverlay": {
-          "type": "boolean",
-          "description": "Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author"
-        },
-        "language": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          },
-          "description": "Additional language-specific data about the function."
-        },
-        "outputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
-        },
-        "additionalProperties": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          }
-        }
-      }
-    },
     "pulumi:index:config": {
       "type": "object",
       "description": "The package\u0027s configuration variables.",
@@ -140,124 +77,14 @@
         }
       }
     },
-    "pulumi:index:meta": {
-      "type": "object",
-      "description": "Format metadata about this package.",
-      "required": [
-        "moduleFormat"
-      ],
-      "properties": {
-        "moduleFormat": {
-          "type": "string",
-          "description": "A regex that is used by the importer to extract a module name from the module portion of a type token. Packages that use the module format \u0022namespace1/namespace2/.../namespaceN\u0022 do not need to specify a format. The regex must define one capturing group that contains the module name, which must be formatted as \u0022namespace1/namespace2/...namespaceN\u0022."
-        }
-      }
-    },
-    "pulumi:index:PulumiPackageMetaschema": {
-      "type": "object",
-      "description": "A description of the schema for a Pulumi Package",
-      "required": [
-        "name"
-      ],
-      "properties": {
-        "attribution": {
-          "type": "string",
-          "description": "Freeform text attribution of derived work, if required."
-        },
-        "config": {
-          "$ref": "#/types/pulumi:index:config"
-        },
-        "description": {
-          "type": "string",
-          "description": "The description of the package. Descriptions are interpreted as Markdown."
-        },
-        "displayName": {
-          "type": "string",
-          "description": "The human-friendly name of the package."
-        },
-        "functions": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/types/pulumi:index:FunctionDefinition"
-          },
-          "description": "A map from token to functionSpec that describes the set of functions defined by this package."
-        },
-        "homepage": {
-          "type": "string",
-          "description": "The package\u0027s homepage."
-        },
-        "keywords": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "The list of keywords that are associated with the package, if any."
-        },
-        "language": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          },
-          "description": "Additional language-specific data about the package."
-        },
-        "license": {
-          "type": "string",
-          "description": "The name of the license used for the package\u0027s contents."
-        },
-        "logoUrl": {
-          "type": "string",
-          "description": "The URL of the package\u0027s logo, if any."
-        },
-        "meta": {
-          "$ref": "#/types/pulumi:index:meta"
-        },
-        "name": {
-          "type": "string",
-          "description": "The unqualified name of the package (e.g. \u0022aws\u0022, \u0022azure\u0022, \u0022gcp\u0022, \u0022kubernetes\u0022, \u0022random\u0022)"
-        },
-        "pluginDownloadURL": {
-          "type": "string",
-          "description": "The URL to use when downloading the provider plugin binary."
-        },
-        "provider": {
-          "$ref": "#/types/pulumi:index:ResourceDefinition"
-        },
-        "publisher": {
-          "type": "string",
-          "description": "The name of the person or organization that authored and published the package."
-        },
-        "repository": {
-          "type": "string",
-          "description": "The URL at which the package\u0027s sources can be found."
-        },
-        "resources": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/types/pulumi:index:ResourceDefinition"
-          },
-          "description": "A map from type token to resourceSpec that describes the set of resources and components defined by this package."
-        },
-        "types": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "pulumi.json#/Any"
-          },
-          "description": "A map from type token to complexTypeSpec that describes the set of complex types (i.e. object, enum) defined by this package."
-        },
-        "version": {
-          "type": "string",
-          "description": "The version of the package. The version must be valid semver."
-        }
-      }
-    },
-    "pulumi:index:ResourceDefinition": {
+    "pulumi:index:resourceDefinition": {
       "type": "object",
       "description": "Describes a resource or component.",
       "properties": {
         "aliases": {
           "type": "array",
           "items": {
-            "$ref": "#/types/pulumi:index:AliasDefinition"
+            "$ref": "#/types/pulumi:index:aliasDefinition"
           },
           "description": "The list of aliases for the resource."
         },
@@ -313,7 +140,7 @@
           "description": "A list of the names of the resource\u0027s required input properties."
         },
         "stateInputs": {
-          "$ref": "#/types/pulumi:index:ObjectTypeDetails"
+          "$ref": "#/types/pulumi:index:objectTypeDetails"
         },
         "additionalProperties": {
           "type": "object",
@@ -323,7 +150,7 @@
         }
       }
     },
-    "pulumi:index:AliasDefinition": {
+    "pulumi:index:aliasDefinition": {
       "type": "object",
       "properties": {
         "name": {
@@ -337,6 +164,179 @@
         "type": {
           "type": "string",
           "description": "The type portion of the alias, if any"
+        },
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          }
+        }
+      }
+    },
+    "pulumi:index:meta": {
+      "type": "object",
+      "description": "Format metadata about this package.",
+      "required": [
+        "moduleFormat"
+      ],
+      "properties": {
+        "moduleFormat": {
+          "type": "string",
+          "description": "A regex that is used by the importer to extract a module name from the module portion of a type token. Packages that use the module format \u0022namespace1/namespace2/.../namespaceN\u0022 do not need to specify a format. The regex must define one capturing group that contains the module name, which must be formatted as \u0022namespace1/namespace2/...namespaceN\u0022."
+        }
+      }
+    },
+    "pulumi:index:pulumiPackageMetaschema": {
+      "type": "object",
+      "description": "A description of the schema for a Pulumi Package",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "attribution": {
+          "type": "string",
+          "description": "Freeform text attribution of derived work, if required."
+        },
+        "config": {
+          "$ref": "#/types/pulumi:index:config"
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the package. Descriptions are interpreted as Markdown."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The human-friendly name of the package."
+        },
+        "functions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/types/pulumi:index:functionDefinition"
+          },
+          "description": "A map from token to functionSpec that describes the set of functions defined by this package."
+        },
+        "homepage": {
+          "type": "string",
+          "description": "The package\u0027s homepage."
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The list of keywords that are associated with the package, if any."
+        },
+        "language": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          },
+          "description": "Additional language-specific data about the package."
+        },
+        "license": {
+          "type": "string",
+          "description": "The name of the license used for the package\u0027s contents."
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "The URL of the package\u0027s logo, if any."
+        },
+        "meta": {
+          "$ref": "#/types/pulumi:index:meta"
+        },
+        "name": {
+          "type": "string",
+          "description": "The unqualified name of the package (e.g. \u0022aws\u0022, \u0022azure\u0022, \u0022gcp\u0022, \u0022kubernetes\u0022, \u0022random\u0022)"
+        },
+        "pluginDownloadURL": {
+          "type": "string",
+          "description": "The URL to use when downloading the provider plugin binary."
+        },
+        "provider": {
+          "$ref": "#/types/pulumi:index:resourceDefinition"
+        },
+        "publisher": {
+          "type": "string",
+          "description": "The name of the person or organization that authored and published the package."
+        },
+        "repository": {
+          "type": "string",
+          "description": "The URL at which the package\u0027s sources can be found."
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/types/pulumi:index:resourceDefinition"
+          },
+          "description": "A map from type token to resourceSpec that describes the set of resources and components defined by this package."
+        },
+        "types": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          },
+          "description": "A map from type token to complexTypeSpec that describes the set of complex types (i.e. object, enum) defined by this package."
+        },
+        "version": {
+          "type": "string",
+          "description": "The version of the package. The version must be valid semver."
+        }
+      }
+    },
+    "pulumi:index:functionDefinition": {
+      "type": "object",
+      "description": "Describes a function.",
+      "properties": {
+        "deprecationMessage": {
+          "type": "string",
+          "description": "Indicates whether the function is deprecated"
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the function, if any. Interpreted as Markdown."
+        },
+        "inputs": {
+          "$ref": "#/types/pulumi:index:objectTypeDetails"
+        },
+        "isOverlay": {
+          "type": "boolean",
+          "description": "Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author"
+        },
+        "language": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          },
+          "description": "Additional language-specific data about the function."
+        },
+        "outputs": {
+          "$ref": "#/types/pulumi:index:objectTypeDetails"
+        },
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          }
+        }
+      }
+    },
+    "pulumi:index:objectTypeDetails": {
+      "type": "object",
+      "description": "Describes an object type",
+      "properties": {
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          },
+          "description": "A map from property name to propertySpec that describes the object\u0027s properties."
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of the names of an object type\u0027s required properties. These properties must be set for inputs and will always be set for outputs."
         },
         "additionalProperties": {
           "type": "object",

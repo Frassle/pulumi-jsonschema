@@ -17,7 +17,7 @@ namespace Pulumi.GithubWorkflow.Outputs
         /// default any for anyOf
         /// </summary>
         public readonly object? Concurrency;
-        public readonly Outputs.Definitions_defaults? Defaults;
+        public readonly Outputs.DefinitionsDefaults? Defaults;
         /// <summary>
         /// default any for anyOf
         /// </summary>
@@ -38,13 +38,13 @@ namespace Pulumi.GithubWorkflow.Outputs
         /// <summary>
         /// The name for workflow runs generated from the workflow. GitHub displays the workflow run name in the list of workflow runs on your repository's 'Actions' tab.
         /// </summary>
-        public readonly string? Run-name;
+        public readonly string? RunName;
 
         [OutputConstructor]
         private Root(
             object? concurrency,
 
-            Outputs.Definitions_defaults? defaults,
+            Outputs.DefinitionsDefaults? defaults,
 
             object? env,
 
@@ -56,7 +56,7 @@ namespace Pulumi.GithubWorkflow.Outputs
 
             object? permissions,
 
-            string? run-name)
+            string? runName)
         {
             Concurrency = concurrency;
             Defaults = defaults;
@@ -65,7 +65,7 @@ namespace Pulumi.GithubWorkflow.Outputs
             Name = name;
             On = on;
             Permissions = permissions;
-            Run-name = run-name;
+            RunName = runName;
         }
     }
 }

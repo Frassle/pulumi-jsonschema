@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.GithubWorkflow.Inputs
 {
 
-    public sealed class Definitions_defaults_runArgs : global::Pulumi.ResourceArgs
+    public sealed class DefinitionsDefaultsRunArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// unhandled schema: Json.Schema.CommentKeyword, Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword
@@ -21,12 +21,12 @@ namespace Pulumi.GithubWorkflow.Inputs
         /// <summary>
         /// Using the working-directory keyword, you can specify the working directory of where to run the command.
         /// </summary>
-        [Input("working-directory")]
-        public Input<string>? Working-directory { get; set; }
+        [Input("workingDirectory")]
+        public Input<string>? WorkingDirectory { get; set; }
 
-        public Definitions_defaults_runArgs()
+        public DefinitionsDefaultsRunArgs()
         {
         }
-        public static new Definitions_defaults_runArgs Empty => new Definitions_defaults_runArgs();
+        public static new DefinitionsDefaultsRunArgs Empty => new DefinitionsDefaultsRunArgs();
     }
 }

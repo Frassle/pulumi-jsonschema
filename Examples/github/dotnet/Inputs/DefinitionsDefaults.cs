@@ -7,18 +7,17 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.GithubWorkflow.Outputs
+namespace Pulumi.GithubWorkflow.Inputs
 {
 
-    [OutputType]
-    public sealed class Definitions_defaults
+    public sealed class DefinitionsDefaults : global::Pulumi.InvokeArgs
     {
-        public readonly Outputs.Definitions_defaults_run? Run;
+        [Input("run")]
+        public Inputs.DefinitionsDefaultsRun? Run { get; set; }
 
-        [OutputConstructor]
-        private Definitions_defaults(Outputs.Definitions_defaults_run? run)
+        public DefinitionsDefaults()
         {
-            Run = run;
         }
+        public static new DefinitionsDefaults Empty => new DefinitionsDefaults();
     }
 }
