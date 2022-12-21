@@ -564,6 +564,50 @@ and [<RequireQualifiedAccess>] TypeSpec =
         | Map c -> c.CollectComplexTypes()
         | Union c -> ImmutableHashSet.Empty
 
+and DiscriminateUnionConversion = {
+    Path : string list
+    Title : string option
+    Description : string option
+    Choices : Conversion list
+} with 
+
+    member this.BuildComplexTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
+        let schema = JsonObject()
+        schema.Add("type", JsonValue.Create("object"))
+        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
+
+        let propertiesSchema = JsonObject()
+        schema.Add("properties", propertiesSchema)
+        this.Choices
+        |> Seq.iteri (fun i choice -> 
+            let name = sprintf "choice%dOf%d" (i+1) this.Choices.Length
+            propertiesSchema.Add(name, choice.BuildPropertySpec packageName names)
+        )
+
+        schema
+
+    member this.Writer (value : Pulumi.Provider.PropertyValue) =
+        let maybeObj = 
+            value.TryUnwrap ()
+            |> optionOfTry
+            |> Option.bind (fun v -> v.TryGetObject() |> optionOfTry)
+                
+        match maybeObj with 
+        | None -> failwithf "Invalid type expected object got %O" value.Type
+        | Some obj ->            
+            failwith "boom"
+
+    member this.Reader (value : JsonElement) =
+        if value.ValueKind = JsonValueKind.Object then           
+            failwith "boom"
+        else 
+            failwithf "Invalid JSON document expected object got %O" value.ValueKind
+
+    member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
+        this.Choices
+        |> Seq.fold (fun types choice -> choice.CollectComplexTypes().Union(types)
+        ) ImmutableHashSet.Empty
+
 and ObjectConversion = {
     Path : string list
     Title : string option
@@ -571,7 +615,6 @@ and ObjectConversion = {
     Properties : Map<string, string * Conversion>
     AdditionalProperties : Conversion option
     Required : Set<string>
-    Choices : Conversion list
 } with 
 
     member this.BuildComplexTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
@@ -602,7 +645,6 @@ and ObjectConversion = {
             let items, _ = aps.BuildTypeSpec packageName names
             additionalPropertiesSchema.Add("additionalProperties", items)
             propertiesSchema.Add("additionalProperties", additionalPropertiesSchema)
-
 
         schema
 
@@ -836,6 +878,7 @@ and TupleConversion = {
 and [<RequireQualifiedAccess>] ComplexTypeSpec =
     | Enum of EnumConversion
     | Object of ObjectConversion
+    | DU of DiscriminateUnionConversion
     | Tuple of TupleConversion
 
     member this.Path = 
@@ -843,36 +886,42 @@ and [<RequireQualifiedAccess>] ComplexTypeSpec =
         | ComplexTypeSpec.Enum spec -> spec.Path
         | ComplexTypeSpec.Object spec -> spec.Path
         | ComplexTypeSpec.Tuple spec -> spec.Path
+        | ComplexTypeSpec.DU spec -> spec.Path
     
     member this.Title = 
         match this with 
         | ComplexTypeSpec.Enum spec -> spec.Title
         | ComplexTypeSpec.Object spec -> spec.Title
         | ComplexTypeSpec.Tuple spec -> spec.Title
+        | ComplexTypeSpec.DU spec -> spec.Title
     
     member this.BuildComplexTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with 
         | ComplexTypeSpec.Enum spec -> spec.BuildComplexTypeSpec()
         | ComplexTypeSpec.Object spec -> spec.BuildComplexTypeSpec packageName names
         | ComplexTypeSpec.Tuple spec -> spec.BuildComplexTypeSpec packageName names
+        | ComplexTypeSpec.DU spec -> spec.BuildComplexTypeSpec packageName names
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) =
         match this with 
         | ComplexTypeSpec.Enum spec -> spec.Writer value
         | ComplexTypeSpec.Object spec -> spec.Writer value
         | ComplexTypeSpec.Tuple spec -> spec.Writer value
+        | ComplexTypeSpec.DU spec -> spec.Writer value
 
     member this.Reader (value : JsonElement) =
         match this with 
         | ComplexTypeSpec.Enum spec -> spec.Reader value
         | ComplexTypeSpec.Object spec -> spec.Reader value
         | ComplexTypeSpec.Tuple spec -> spec.Reader value
+        | ComplexTypeSpec.DU spec -> spec.Reader value
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         match this with 
         | ComplexTypeSpec.Enum _ -> ImmutableHashSet.Create(this)
         | ComplexTypeSpec.Object spec -> spec.CollectComplexTypes().Add(this)
         | ComplexTypeSpec.Tuple spec -> spec.CollectComplexTypes().Add(this)
+        | ComplexTypeSpec.DU spec -> spec.CollectComplexTypes().Add(this)
 
 and [<RequireQualifiedAccess>] Conversion =
     | Type of TypeSpec
@@ -1274,7 +1323,6 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
             Properties = Map.empty
             AdditionalProperties = None
             Required = required
-            Choices = []
         }
         |> ComplexTypeSpec.Object
         |> Conversion.ComplexType
@@ -1311,7 +1359,6 @@ and convertObjectSchema (root : RootInformation) path (jsonSchema : Json.Schema.
             Properties = props
             AdditionalProperties = aps
             Required = required
-            Choices = []
         }
         |> ComplexTypeSpec.Object
         |> Conversion.ComplexType
@@ -1420,12 +1467,9 @@ and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema)
             Path = path
             Title = getTitle schema.Keywords
             Description = getDescription schema.Keywords
-            AdditionalProperties = None
-            Properties = Map.empty
             Choices = List.choose id subConversions
-            Required = Set.empty
         }
-        |> ComplexTypeSpec.Object
+        |> ComplexTypeSpec.DU
         |> Conversion.ComplexType
         |> Some
 
