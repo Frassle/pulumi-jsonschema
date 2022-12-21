@@ -1008,6 +1008,17 @@ let readRef  (root : RootInformation) (ref : Json.Schema.RefKeyword) : Json.Sche
 //		throw new JsonSchemaException($"Cannot resolve schema `{newUri}`");
 //
     
+let handleKeyword<'T when 'T : not struct> func keywordsMap =
+    keywordsMap
+    |> Map.filter (fun _ list -> 
+        match list with 
+        | item :: _ when item.GetType() = typeof<'T> -> 
+            list 
+            |> Seq.cast<'T>
+            |> func
+            false
+        | _ -> true)
+
 let rec convertRef (root : RootInformation) path (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion option =
     // If this is a simple $ref by itself just convert the inner type    
     let simpleRef = 
@@ -1058,28 +1069,45 @@ let rec convertRef (root : RootInformation) path (schema : Json.Schema.JsonSchem
                 | _ -> true)
 
         // At this point allKeywords is made of keywords that are in multiple schemas
-    
-        // First find the "properties" keyword
         let allKeywords = 
             allKeywords
-            |> Map.filter (fun _ list -> 
-                match list with 
-                | (:? Json.Schema.PropertiesKeyword) :: _ -> 
-                    list 
-                    |> Seq.cast<Json.Schema.PropertiesKeyword>
-                    |> Seq.map (fun kw -> kw.Properties)
-                    |> Seq.fold (fun properties next ->
-                        next 
-                        |> Seq.fold (fun properties property -> 
-                            match Map.tryFind property.Key properties with 
-                            | None -> Map.add property.Key property.Value properties
-                            | Some _ -> failwith "Property key conflict in allOf"
-                        ) properties
-                    ) Map.empty
-                    |> fun properties -> 
-                        newSchema.Add(Json.Schema.PropertiesKeyword(properties))
-                    false
-                | _ -> true)
+
+            // First handle the "type" keyword, we can just union this
+            |> handleKeyword<Json.Schema.TypeKeyword> (fun kws ->
+                let types =
+                    kws
+                    |> Seq.map (fun kw -> kw.Type)
+                    |> Seq.fold (fun overall t -> overall ||| t) (enum<Json.Schema.SchemaValueType> 0)
+                newSchema.Add(Json.Schema.TypeKeyword(types))
+            )
+
+            // Next handle title and description, we just take these from the main schema ignoring the merged in ref
+            |> handleKeyword<Json.Schema.TitleKeyword> (fun _ ->
+                schema.Keywords 
+                |> pickKeyword<Json.Schema.TitleKeyword>
+                |> Option.iter newSchema.Add
+            )    
+            |> handleKeyword<Json.Schema.DescriptionKeyword> (fun _ ->
+                schema.Keywords 
+                |> pickKeyword<Json.Schema.DescriptionKeyword>
+                |> Option.iter newSchema.Add
+            )
+    
+            // Next find the "properties" keyword
+            |> handleKeyword<Json.Schema.PropertiesKeyword> (fun kws ->
+                    let props = 
+                        kws
+                        |> Seq.map (fun kw -> kw.Properties)
+                        |> Seq.fold (fun properties next ->
+                            next 
+                            |> Seq.fold (fun properties property -> 
+                                match Map.tryFind property.Key properties with 
+                                | None -> Map.add property.Key property.Value properties
+                                | Some _ -> failwith "Property key conflict in allOf"
+                            ) properties
+                        ) Map.empty
+                    newSchema.Add(Json.Schema.PropertiesKeyword(props))
+            )
 
         if allKeywords.Count <> 0 then
             sprintf "Needs more translation %O" allKeywords
@@ -1254,11 +1282,9 @@ and convertAllOf (root : RootInformation) (path : string list) (schema : Json.Sc
     // First find the "properties" keyword
     let allKeywords = 
         allKeywords
-        |> Map.filter (fun _ list -> 
-            match list with 
-            | (:? Json.Schema.PropertiesKeyword) :: _ -> 
-                list 
-                |> Seq.cast<Json.Schema.PropertiesKeyword>
+        |> handleKeyword<Json.Schema.PropertiesKeyword>(fun kws ->
+            let props = 
+                kws
                 |> Seq.map (fun kw -> kw.Properties)
                 |> Seq.fold (fun properties next ->
                     next 
@@ -1268,19 +1294,57 @@ and convertAllOf (root : RootInformation) (path : string list) (schema : Json.Sc
                         | Some _ -> failwith "Property key conflict in allOf"
                     ) properties
                 ) Map.empty
-                |> fun properties -> 
-                    newSchema.Add(Json.Schema.PropertiesKeyword(properties))
-                false
-            | _ -> true)
+            newSchema.Add(Json.Schema.PropertiesKeyword(props))
+        )
 
     if allKeywords.Count <> 0 then
         failwithf "Needs more translation %O" allKeywords
 
     convertSubSchema root path (newSchema.Build())
 
-and convertOneOf (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
+and convertOneOf (root : RootInformation) path (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion option =
+    // Check to see if all the oneOf schemas are _simple_ and we don't have any extra validation if so we can just make this a type union    
+    let simpleOneOf = 
+        schema.Keywords 
+        |> Seq.forall (fun kw ->
+            kw.Equals oneOf || not (isValidationKeyword kw)
+        )
+
+    let subConversions = 
+        oneOf.Schemas 
+        |> Seq.mapi (fun i subschema -> 
+            let path = sprintf "oneOf%d" i :: path
+            convertSubSchema root path subschema)
+
+    let simpleUnion = 
+        if not simpleOneOf then None 
+        else
+            subConversions 
+            |> Seq.fold (fun (overall : UnionConversion option) subconversion -> 
+                match overall with 
+                | None -> None
+                | Some overall ->
+                    match subconversion with 
+                    | None -> None
+                    | Some (Conversion.TypeSpec (TypeSpec.Primitive p)) ->
+                        if p.Type = PrimitiveType.Boolean then 
+                            Some { overall with BooleanConversion = Some p }
+                        elif p.Type = PrimitiveType.Number then 
+                            Some { overall with NumberConversion = Some p }
+                        elif p.Type = PrimitiveType.String then 
+                            Some { overall with StringConversion = Some p }
+                        else 
+                            None
+                    | _ -> None
+            ) (Some { Description = None; BooleanConversion = None; NumberConversion = None; StringConversion = None })
+
+    match simpleUnion with
+    | Some union -> union |> TypeSpec.Union |> Conversion.TypeSpec |> Some
+    | None ->   
+
     TypeSpec.Any (Some "default any for anyOf")
     |> Conversion.TypeSpec
+    |> Some
 
 and convertSubSchema (root : RootInformation) (path : string list) (schema : Json.Schema.JsonSchema) : Conversion option =
     match schema.BoolValue |> Option.ofNullable with
@@ -1306,7 +1370,7 @@ and convertSubSchema (root : RootInformation) (path : string list) (schema : Jso
         elif allOf.IsSome then
             convertAllOf root path schema allOf.Value
         elif oneOf.IsSome then
-            Some (convertOneOf schema oneOf.Value)
+            convertOneOf root path schema oneOf.Value
         elif isSimpleType Json.Schema.SchemaValueType.Null keywords then 
             convertNullSchema schema |> TypeSpec.Null |> Conversion.TypeSpec |> Some
         elif isSimpleType Json.Schema.SchemaValueType.Boolean keywords then 

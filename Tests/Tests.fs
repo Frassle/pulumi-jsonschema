@@ -858,4 +858,43 @@ let ``Test merged refs`` () =
 
     fromJson """{}"""
     |> conversion.Reader
-    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty) 
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    
+[<Fact>]
+let ``Test oneOf primitives`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "oneOf": [
+            { "type": "string" },
+            { "type": "number" }
+        ]
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
+    
+    conversion
+    |> conversionToJson    
+    |> shouldJsonEqual (simpleSchema """{"oneOf": [
+            {"type": "number"},
+            {"type": "string"}
+        ]
+    }""")
+
+    Pulumi.Provider.PropertyValue(45)
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual "45"
+
+    Pulumi.Provider.PropertyValue("hello")
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual "\"hello\""
+
+    fromJson "123"
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue 123)
+
+    fromJson "\"testing\""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue "testing")
+
+
