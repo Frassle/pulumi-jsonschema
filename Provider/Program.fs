@@ -132,7 +132,7 @@ type NullConversion = {
         else 
             errorf "Invalid JSON document expected null got %O" value.ValueKind
 
-let writePrimitive (typ : PrimitiveType) (value : Pulumi.Provider.PropertyValue) = 
+let writePrimitive (typ : PrimitiveType) pattern (value : Pulumi.Provider.PropertyValue) = 
     let rec getNode (value : Pulumi.Provider.PropertyValue) =
         match typ with 
         | PrimitiveType.Boolean ->
@@ -183,6 +183,12 @@ let writePrimitive (typ : PrimitiveType) (value : Pulumi.Provider.PropertyValue)
                 (fun _ -> raise "bool"),
                 (fun _ -> raise "number"),
                 (fun s -> 
+                    match pattern with 
+                    | None -> ()
+                    | Some pattern ->
+                        let re = System.Text.RegularExpressions.Regex(pattern)
+                        if re.IsMatch s |> not then failwith "The string value was not a match for the indicated regular expression"
+
                     JsonValue.Create(s) 
                     :> JsonNode
                     |> Some
@@ -198,7 +204,7 @@ let writePrimitive (typ : PrimitiveType) (value : Pulumi.Provider.PropertyValue)
             )
     getNode value
 
-let readPrimitive (typ: PrimitiveType) (value : JsonElement) =
+let readPrimitive (typ: PrimitiveType) pattern (value : JsonElement) =
     match typ with 
     | PrimitiveType.Boolean ->
         if value.ValueKind = JsonValueKind.True then
@@ -215,13 +221,23 @@ let readPrimitive (typ: PrimitiveType) (value : JsonElement) =
             errorf "Invalid JSON document expected number got %O" value.ValueKind
     | PrimitiveType.String ->
         if value.ValueKind = JsonValueKind.String then
-            Ok (Pulumi.Provider.PropertyValue(value.GetString()))
+            let str = value.GetString()
+            match pattern with 
+            | Some pattern ->
+                let re = System.Text.RegularExpressions.Regex(pattern)
+                if re.IsMatch str |> not then
+                    Error "The string value was not a match for the indicated regular expression"
+                else 
+                    Ok str
+            | None -> Ok str
+            |> Result.map Pulumi.Provider.PropertyValue
         else 
             errorf "Invalid JSON document expected number got %O" value.ValueKind
 
 type PrimitiveConversion = {
     Description : string option
     Type : PrimitiveType
+    Pattern : string option
 } with
     member this.BuildTypeSpec() = 
         let schema = JsonObject()
@@ -235,10 +251,10 @@ type PrimitiveConversion = {
         schema
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        writePrimitive this.Type value
+        writePrimitive this.Type this.Pattern value
 
     member this.Reader (value : JsonElement) = 
-        readPrimitive this.Type value
+        readPrimitive this.Type this.Pattern value
 
 type UnionConversion = {
     Description : string option
@@ -366,10 +382,10 @@ type EnumConversion = {
         schema
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        writePrimitive this.Type value
+        writePrimitive this.Type None value
 
     member this.Reader (value : JsonElement) = 
-        readPrimitive this.Type value
+        readPrimitive this.Type None value
                 
 type ArrayConversion = {
     Description : string option
@@ -659,13 +675,15 @@ and DiscriminateUnionConversion = {
 
     member this.Reader (value : JsonElement) =
         this.Choices
-        |> Seq.choose (fun choice ->
-            try 
-                Some (choice.Reader value)
-            with 
-            | _ -> None
+        |> List.mapi (fun i choice -> i, choice)
+        |> List.choose (fun (i, choice) ->
+            match choice.Reader value with 
+            | Ok v -> Some (KeyValuePair.Create(sprintf "choice%dOf%d" (i+1) this.Choices.Length, v))
+            | Error e -> None
         )
-        |> Seq.exactlyOne
+        |> function 
+           | [result] -> Ok (Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [result]))
+           | results -> errorf "Expected 1 matching subschema but found %d" results.Length
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         this.Choices
@@ -1082,12 +1100,17 @@ let isSimpleUnion (keywords : KeywordCollection) : bool =
         
 let getDescription keywords = 
     match pickKeyword<Json.Schema.DescriptionKeyword> keywords with 
-    | Some desc -> Some desc.Value
+    | Some kw -> Some kw.Value
     | None -> None
 
 let getTitle keywords = 
     match pickKeyword<Json.Schema.TitleKeyword> keywords with 
-    | Some title -> Some title.Value
+    | Some kw -> Some kw.Value
+    | None -> None
+
+let getPattern keywords = 
+    match pickKeyword<Json.Schema.PatternKeyword> keywords with 
+    | Some kw -> Some (kw.Value.ToString())
     | None -> None
 
 let convertNullSchema (jsonSchema : Json.Schema.JsonSchema) : NullConversion =
@@ -1099,6 +1122,7 @@ let convertBoolSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversio
     {
         Type = PrimitiveType.Boolean
         Description = getDescription jsonSchema.Keywords
+        Pattern = None
     }
 
 let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion =
@@ -1108,6 +1132,7 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
         {
             Type = PrimitiveType.String
             Description = getDescription jsonSchema.Keywords
+            Pattern = getPattern jsonSchema.Keywords
         }
         |> TypeSpec.Primitive
         |> Conversion.Type
@@ -1130,6 +1155,7 @@ let convertNumberSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConvers
     {
         Type = PrimitiveType.Number
         Description = getDescription jsonSchema.Keywords
+        Pattern = None
     }
 
 let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =

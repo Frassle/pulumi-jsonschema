@@ -1111,7 +1111,9 @@ let ``Test string pattern with oneOf`` () =
     ]))
 
     let exc = Assert.Throws<exn>(fun () ->
-        Pulumi.Provider.PropertyValue("hello")
+        Pulumi.Provider.PropertyValue( listToDict [
+            "choice2Of2", Pulumi.Provider.PropertyValue("hello")
+        ])
         |> conversion.Writer
         |> ignore)
     exc.Message |> shouldEqual "The string value was not a match for the indicated regular expression"
@@ -1120,4 +1122,4 @@ let ``Test string pattern with oneOf`` () =
         fromJson "\"bob\""
         |> conversion.Reader
         |> ignore)
-    exc.Message |> shouldEqual "The string value was not a match for the indicated regular expression"
+    exc.Message |> shouldEqual "Expected 1 matching subschema but found 0"
