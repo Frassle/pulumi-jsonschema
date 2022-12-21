@@ -451,13 +451,29 @@ and [<RequireQualifiedAccess>] TypeSpec =
         match this with 
         | Any _ -> 
             let rec getValue (value : Pulumi.Provider.PropertyValue) =
-                value.Match(
+                value.Match<JsonNode option>(
                     (fun () -> None),
-                    (fun b -> JsonValue.Create(b) :> JsonNode |> Option.ofObj),
-                    (fun n -> JsonValue.Create(n) :> JsonNode |> Option.ofObj),
-                    (fun s -> JsonValue.Create(s) :> JsonNode |> Option.ofObj),
-                    (fun a -> failwith "not implemented"),
-                    (fun o -> failwith "not implemented"),
+                    (fun b -> JsonValue.Create(b) :> JsonNode |> Some),
+                    (fun n -> JsonValue.Create(n) :> JsonNode |> Some),
+                    (fun s -> JsonValue.Create(s) :> JsonNode |> Some),
+                    (fun a -> 
+                        a
+                        |> Seq.map (fun i -> getValue i |> Option.toObj)
+                        |> Seq.toArray
+                        |> JsonArray
+                        :> JsonNode
+                        |> Some
+                    ),
+                    (fun o -> 
+                        o
+                        |> Seq.map (fun kv -> 
+                            KeyValuePair.Create(kv.Key, getValue kv.Value |> Option.toObj)
+                        )
+                        |> Seq.toArray
+                        |> JsonObject
+                        :> JsonNode
+                        |> Some
+                    ),
                     (fun _ -> failwith "not implemented"),
                     (fun _ -> failwith "not implemented"),
                     (fun secret -> getValue secret),

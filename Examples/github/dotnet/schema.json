@@ -65,6 +65,11 @@
         }
       }
     },
+    "github-workflow:index:jobs": {
+      "type": "object",
+      "description": "A workflow run is made up of one or more jobs. Jobs run in parallel by default. To run jobs sequentially, you can define dependencies on other jobs using the jobs.\u003Cjob_id\u003E.needs keyword.\nEach job runs in a fresh instance of the virtual environment specified by runs-on.\nYou can run an unlimited number of jobs as long as you are within the workflow usage limits. For more information, see https://help.github.com/en/github/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#usage-limits.",
+      "properties": {}
+    },
     "github-workflow:index:definitions_defaults_run": {
       "type": "object",
       "properties": {
@@ -116,11 +121,6 @@
           "description": "The name for workflow runs generated from the workflow. GitHub displays the workflow run name in the list of workflow runs on your repository\u0027s \u0027Actions\u0027 tab."
         }
       }
-    },
-    "github-workflow:index:jobs": {
-      "type": "object",
-      "description": "A workflow run is made up of one or more jobs. Jobs run in parallel by default. To run jobs sequentially, you can define dependencies on other jobs using the jobs.\u003Cjob_id\u003E.needs keyword.\nEach job runs in a fresh instance of the virtual environment specified by runs-on.\nYou can run an unlimited number of jobs as long as you are within the workflow usage limits. For more information, see https://help.github.com/en/github/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#usage-limits.",
-      "properties": {}
     }
   }
 }

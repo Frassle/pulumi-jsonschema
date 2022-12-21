@@ -345,6 +345,38 @@ let ``Test array`` () =
         Pulumi.Provider.PropertyValue("foo")
         Pulumi.Provider.PropertyValue("bar")
     ]))
+    
+[<Fact>]
+let ``Test tuple`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "array",
+        "prefixItems": [
+            { "type": "string" }
+            { "type": "number" }
+        ],
+        "items": false
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (simpleSchema """{"type":"array","items":{"type":"string"}}""")
+    
+    Pulumi.Provider.PropertyValue(ImmutableArray.CreateRange [
+        Pulumi.Provider.PropertyValue("a");
+        Pulumi.Provider.PropertyValue("b");
+    ])
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """["a","b"]"""
+
+    fromJson """["foo","bar"]"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue (ImmutableArray.CreateRange [
+        Pulumi.Provider.PropertyValue("foo")
+        Pulumi.Provider.PropertyValue("bar")
+    ]))
 
 [<Fact>]
 let ``Test empty object`` () =
@@ -762,4 +794,58 @@ let ``Test allOf`` () =
 
     fromJson """{}"""
     |> conversion.Reader
-    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)    
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)  
+    
+[<Fact>]
+let ``Test merged refs`` () =
+    let schema = System.Text.Json.JsonDocument.Parse """{
+        "type": "object",
+        "properties": {              
+            "$ref": "#/$defs/basicType",
+            "properties": {
+                "extra": { "type": "number" }
+            }
+        },
+        "$defs": {
+            "basicType": { 
+                "properties": {
+                    "basic": { "type": "number" }
+                }
+            }
+        }
+    }"""
+    let conversion = Provider.convertSchema testBaseUri schema.RootElement
+    testRoundTrip schema.RootElement conversion
+    
+    conversion
+    |> conversionToJson
+    |> shouldJsonEqual (complexSchema ["schema:index:root", """{
+        "type":"object",
+        "properties":{
+            "extra":{"type":"number"}
+            "basic":{"type":"number"}
+        }
+    }"""])
+    
+    Pulumi.Provider.PropertyValue(listToDict [
+        "foo", Pulumi.Provider.PropertyValue(123)
+    ])
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """{"foo":123}"""
+    
+    // Properties are optional by default
+    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    |> conversion.Writer
+    |> toJson
+    |> shouldJsonEqual """{}"""
+
+    fromJson """{"foo":456.789}"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue (listToDict [
+        "foo", Pulumi.Provider.PropertyValue(456.789)
+    ]))
+
+    fromJson """{}"""
+    |> conversion.Reader
+    |> shouldEqual (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty) 
