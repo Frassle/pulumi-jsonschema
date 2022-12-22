@@ -75,12 +75,6 @@ let shouldJsonEqual (expected : string) (actual : string) : unit =
     let actualJson = fromJson actual
     Assert.Equal(expectedJson, actualJson, JsonComparer())
 
-let conversionToJson (conversion : Provider.RootConversion) : string =
-    conversion.Schema
-    :> Nodes.JsonNode
-    |> Some
-    |> toJson
-
 let baseUri = Uri("https://github.com/Frassle/pulumi-jsonschema/schema.json")
 
 // Fills in the standard fields for the Pulumi schema
@@ -167,19 +161,75 @@ let dictToProperty (list : (string * Pulumi.Provider.PropertyValue) list) =
 let listToProperty (list : Pulumi.Provider.PropertyValue list) =
     list |> ImmutableArray.CreateRange |> Pulumi.Provider.PropertyValue
 
-let roundTrip (schema : System.Text.Json.JsonElement) (conversion : Provider.RootConversion) =
-    // Use Json.Schema.Data to generate some json, check we can read and write it
-    let jsonSchema = Json.Schema.JsonSchema.FromText (schema.GetRawText())
-    let data = Json.Schema.DataGeneration.JsonSchemaExtensions.GenerateData(jsonSchema)
-    if not data.IsSuccess then
-        failwithf "Could not generate JSON data: %s" data.ErrorMessage
+type SchemaTest = {
+    Schema : Json.Schema.JsonSchema
+    Conversion : Provider.RootConversion
+} with 
 
-    let element = data.Result.Deserialize<System.Text.Json.JsonElement>()
+    member this.ShouldWrite (expectedJson : string) (value : Pulumi.Provider.PropertyValue) : unit =
+        let result = this.Conversion.Writer value
+
+        result
+        |> toJson
+        |> shouldJsonEqual expectedJson
     
-    let dom = conversion.Reader element
-    let rt = conversion.Writer dom
+        let validationOptions = Json.Schema.ValidationOptions()
+        validationOptions.OutputFormat <- Json.Schema.OutputFormat.Basic
+        let validation = this.Schema.Validate(Option.toObj result, validationOptions)
+        if not validation.IsValid then 
+            failwith validation.Message
+
+    member this.ShouldRead (expectedValue : Pulumi.Provider.PropertyValue) (json : string) : unit =
+        let validationOptions = Json.Schema.ValidationOptions()
+        validationOptions.OutputFormat <- Json.Schema.OutputFormat.Basic
     
-    match rt with 
-    | None -> "null"
-    | Some rt -> rt.ToJsonString()
-    |> shouldJsonEqual (element.GetRawText())
+        let element = fromJson json
+        let node = Json.More.JsonElementExtensions.AsNode(element)
+        let validation = this.Schema.Validate(node, validationOptions)
+        if not validation.IsValid then 
+            failwith validation.Message
+
+        this.Conversion.Reader element 
+        |> shouldEqual expectedValue
+        
+    member this.ShouldThrow<'T when 'T :> exn>(value : Pulumi.Provider.PropertyValue) : 'T =
+        Assert.Throws<'T>(fun () ->
+            this.Conversion.Writer value
+            |> ignore)
+        
+    member this.ShouldThrow<'T when 'T :> exn>(json : string) : 'T =
+        Assert.Throws<'T>(fun () ->
+            fromJson json
+            |> this.Conversion.Reader 
+            |> ignore)
+
+    member this.RoundTrip () =
+        // Use Json.Schema.Data to generate some json, check we can read and write it
+        let data = Json.Schema.DataGeneration.JsonSchemaExtensions.GenerateData(this.Schema)
+        if not data.IsSuccess then
+            failwithf "Could not generate JSON data: %s" data.ErrorMessage
+
+        let element = data.Result.Deserialize<System.Text.Json.JsonElement>()
+    
+        let dom = this.Conversion.Reader element
+        let rt = this.Conversion.Writer dom
+    
+        match rt with 
+        | None -> "null"
+        | Some rt -> rt.ToJsonString()
+        |> shouldJsonEqual (element.GetRawText())
+
+    member this.ShouldEqual (pulumiSchema : string) =    
+        this.Conversion.Schema
+        :> Nodes.JsonNode
+        |> Some
+        |> toJson
+        |> shouldJsonEqual pulumiSchema
+
+let convertSchema (schema: string) =
+    let json = System.Text.Json.JsonDocument.Parse schema
+    let schema = Json.Schema.JsonSchema.FromText schema
+    {
+        Schema = schema
+        Conversion = Provider.convertSchema baseUri json.RootElement
+    }

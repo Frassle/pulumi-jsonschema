@@ -4,7 +4,7 @@ open Xunit
     
 [<Fact>]
 let ``Test tuple`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
+    let t = Test.convertSchema """{
         "type": "array",
         "prefixItems": [
             { "type": "string" },
@@ -12,12 +12,9 @@ let ``Test tuple`` () =
         ],
         "items": false
     }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
-    Test.roundTrip schema.RootElement conversion
+    t.RoundTrip()
     
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.complexSchema ["schema:index:root", """{
+    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{
         "type":"object",
         "properties":{
             "item1" : { "type":"string" },
@@ -29,20 +26,17 @@ let ``Test tuple`` () =
         "item1", Pulumi.Provider.PropertyValue("a")
         "item2", Pulumi.Provider.PropertyValue(123)
     ]
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual """["a",123]"""
+    |> t.ShouldWrite """["a",123]"""
 
-    Test.fromJson """["foo",-345]"""
-    |> conversion.Reader
-    |> Test.shouldEqual (Test.dictToProperty [
+    """["foo",-345]"""
+    |> t.ShouldRead (Test.dictToProperty [
         "item1", Pulumi.Provider.PropertyValue("foo")
         "item2", Pulumi.Provider.PropertyValue(-345)
     ])
     
 [<Fact>]
 let ``Test tuple additionalItems`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
+    let t = Test.convertSchema """{
         "type": "array",
         "prefixItems": [
             { "type": "string" },
@@ -50,11 +44,8 @@ let ``Test tuple additionalItems`` () =
         ],
         "items": { "type": "boolean" }
     }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
     
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.complexSchema [
+    t.ShouldEqual (Test.complexSchema [
         "schema:index:root", """{
             "type": "object",
             "properties": {
@@ -73,9 +64,8 @@ let ``Test tuple additionalItems`` () =
             }
         }"""])
 
-    Test.fromJson """["hello", 45, true, false]"""
-    |> conversion.Reader
-    |> Test.shouldEqual (Test.dictToProperty [
+    """["hello", 45, true, false]"""
+    |> t.ShouldRead (Test.dictToProperty [
         "item1", Pulumi.Provider.PropertyValue("hello")
         "item2", Pulumi.Provider.PropertyValue(45)
         "rest", Test.listToProperty [
@@ -88,35 +78,29 @@ let ``Test tuple additionalItems`` () =
         "item1", Pulumi.Provider.PropertyValue("goodbye")
         "item2", Pulumi.Provider.PropertyValue(47)
     ]
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual """["goodbye", 47]"""
+    |> t.ShouldWrite """["goodbye", 47]"""
 
-    let exc = Assert.Throws<exn>(fun () ->
-        Test.fromJson """[false]"""
-        |> conversion.Reader
-        |> ignore)
+    let exc = 
+        """[false]"""
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"boolean\" but should be \"string\""
 
-    let exc = Assert.Throws<exn>(fun () ->
-        Test.fromJson """[1.5]"""
-        |> conversion.Reader
-        |> ignore)
+    let exc = 
+        """[1.5]"""
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"number\" but should be \"string\""
     
-    let exc = Assert.Throws<exn>(fun () ->
+    let exc = 
         Test.dictToProperty [
             "item1", Pulumi.Provider.PropertyValue(2)
         ]
-        |> conversion.Writer
-        |> ignore)
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"string\""
     
-    let exc = Assert.Throws<exn>(fun () ->
+    let exc = 
         Test.dictToProperty [
             "item1", Pulumi.Provider.PropertyValue(1)
             "item2", Pulumi.Provider.PropertyValue(2)
         ]
-        |> conversion.Writer
-        |> ignore)
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"string\""

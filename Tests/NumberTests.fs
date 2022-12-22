@@ -4,112 +4,86 @@ open Xunit
 
 [<Fact>]
 let ``Test number`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
+    let t = Test.convertSchema """{
         "type": "number" 
     }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
-    Test.roundTrip schema.RootElement conversion
-    
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.simpleSchema """{"type":"number"}""")
+    t.RoundTrip()
+
+    t.ShouldEqual (Test.simpleSchema """{"type":"number"}""")
 
     Pulumi.Provider.PropertyValue(14.512)
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual "14.512"
+    |> t.ShouldWrite "14.512"
 
-    Test.fromJson "53.42"
-    |> conversion.Reader
-    |> Test.shouldEqual (Pulumi.Provider.PropertyValue 53.42)
+    "53.42"
+    |> t.ShouldRead (Pulumi.Provider.PropertyValue 53.42)
 
-    let exc = Assert.Throws<exn>(fun () ->
+    let exc = 
         Pulumi.Provider.PropertyValue("foo")
-        |> conversion.Writer
-        |> ignore)
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"string\" but should be \"number\""
 
-    let exc = Assert.Throws<exn>(fun () ->
-        Test.fromJson "true"
-        |> conversion.Reader
-        |> ignore)
+    let exc = 
+        "true"
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"boolean\" but should be \"number\""
 
     
 [<Fact>]
 let ``Test integer`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
+    let t = Test.convertSchema """{
         "type": "integer" 
     }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
-    Test.roundTrip schema.RootElement conversion
+    t.RoundTrip()
     
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.simpleSchema """{"type":"integer"}""")
+    t.ShouldEqual (Test.simpleSchema """{"type":"integer"}""")
 
     Pulumi.Provider.PropertyValue(14)
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual "14"
+    |> t.ShouldWrite "14"
 
-    Test.fromJson "52"
-    |> conversion.Reader
-    |> Test.shouldEqual (Pulumi.Provider.PropertyValue 52)
+    "52"
+    |> t.ShouldRead (Pulumi.Provider.PropertyValue 52)
 
-    let exc = Assert.Throws<exn>(fun () ->
+    let exc = 
         Pulumi.Provider.PropertyValue(123.56)
-        |> conversion.Writer
-        |> ignore)
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"number\" but should be \"integer\""
 
-    let exc = Assert.Throws<exn>(fun () ->
-        Test.fromJson "123.56"
-        |> conversion.Reader
-        |> ignore)
+    let exc = 
+        "123.56"
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"number\" but should be \"integer\""
 
-    let exc = Assert.Throws<exn>(fun () ->
+    let exc = 
         Pulumi.Provider.PropertyValue("foo")
-        |> conversion.Writer
-        |> ignore)
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"string\" but should be \"integer\""
 
-    let exc = Assert.Throws<exn>(fun () ->
-        Test.fromJson "true"
-        |> conversion.Reader
-        |> ignore)
+    let exc =
+        "true"
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"boolean\" but should be \"integer\""
 
 [<Fact>]
 let ``Test integer multipleOf`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
+    let t = Test.convertSchema """{
         "type": "integer",
         "multipleOf": 4
     }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
     
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.simpleSchema """{"type":"integer"}""")
+    t.ShouldEqual (Test.simpleSchema """{"type":"integer"}""")
 
     Pulumi.Provider.PropertyValue(8)
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual "8"
+    |> t.ShouldWrite "8"
 
-    Test.fromJson "16"
-    |> conversion.Reader
-    |> Test.shouldEqual (Pulumi.Provider.PropertyValue 16)
+    "16"
+    |> t.ShouldRead (Pulumi.Provider.PropertyValue 16)
 
-    let exc = Assert.Throws<exn>(fun () ->
-        Test.fromJson "2"
-        |> conversion.Reader
-        |> ignore)
+    let exc = 
+        "2"
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "2 is not a multiple of 4"
 
-    let exc = Assert.Throws<exn>(fun () ->
+    let exc = 
         Pulumi.Provider.PropertyValue(3)
-        |> conversion.Writer
-        |> ignore)
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "3 is not a multiple of 4"

@@ -4,134 +4,102 @@ open Xunit
 
 [<Fact>]
 let ``Test plain string`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
+    let t = Test.convertSchema """{
         "type": "string" 
     }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
-    Test.roundTrip schema.RootElement conversion
+    t.RoundTrip()
     
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.simpleSchema """{"type":"string"}""")
+    t.ShouldEqual (Test.simpleSchema """{"type":"string"}""")
 
     Pulumi.Provider.PropertyValue("test")
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual "\"test\""
+    |> t.ShouldWrite "\"test\""
 
-    Test.fromJson "\"test\""
-    |> conversion.Reader
-    |> Test.shouldEqual (Pulumi.Provider.PropertyValue "test")
+    "\"test\""
+    |> t.ShouldRead (Pulumi.Provider.PropertyValue "test")
     
-    let exc = Assert.Throws<exn>(fun () ->
+    let exc = 
         Pulumi.Provider.PropertyValue(45)
-        |> conversion.Writer
-        |> ignore)
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"string\""
 
-    let exc = Assert.Throws<exn>(fun () ->
-        Test.fromJson "44"
-        |> conversion.Reader
-        |> ignore)
+    let exc = 
+        "44"
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"string\""
 
 [<Fact>]
 let ``Test string pattern`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
+    let t = Test.convertSchema """{
         "type": "string",
         "pattern": "^\\d+$"
     }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
     
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.simpleSchema """{"type":"string"}""")
+    t.ShouldEqual (Test.simpleSchema """{"type":"string"}""")
 
     Pulumi.Provider.PropertyValue("123")
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual "\"123\""
+    |> t.ShouldWrite "\"123\""
 
-    Test.fromJson "\"456\""
-    |> conversion.Reader
-    |> Test.shouldEqual (Pulumi.Provider.PropertyValue "456")
+    "\"456\""
+    |> t.ShouldRead (Pulumi.Provider.PropertyValue "456")
 
-    let exc = Assert.Throws<exn>(fun () ->
+    let exc = 
         Pulumi.Provider.PropertyValue("hello")
-        |> conversion.Writer
-        |> ignore)
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "The string value was not a match for the indicated regular expression"
     
-    let exc = Assert.Throws<exn>(fun () ->
-        Test.fromJson "\"bob\""
-        |> conversion.Reader
-        |> ignore)
+    let exc = 
+        "\"bob\""
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "The string value was not a match for the indicated regular expression"
 
     
 [<Fact>]
 let ``Test string minLength`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
+    let t = Test.convertSchema """{
         "type": "string",
         "minLength": 4
     }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
     
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.simpleSchema """{"type":"string"}""")
+    t.ShouldEqual (Test.simpleSchema """{"type":"string"}""")
 
     Pulumi.Provider.PropertyValue("1234")
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual "\"1234\""
+    |> t.ShouldWrite "\"1234\""
 
-    Test.fromJson "\"4567\""
-    |> conversion.Reader
-    |> Test.shouldEqual (Pulumi.Provider.PropertyValue "4567")
+    "\"4567\""
+    |> t.ShouldRead (Pulumi.Provider.PropertyValue "4567")
 
-    let exc = Assert.Throws<exn>(fun () ->
+    let exc = 
         Pulumi.Provider.PropertyValue("hi")
-        |> conversion.Writer
-        |> ignore)
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is not longer than or equal to 4 characters"
     
-    let exc = Assert.Throws<exn>(fun () ->
-        Test.fromJson "\"bob\""
-        |> conversion.Reader
-        |> ignore)
+    let exc = 
+        "\"bob\""
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is not longer than or equal to 4 characters"
 
     
 [<Fact>]
 let ``Test string maxLength`` () =
-    let schema = System.Text.Json.JsonDocument.Parse """{
+    let t = Test.convertSchema """{
         "type": "string",
         "maxLength": 6
     }"""
-    let conversion = Provider.convertSchema Test.baseUri schema.RootElement
     
-    conversion
-    |> Test.conversionToJson
-    |> Test.shouldJsonEqual (Test.simpleSchema """{"type":"string"}""")
+    t.ShouldEqual (Test.simpleSchema """{"type":"string"}""")
 
     Pulumi.Provider.PropertyValue("hello")
-    |> conversion.Writer
-    |> Test.toJson
-    |> Test.shouldJsonEqual "\"hello\""
+    |> t.ShouldWrite "\"hello\""
 
-    Test.fromJson "\"world\""
-    |> conversion.Reader
-    |> Test.shouldEqual (Pulumi.Provider.PropertyValue "world")
+    "\"world\""
+    |> t.ShouldRead (Pulumi.Provider.PropertyValue "world")
 
-    let exc = Assert.Throws<exn>(fun () ->
+    let exc = 
         Pulumi.Provider.PropertyValue("goodbye")
-        |> conversion.Writer
-        |> ignore)
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is not shorter than or equal to 6 characters"
     
-    let exc = Assert.Throws<exn>(fun () ->
-        Test.fromJson "\"au revoir\""
-        |> conversion.Reader
-        |> ignore)
+    let exc = 
+        "\"au revoir\""
+        |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is not shorter than or equal to 6 characters"
