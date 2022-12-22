@@ -936,7 +936,12 @@ and ObjectConversion = {
     Title : string option
     Description : string option
     Properties : Map<string, string * Conversion>
-    AdditionalProperties : Conversion option
+    // There are three states for AdditionalProperties:
+    // 1. Explictly set to a scheam
+    // 2. Unset but should be added as an object property
+    // 3. Unset and so should pass validation, but shouldn't be added as a property
+    // Mode 3 is so we can have nested objects without having additionalProperties on all of them
+    AdditionalProperties : Choice<unit, Conversion option>
     Choices : Conversion list
     Required : Set<string>
 } with 
@@ -962,8 +967,9 @@ and ObjectConversion = {
                 propertiesSchema.Add(kv.Key, prop.BuildPropertySpec packageName names)
             
         match this.AdditionalProperties with 
-        | Some aps when aps.IsFalseSchema -> ()
-        | aps ->
+        | Choice1Of2 () -> ()
+        | Choice2Of2 (Some aps) when aps.IsFalseSchema -> ()
+        | Choice2Of2 aps ->
             let aps = Option.defaultValue Conversion.True aps 
 
             // additionalProperties is always just a map
@@ -995,7 +1001,10 @@ and ObjectConversion = {
                 if not (obj.ContainsKey key) then
                     failwithf "property '%s' is required" key
                     
-            let additionalProperties = Option.defaultValue Conversion.True this.AdditionalProperties
+            let additionalProperties = 
+                match this.AdditionalProperties with 
+                | Choice1Of2 () -> Conversion.True
+                | Choice2Of2 aps -> Option.defaultValue Conversion.True aps
 
             obj
             |> Seq.collect (fun kv ->
@@ -1062,8 +1071,11 @@ and ObjectConversion = {
                        | [result] -> Ok result
                        | results -> errorf "Expected 1 matching subschema but found %d" results.Length
                     |> Some
-
-            let additionalProperties = Option.defaultValue Conversion.True this.AdditionalProperties
+                    
+            let additionalProperties, addProperty = 
+                match this.AdditionalProperties with 
+                | Choice1Of2 () -> Conversion.True, false
+                | Choice2Of2 aps -> Option.defaultValue Conversion.True aps, true
 
             let propertiesAdditionalProperties =
                 obj
@@ -1088,9 +1100,10 @@ and ObjectConversion = {
 
             // If we have any additionalProperties add them to the properties
             let properties = 
-                match additionalProperties with
-                | [] -> properties
-                | additionalProperties ->
+                match additionalProperties, addProperty with
+                | [], _ 
+                | _, false -> properties
+                | additionalProperties, true ->
                     let arr = Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange additionalProperties)
                     KeyValuePair.Create("additionalProperties", arr) :: properties
             
@@ -1117,8 +1130,8 @@ and ObjectConversion = {
             ) ImmutableHashSet.Empty
         let additionalTypes =
             match this.AdditionalProperties with
-            | None -> complexTypes
-            | Some aps -> aps.CollectComplexTypes().Union(complexTypes)
+            | Choice2Of2 (Some aps) -> aps.CollectComplexTypes().Union(complexTypes)
+            | _ -> complexTypes
             
         this.Choices
         |> Seq.fold (fun types kv ->
@@ -1777,7 +1790,7 @@ and convertObjectSchema (root : RootInformation) path (context : ConversionConte
             Description = description
             Title = title
             Properties = Map.empty
-            AdditionalProperties = None
+            AdditionalProperties = if context.AdditionalProperties then Choice2Of2 None else Choice1Of2 ()
             Required = required
             Choices = []
         }
@@ -1808,6 +1821,12 @@ and convertObjectSchema (root : RootInformation) path (context : ConversionConte
                 Set.add pulumiName names, Map.add pulumiName (key, value) newProps
             ) (Set.empty, Map.empty) props
             |> snd
+
+        let aps = 
+            match context.AdditionalProperties, aps with
+            | true, aps -> Choice2Of2 aps
+            | false, Some aps -> Choice2Of2 (Some aps)
+            | false, None -> Choice1Of2 ()
 
         {
             Path = path
