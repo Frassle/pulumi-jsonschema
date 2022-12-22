@@ -411,6 +411,83 @@ let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (valu
         else 
             errorf "Value is \"%s\" but should be \"string\"" valueTyp
 
+let rec writeAny (validation : PrimitiveValidation) (value : Pulumi.Provider.PropertyValue) =
+    value.Match<JsonNode option>(
+        (fun () -> None),
+        (fun b -> JsonValue.Create(b) :> JsonNode |> Some),
+        (fun n -> 
+            match validation.Numeric.Validate (decimal n) with
+            | Some err -> failwith err
+            | None -> ()
+            JsonValue.Create(n) :> JsonNode |> Some),
+        (fun s ->
+            match validation.String.Validate s with
+            | Some err -> failwith err
+            | None -> ()
+            JsonValue.Create(s) :> JsonNode |> Some),
+        (fun a -> 
+            a
+            |> Seq.map (fun i -> writeAny PrimitiveValidation.None i |> Option.toObj)
+            |> Seq.toArray
+            |> JsonArray
+            :> JsonNode
+            |> Some
+        ),
+        (fun o -> 
+            o
+            |> Seq.map (fun kv -> 
+                KeyValuePair.Create(kv.Key, writeAny PrimitiveValidation.None kv.Value |> Option.toObj)
+            )
+            |> Seq.toArray
+            |> JsonObject
+            :> JsonNode
+            |> Some
+        ),
+        (fun _ -> failwith "not implemented"),
+        (fun _ -> failwith "not implemented"),
+        (fun secret -> writeAny validation secret),
+        (fun _ -> failwith "not implemented"),   
+        (fun output -> writeAny validation output.Value),
+        (fun _ ->failwith "not implemented")
+    )
+
+let rec readAny (validation : PrimitiveValidation) (value : JsonElement) =
+        if value.ValueKind = JsonValueKind.Null then
+            Ok (Pulumi.Provider.PropertyValue.Null)
+        elif value.ValueKind = JsonValueKind.False then 
+            Ok (Pulumi.Provider.PropertyValue false)
+        elif value.ValueKind = JsonValueKind.True then 
+            Ok (Pulumi.Provider.PropertyValue true)
+        elif value.ValueKind = JsonValueKind.Number then 
+            Ok (Pulumi.Provider.PropertyValue(value.GetDouble()))
+        elif value.ValueKind = JsonValueKind.String then 
+            Ok (Pulumi.Provider.PropertyValue(value.GetString()))
+        elif value.ValueKind = JsonValueKind.Array then 
+            value.EnumerateArray()
+            |> Seq.map (fun item -> readAny PrimitiveValidation.None item)
+            |> Seq.toList
+            |> okList
+            |> Result.mapError (fun errs -> String.concat ", " errs)
+            |> Result.map (fun items -> 
+                items 
+                |> ImmutableArray.CreateRange
+                |> Pulumi.Provider.PropertyValue)
+        elif value.ValueKind = JsonValueKind.Object then 
+            value.EnumerateObject()
+            |> Seq.map (fun item -> 
+                match readAny PrimitiveValidation.None item.Value with 
+                | Ok v -> Ok (KeyValuePair.Create(item.Name, v))
+                | Error err -> Error err)
+            |> Seq.toList
+            |> okList
+            |> Result.mapError (fun errs -> String.concat ", " errs)
+            |> Result.map (fun items -> 
+                items
+                |> ImmutableDictionary.CreateRange
+                |> Pulumi.Provider.PropertyValue)
+        else 
+            Error (sprintf "unexpected JsonValueKind: %O" value.ValueKind)
+
 type AnyConversion = {
     Description : string option
     PrimitiveValidation : PrimitiveValidation
@@ -426,89 +503,9 @@ type AnyConversion = {
         this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
         schema
         
-    member this.Writer (value : Pulumi.Provider.PropertyValue) =
-        let rec getValue validation (value : Pulumi.Provider.PropertyValue) =
-            value.Match<JsonNode option>(
-                (fun () -> None),
-                (fun b -> JsonValue.Create(b) :> JsonNode |> Some),
-                (fun n -> 
-                    match validation.Numeric.Validate (decimal n) with
-                    | Some err -> failwith err
-                    | None -> ()
-                    JsonValue.Create(n) :> JsonNode |> Some),
-                (fun s ->
-                    match validation.String.Validate s with
-                    | Some err -> failwith err
-                    | None -> ()
-                    JsonValue.Create(s) :> JsonNode |> Some),
-                (fun a -> 
-                    a
-                    |> Seq.map (fun i -> getValue PrimitiveValidation.None i |> Option.toObj)
-                    |> Seq.toArray
-                    |> JsonArray
-                    :> JsonNode
-                    |> Some
-                ),
-                (fun o -> 
-                    o
-                    |> Seq.map (fun kv -> 
-                        KeyValuePair.Create(kv.Key, getValue PrimitiveValidation.None kv.Value |> Option.toObj)
-                    )
-                    |> Seq.toArray
-                    |> JsonObject
-                    :> JsonNode
-                    |> Some
-                ),
-                (fun _ -> failwith "not implemented"),
-                (fun _ -> failwith "not implemented"),
-                (fun secret -> getValue validation secret),
-                (fun _ -> failwith "not implemented"),   
-                (fun output -> getValue validation output.Value),
-                (fun _ ->failwith "not implemented")
-            )
-        getValue this.PrimitiveValidation value
+    member this.Writer (value : Pulumi.Provider.PropertyValue) = writeAny this.PrimitiveValidation value
         
-    member this.Reader (value : JsonElement) = 
-        if value.ValueKind = JsonValueKind.Null then
-            Ok (Pulumi.Provider.PropertyValue.Null)
-        elif value.ValueKind = JsonValueKind.False then 
-            Ok (Pulumi.Provider.PropertyValue false)
-        elif value.ValueKind = JsonValueKind.True then 
-            Ok (Pulumi.Provider.PropertyValue true)
-        elif value.ValueKind = JsonValueKind.Number then 
-            Ok (Pulumi.Provider.PropertyValue(value.GetDouble()))
-        elif value.ValueKind = JsonValueKind.String then 
-            Ok (Pulumi.Provider.PropertyValue(value.GetString()))
-        elif value.ValueKind = JsonValueKind.Array then 
-            value.EnumerateArray()
-            |> Seq.map (fun item -> this.Reader item)
-            |> Seq.toList
-            |> okList
-            |> Result.mapError (fun errs -> String.concat ", " errs)
-            |> Result.map (fun items -> 
-                items 
-                |> ImmutableArray.CreateRange
-                |> Pulumi.Provider.PropertyValue)
-        elif value.ValueKind = JsonValueKind.Object then 
-            value.EnumerateObject()
-            |> Seq.map (fun item -> 
-                match this.Reader item.Value with 
-                | Ok v -> Ok (KeyValuePair.Create(item.Name, v))
-                | Error err -> Error err)
-            |> Seq.toList
-            |> okList
-            |> Result.mapError (fun errs -> String.concat ", " errs)
-            |> Result.map (fun items -> 
-                items
-                |> ImmutableDictionary.CreateRange
-                |> Pulumi.Provider.PropertyValue)
-        else 
-            Error (sprintf "unexpected JsonValueKind: %O" value.ValueKind)
-
-let TrueConversion = {
-    Description = None
-    PrimitiveValidation = PrimitiveValidation.None
-}
+    member this.Reader (value : JsonElement) =  readAny this.PrimitiveValidation value
 
 type PrimitiveConversion = {
     Description : string option
@@ -697,21 +694,19 @@ type ConversionContext = {
                 
 type ArrayConversion = {
     Description : string option
-    Items : Conversion
+    Items : Conversion option
 } with
     member this.BuildTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         let schema = JsonObject()
         schema.Add("type", JsonValue.Create("array"))
-        let items, desc = this.Items.BuildTypeSpec packageName names
-        schema.Add("items", items)
+        let items = Option.defaultValue Conversion.True this.Items
+        let itemsSpec, desc = items.BuildTypeSpec packageName names
+        schema.Add("items", itemsSpec)
         schema, this.Description
 
     member this.BuildPropertySpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) = 
-        let schema = JsonObject()
-        schema.Add("type", JsonValue.Create("array"))
-        let items, desc = this.Items.BuildTypeSpec packageName names
-        schema.Add("items", items)
-        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
+        let schema, desc = this.BuildTypeSpec packageName names
+        desc |> Option.iter (fun desc -> schema.Add("description", desc))
         schema
         
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
@@ -720,12 +715,17 @@ type ArrayConversion = {
             |> optionOfTry
             |> Option.bind (fun v -> v.TryGetArray() |> optionOfTry)
 
+        let itemWriter = 
+            match this.Items with 
+            | Some items -> items.Writer
+            | None -> writeAny PrimitiveValidation.None
+
         match maybeArr with 
         | None -> failwithf "Invalid type expected array got %O" value.Type
         | Some arr ->
             arr
             |> Seq.map (fun item ->
-                this.Items.Writer item
+                itemWriter item
                 |> Option.toObj
             )
             |> Seq.toArray
@@ -735,8 +735,13 @@ type ArrayConversion = {
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Array then
+            let itemReader = 
+                match this.Items with 
+                | Some items -> items.Reader
+                | None -> readAny PrimitiveValidation.None
+
             value.EnumerateArray()
-            |> Seq.map (fun item -> this.Items.Reader item)
+            |> Seq.map (fun item -> itemReader item)
             |> Seq.toList
             |> okList
             |> Result.mapError (fun errs -> String.concat ", " errs)
@@ -748,7 +753,9 @@ type ArrayConversion = {
             errorf "Invalid JSON document expected array got %O" value.ValueKind
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
-        this.Items.CollectComplexTypes()
+        match this.Items with
+        | Some items -> items.CollectComplexTypes()
+        | None -> ImmutableHashSet.Empty
 
 and MapConversion = {
     Description : string option
@@ -1149,8 +1156,12 @@ and TupleConversion = {
         )
 
         match this.AdditionalItems with
-        | None -> ()
-        | Some ais ->
+        | Some ais when ais.IsFalseSchema -> ()
+            // AdditionalItems is false so no need for the extra property
+        | ais ->
+            // AdditionalItems is either unset (behaves like true) or set to something
+            let ais = Option.defaultValue Conversion.True ais
+
             // additionalItems is always just an array
             let additionalItemsSchema = JsonObject()
             additionalItemsSchema.Add("type", "array")
@@ -1218,7 +1229,10 @@ and TupleConversion = {
                     | Error err -> Error err
                     | Ok (properties, rest) ->
                         match List.tryItem i this.PrefixItems, this.AdditionalItems with 
-                        | None, None -> errorf "unexpected item %d in tuple" i
+                        | None, None ->                             
+                            match readAny PrimitiveValidation.None item with 
+                            | Ok ok -> Ok (properties, ok :: rest)
+                            | Error err -> Error err                            
                         | None, Some ais -> 
                             match ais.Reader item with 
                             | Ok ok -> Ok (properties, ok :: rest)
@@ -1235,16 +1249,14 @@ and TupleConversion = {
                 
             // If we have any additionalItems we'll add them to the properties
             let rest = 
-                match this.AdditionalItems, rest with 
-                | Some _, rest -> 
+                match this.AdditionalItems, rest with
+                | Some ais, rest when ais.IsFalseSchema ->
+                    match rest with 
+                    | [] -> None
+                    | _ -> failwith "This should be unreachable"
+                | _, rest -> 
                     let arr = rest |> List.rev |> ImmutableArray.CreateRange
-                    Ok (Some (KeyValuePair.Create("rest", Pulumi.Provider.PropertyValue(arr))))
-                | None, [] -> Ok None
-                | None, rest -> errorf "AdditionalItems isn't set, but we got values in rest"
-
-            match rest with
-            | Error err -> Error err
-            | Ok rest ->
+                    Some (KeyValuePair.Create("rest", Pulumi.Provider.PropertyValue(arr)))
 
             let properties = 
                 properties
@@ -1318,11 +1330,23 @@ and [<RequireQualifiedAccess>] ComplexTypeSpec =
         | ComplexTypeSpec.DU spec -> spec.CollectComplexTypes().Add(this)
 
 and [<RequireQualifiedAccess>] Conversion =
+    | False
+    | True
     | Type of TypeSpec
     | ComplexType of ComplexTypeSpec
+
+    member this.IsFalseSchema = 
+        match this with 
+        | Conversion.False -> true
+        | _ -> false
          
     member this.BuildTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with 
+        | Conversion.False -> failwith "Should not try to build typeSpec for false"
+        | Conversion.True -> 
+            let schema = JsonObject()
+            schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
+            schema, None
         | Conversion.Type spec -> spec.BuildTypeSpec packageName names
         | Conversion.ComplexType spec ->
             match names.TryGetValue spec with 
@@ -1334,6 +1358,11 @@ and [<RequireQualifiedAccess>] Conversion =
 
     member this.BuildPropertySpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with 
+        | Conversion.False -> failwith "Should not try to build propertySpec for false"
+        | Conversion.True -> 
+            let schema = JsonObject()
+            schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
+            schema
         | Conversion.Type spec -> spec.BuildPropertySpec packageName names
         | Conversion.ComplexType spec ->
             match names.TryGetValue spec with 
@@ -1345,16 +1374,22 @@ and [<RequireQualifiedAccess>] Conversion =
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) : JsonNode option =
         match this with 
+        | Conversion.False -> failwith "All values fail against the false schema"
+        | Conversion.True -> writeAny PrimitiveValidation.None value
         | Conversion.Type spec -> spec.Writer value
         | Conversion.ComplexType spec -> spec.Writer value
 
     member this.Reader (value : JsonElement) : Result<Pulumi.Provider.PropertyValue, string> =
         match this with 
+        | Conversion.False -> errorf "All values fail against the false schema"
+        | Conversion.True -> readAny PrimitiveValidation.None value
         | Conversion.Type spec -> spec.Reader value
         | Conversion.ComplexType spec -> spec.Reader value
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         match this with 
+        | Conversion.False -> ImmutableHashSet.Empty
+        | Conversion.True -> ImmutableHashSet.Empty
         | Conversion.Type spec -> spec.CollectComplexTypes()
         | Conversion.ComplexType spec -> spec.CollectComplexTypes()
 
@@ -1570,7 +1605,7 @@ let handleKeyword<'T when 'T : not struct> func keywordsMap =
             false
         | _ -> true)
 
-let rec convertRef (root : RootInformation) path context (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion option =
+let rec convertRef (root : RootInformation) path context (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion =
     // If this is a simple $ref by itself just convert the inner type    
     let simpleRef = 
         schema.Keywords 
@@ -1590,7 +1625,7 @@ let rec convertRef (root : RootInformation) path context (schema : Json.Schema.J
         
         // If the subschema is just bool then we can just return Any or None
         match subschema.BoolValue |> Option.ofNullable with
-        | Some false -> None
+        | Some false -> Conversion.False
         | Some true -> 
             {
                 Description = None
@@ -1598,7 +1633,6 @@ let rec convertRef (root : RootInformation) path context (schema : Json.Schema.J
             }
             |> TypeSpec.Any
             |> Conversion.Type
-            |> Some
         | None ->
 
         let allKeywords = 
@@ -1674,66 +1708,41 @@ let rec convertRef (root : RootInformation) path context (schema : Json.Schema.J
             }
             |> TypeSpec.Any
             |> Conversion.Type
-            |> Some
         else 
             convertSubSchema root path context (newSchema.Build())
 
-and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.JsonSchema) : Conversion option =    
+and convertArraySchema (root : RootInformation) path (jsonSchema : Json.Schema.JsonSchema) : Conversion =    
     let prefixItems =
         jsonSchema.Keywords
         |> pickKeyword<Json.Schema.PrefixItemsKeyword>
         |> Option.map (fun kw -> 
             kw.ArraySchemas
-            |> Seq.mapi (fun i s -> convertSubSchema root (sprintf "item%d" (i+1) :: path) ConversionContext.Default s)
+            |> Seq.mapi (fun i s -> convertSubSchema root (sprintf "%d" (i+1) :: "prefixItems" :: path) ConversionContext.Default s)
+            |> Seq.toList
         )
-
-    match prefixItems with
-    | Some items when Seq.exists Option.isNone items -> 
-        // One of the tuple types is `false` so this tuple can't ever be constructed, so this object can't be constructed
-        None
-    | _ ->
 
     let items =
         jsonSchema.Keywords
         |> pickKeyword<Json.Schema.ItemsKeyword>
-        |> Option.map (fun ik -> convertSubSchema root ("item" :: path) ConversionContext.Default ik.SingleSchema)
-        |> Option.defaultValue (Some (Conversion.Type (TypeSpec.Any TrueConversion)))
+        |> Option.map (fun ik -> convertSubSchema root ("items" :: path) ConversionContext.Default ik.SingleSchema)
 
     let description = getDescription jsonSchema.Keywords
-    match prefixItems, items with 
-    | None, None -> 
-        // Forced empty array, just make an array of any but nothing can go in it
-        {
-            Description = description
-            Items = Conversion.Type (TypeSpec.Any TrueConversion)
-        } |> TypeSpec.Array |> Conversion.Type
-    | Some prefixItems, None -> 
-        // Tuple type!
-        let prefixItems = prefixItems |> Seq.map Option.get |> Seq.toList
-        {
-            Path = path
-            Title = getTitle jsonSchema.Keywords
-            Description = description
-            PrefixItems = prefixItems
-            AdditionalItems = None
-        } |> ComplexTypeSpec.Tuple |> Conversion.ComplexType
-    | None, Some items ->
+    match prefixItems with 
+    | None ->
         // Basic array
         {
-            Description = getDescription jsonSchema.Keywords
+            Description = description
             Items = items
         } |> TypeSpec.Array |> Conversion.Type
-    | Some prefixItems, Some items -> 
-        // A tuple with rest
-        let prefixItems = prefixItems |> Seq.map Option.get |> Seq.toList
+    | Some prefixItems -> 
+        // Tuple type!
         {
             Path = path
             Title = getTitle jsonSchema.Keywords
             Description = description
             PrefixItems = prefixItems
-            AdditionalItems = Some items
+            AdditionalItems = items
         } |> ComplexTypeSpec.Tuple |> Conversion.ComplexType
-    |> Some
 
 and convertObjectSchema (root : RootInformation) path (context : ConversionContext) (jsonSchema : Json.Schema.JsonSchema) : Conversion =
     let propertiesKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.PropertiesKeyword>
@@ -1745,10 +1754,8 @@ and convertObjectSchema (root : RootInformation) path (context : ConversionConte
         propertiesKeyword
         |> Option.map (fun pk ->
             pk.Properties
-            |> Seq.choose (fun kv ->
-                match convertSubSchema root (kv.Key :: path) ConversionContext.Default kv.Value  with 
-                | Some subConversion -> Some (kv.Key, subConversion)
-                | None -> None
+            |> Seq.map (fun kv ->
+                kv.Key, convertSubSchema root (kv.Key :: path) ConversionContext.Default kv.Value
             )
             |> Map.ofSeq
         )
@@ -1757,8 +1764,8 @@ and convertObjectSchema (root : RootInformation) path (context : ConversionConte
     // If we have both we need to add an extra "additionalProperties" property to the object
     let additionalProperties =
         match context.AdditionalProperties, additionalPropertiesKeyword with 
-        | true, Some apk -> convertSubSchema root ("additionalProperties" :: path) ConversionContext.Default apk.Schema
-        | true, None -> Some (Conversion.Type (TypeSpec.Any TrueConversion))
+        | true, Some apk -> Some (convertSubSchema root ("additionalProperties" :: path) ConversionContext.Default apk.Schema)
+        | true, None -> Some (Conversion.True)
         | false, _ -> None
 
     let required = 
@@ -1822,7 +1829,7 @@ and convertObjectSchema (root : RootInformation) path (context : ConversionConte
         |> ComplexTypeSpec.Object
         |> Conversion.ComplexType
 
-and convertAllOf (root : RootInformation) (path : string list) context (schema : Json.Schema.JsonSchema) (allOf : Json.Schema.AllOfKeyword): Conversion option =
+and convertAllOf (root : RootInformation) (path : string list) context (schema : Json.Schema.JsonSchema) (allOf : Json.Schema.AllOfKeyword): Conversion =
 
     // allOf is a union of all the subschemas
     // we build a new _schema_ that merges the subschemas in ways that are possible to express in the type system (falling back to just any if we can't merge them)
@@ -1831,7 +1838,7 @@ and convertAllOf (root : RootInformation) (path : string list) context (schema :
 
     // If _any_ are false we can early out
     match boolSchemas |> List.map (fun s -> s.BoolValue.Value) |> List.exists not with 
-    | true -> None
+    | true -> Conversion.False
     | false ->
 
     let allKeywords = 
@@ -1886,7 +1893,7 @@ and convertAllOf (root : RootInformation) (path : string list) context (schema :
 
     convertSubSchema root path context (newSchema.Build()) 
 
-and convertOneOf (root : RootInformation) path context (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion option =
+and convertOneOf (root : RootInformation) path context (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
 
     // See if there's any validation keywords at this level or if it's just a simple oneOf
     let simpleOneOf = 
@@ -1900,7 +1907,7 @@ and convertOneOf (root : RootInformation) path context (schema : Json.Schema.Jso
         |> Seq.mapi (fun i subschema -> 
             let path = sprintf "oneOf%d" i :: path
             convertSubSchema root path context subschema)
-        |> Seq.choose id
+        |> Seq.filter (fun c -> not c.IsFalseSchema)
         |> Seq.toList
         
     // Check to see if all the oneOf schemas are _simple_ and we don't have any extra validation if so we can just make this a type union
@@ -1922,7 +1929,7 @@ and convertOneOf (root : RootInformation) path context (schema : Json.Schema.Jso
             ) (Some { Description = None; BooleanConversion = None; NumberConversion = None; StringConversion = None })
 
     match simpleOneOf, simpleUnion with
-    | _, Some union -> union |> TypeSpec.Union |> Conversion.Type |> Some
+    | _, Some union -> union |> TypeSpec.Union |> Conversion.Type
     | true, _ ->
         // Emit a DU for each of the choices
         {
@@ -1933,7 +1940,6 @@ and convertOneOf (root : RootInformation) path context (schema : Json.Schema.Jso
         }
         |> ComplexTypeSpec.DU
         |> Conversion.ComplexType
-        |> Some
     | false, _ -> 
         // This is a complex object. First try to translate this object _without_ the oneOf
         let newSchema = Json.Schema.JsonSchemaBuilder()
@@ -1945,20 +1951,18 @@ and convertOneOf (root : RootInformation) path context (schema : Json.Schema.Jso
         let obj = convertSubSchema root path context (newSchema.Build()) 
 
         match obj with 
-        | Some (Conversion.ComplexType (ComplexTypeSpec.Object obj)) ->
+        | Conversion.ComplexType (ComplexTypeSpec.Object obj) ->
             // this _should_ be an object now, 
             let subConversions = 
                 oneOf.Schemas 
                 |> Seq.mapi (fun i subschema -> 
                     let path = sprintf "oneOf%d" i :: path
                     convertSubSchema root path { context with AdditionalProperties = false } subschema)
-                |> Seq.choose id
                 |> Seq.toList
 
             { obj with Choices = subConversions }
             |> ComplexTypeSpec.Object
             |> Conversion.ComplexType
-            |> Some
         | root ->             
             {
                 Description = Some (sprintf "unhandled root conversion for oneOf: %A" root)
@@ -1966,12 +1970,11 @@ and convertOneOf (root : RootInformation) path context (schema : Json.Schema.Jso
             }
             |> TypeSpec.Any
             |> Conversion.Type
-            |> Some
 
-and convertSubSchema (root : RootInformation) (path : string list) (context : ConversionContext) (schema : Json.Schema.JsonSchema)  : Conversion option =
+and convertSubSchema (root : RootInformation) (path : string list) (context : ConversionContext) (schema : Json.Schema.JsonSchema)  : Conversion =
     match schema.BoolValue |> Option.ofNullable with
-    | Some false -> None
-    | Some true -> TypeSpec.Any TrueConversion |> Conversion.Type |> Some
+    | Some false -> Conversion.False
+    | Some true -> Conversion.True
     | None ->
         let keywords = schema.Keywords
 
@@ -1984,7 +1987,6 @@ and convertSubSchema (root : RootInformation) (path : string list) (context : Co
             }
             |> TypeSpec.Any
             |> Conversion.Type
-            |> Some
         | false -> 
 
         let typ = 
@@ -2006,7 +2008,7 @@ and convertSubSchema (root : RootInformation) (path : string list) (context : Co
             | None -> false
         
         if constKeyword.IsSome then 
-            convertConst root path schema constKeyword.Value |> Some
+            convertConst root path schema constKeyword.Value
         elif ref.IsSome then
             convertRef root path context schema ref.Value
         elif allOf.IsSome then
@@ -2014,21 +2016,21 @@ and convertSubSchema (root : RootInformation) (path : string list) (context : Co
         elif oneOf.IsSome then
             convertOneOf root path context schema oneOf.Value
         elif isSimpleType Json.Schema.SchemaValueType.Null then 
-            convertNullSchema schema |> TypeSpec.Null |> Conversion.Type |> Some
+            convertNullSchema schema |> TypeSpec.Null |> Conversion.Type
         elif isSimpleType Json.Schema.SchemaValueType.Boolean then 
-            convertBoolSchema schema |> TypeSpec.Primitive |> Conversion.Type |> Some
+            convertBoolSchema schema |> TypeSpec.Primitive |> Conversion.Type
         elif isSimpleType Json.Schema.SchemaValueType.String then 
-            convertStringSchema path schema |> Some
+            convertStringSchema path schema
         elif isSimpleType Json.Schema.SchemaValueType.Integer then 
-            convertNumberSchema true schema |> TypeSpec.Primitive |> Conversion.Type |> Some
+            convertNumberSchema true schema |> TypeSpec.Primitive |> Conversion.Type
         elif isSimpleType Json.Schema.SchemaValueType.Number then 
-            convertNumberSchema false schema |> TypeSpec.Primitive |> Conversion.Type |> Some
+            convertNumberSchema false schema |> TypeSpec.Primitive |> Conversion.Type
         elif isSimpleType Json.Schema.SchemaValueType.Object then 
-            convertObjectSchema root path context schema |> Some
+            convertObjectSchema root path context schema
         elif isSimpleType Json.Schema.SchemaValueType.Array then 
             convertArraySchema root path schema
         elif isSimpleUnion keywords then
-            convertSimpleUnion schema |> TypeSpec.Union |> Conversion.Type |> Some
+            convertSimpleUnion schema |> TypeSpec.Union |> Conversion.Type
         else 
             let msg =
                 keywords
@@ -2042,7 +2044,6 @@ and convertSubSchema (root : RootInformation) (path : string list) (context : Co
             }
             |> TypeSpec.Any 
             |> Conversion.Type
-            |> Some
 
 type RootConversion = {
     Schema: JsonObject
@@ -2077,9 +2078,9 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     let conversion = convertSubSchema root [] { Type = None; AdditionalProperties = true } jsonSchema 
 
     let conversion = 
-        match conversion with 
-        | None -> failwith "top level false schemas are not supported, this schema can not read or write anything"
-        | Some conversion -> conversion
+        match conversion.IsFalseSchema with 
+        | true -> failwith "top level false schemas are not supported, this schema can not read or write anything"
+        | false -> conversion
 
     // We need to get all complex types and make names for them, then ask for the root schema to generate a pulumi schema for itself _given_ those names
     let complexTypes = conversion.CollectComplexTypes()
