@@ -871,9 +871,14 @@ let ``Test cyclic refs`` () =
             "properties": {
                 "anotherOne": {
                     "$ref": "#/types/schema:index:myType"
-                }
+                },
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "pulumi.json#/Any"
+                  }
+                }    
             }
-    
         }"""
         "schema:index:root", """{
             "type":"object",
@@ -885,18 +890,23 @@ let ``Test cyclic refs`` () =
         }"""])
     
     Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue(123)
+        "foo", Test.dictToProperty [
+            "anotherOne", Test.dictToProperty []
+        ]
     ]
-    |> t.ShouldWrite """{"foo":123}"""
+    |> t.ShouldWrite """{"foo":{"anotherOne": {}}}"""
+
+    """{"foo":{"anotherOne": {"anotherOne": {}}}}"""
+    |> t.ShouldRead (Test.dictToProperty [
+        "foo", Test.dictToProperty [
+            "anotherOne", Test.dictToProperty [
+                "anotherOne", Test.dictToProperty []
+            ]
+        ]
+    ])
     
-    // Properties are optional by default
     Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
-
-    """{"foo":456.789}"""
-    |> t.ShouldRead (Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue(456.789)
-    ])
 
     """{}"""
     |> t.ShouldRead (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)    

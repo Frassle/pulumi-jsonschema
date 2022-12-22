@@ -712,25 +712,6 @@ type EnumConversion = {
 
         if isMatch then readPrimitive this.Type PrimitiveValidation.None value
         else errorf "Expected value to match one of the values specified by the enum"
-
-type ConversionContext = {
-    Type : Json.Schema.SchemaValueType option
-    // True if object types should default to additional properties
-    AdditionalProperties : bool
-    Converting : ImmutableHashSet<Json.Schema.JsonSchema> 
-    
-} with 
-    static member Default = { 
-        Type = None
-        AdditionalProperties = true 
-        Converting = ImmutableHashSet.Empty
-    }
-
-    member this.AddSchema schema = {
-        this with Converting = this.Converting.Add schema
-    }
-
-    member this.Clear = { this with Type = None; AdditionalProperties = true }
      
 type ArrayConversion = {
     Description : string option
@@ -1407,19 +1388,34 @@ and [<RequireQualifiedAccess>] ComplexTypeSpec =
         | ComplexTypeSpec.Tuple spec -> spec.CollectComplexTypes().Add(this)
         | ComplexTypeSpec.DU spec -> spec.CollectComplexTypes().Add(this)
 
-and [<RequireQualifiedAccess>] Conversion =
+and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
+    | Ref of Conversion option ref
     | False
     | True
     | Type of TypeSpec
     | ComplexType of ComplexTypeSpec
 
+    override this.Equals (other : obj) : bool =
+        match other with
+        | :? Conversion as other ->
+            match this, other with 
+            | Ref a, Ref b -> Object.ReferenceEquals(a, b)
+            | False, False -> true
+            | True, True -> true
+            | Type a, Type b -> a.Equals b
+            | ComplexType a, ComplexType b -> a.Equals b
+            | _, _ -> false
+        | _ -> false
+
     member this.IsFalseSchema = 
         match this with 
+        | Conversion.Ref ref -> ref.Value.Value.IsFalseSchema
         | Conversion.False -> true
         | _ -> false
          
     member this.BuildTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with 
+        | Conversion.Ref ref -> ref.Value.Value.BuildTypeSpec packageName names
         | Conversion.False -> failwith "Should not try to build typeSpec for false"
         | Conversion.True -> 
             let schema = JsonObject()
@@ -1436,6 +1432,7 @@ and [<RequireQualifiedAccess>] Conversion =
 
     member this.BuildPropertySpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with 
+        | Conversion.Ref ref -> ref.Value.Value.BuildPropertySpec packageName names
         | Conversion.False -> failwith "Should not try to build propertySpec for false"
         | Conversion.True -> 
             let schema = JsonObject()
@@ -1452,6 +1449,7 @@ and [<RequireQualifiedAccess>] Conversion =
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) : JsonNode option =
         match this with 
+        | Conversion.Ref ref -> ref.Value.Value.Writer value
         | Conversion.False -> failwith "All values fail against the false schema"
         | Conversion.True -> writeAny PrimitiveValidation.None value
         | Conversion.Type spec -> spec.Writer value
@@ -1459,6 +1457,7 @@ and [<RequireQualifiedAccess>] Conversion =
 
     member this.Reader (value : JsonElement) : Result<Pulumi.Provider.PropertyValue * Annotations, string> =
         match this with 
+        | Conversion.Ref ref -> ref.Value.Value.Reader value
         | Conversion.False -> errorf "All values fail against the false schema"
         | Conversion.True -> readAny PrimitiveValidation.None value
         | Conversion.Type spec -> spec.Reader value
@@ -1466,10 +1465,35 @@ and [<RequireQualifiedAccess>] Conversion =
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         match this with 
+        | Conversion.Ref _ -> ImmutableHashSet.Empty // This should have been collected on another path
         | Conversion.False -> ImmutableHashSet.Empty
         | Conversion.True -> ImmutableHashSet.Empty
         | Conversion.Type spec -> spec.CollectComplexTypes()
         | Conversion.ComplexType spec -> spec.CollectComplexTypes()
+
+and ConversionContext = {
+    Type : Json.Schema.SchemaValueType option
+    // True if object types should default to additional properties
+    AdditionalProperties : bool
+    Refs : Map<string, Conversion option ref>
+    
+} with 
+    static member Default = { 
+        Type = None
+        AdditionalProperties = true 
+        Refs = Map.empty
+    }
+
+    member this.AddRef path = {
+        this with Refs = Map.add path (ref None) this.Refs
+    }
+
+    member this.SetRef path value =
+        match this.Refs.TryFind path with 
+        | Some box -> box.contents <- Some value
+        | None -> failwithf "Failed to set $ref %s" path
+
+    member this.Clear = { this with Type = None; AdditionalProperties = true }
 
 type RootInformation = {
     BaseUri : Uri
@@ -1684,6 +1708,13 @@ let handleKeyword<'T when 'T : not struct> func keywordsMap =
         | _ -> true)
 
 let rec convertRef (root : RootInformation) path context (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion =
+    let refKey = ref.Reference.ToString()
+    match context.Refs.TryFind refKey with 
+    | Some box -> Conversion.Ref box
+    | None ->
+
+    let context = context.AddRef refKey
+
     // If this is a simple $ref by itself just convert the inner type    
     let simpleRef = 
         schema.Keywords 
@@ -1788,6 +1819,10 @@ let rec convertRef (root : RootInformation) path context (schema : Json.Schema.J
             |> Conversion.Type
         else 
             convertSubSchema root path context (newSchema.Build())
+    |> fun result ->
+        // Whatever the result of this ref set it
+        context.SetRef refKey result
+        result
 
 and convertArraySchema (root : RootInformation) path (context : ConversionContext) (jsonSchema : Json.Schema.JsonSchema) : Conversion =    
     let prefixItems =
@@ -2083,9 +2118,7 @@ and convertSubSchema (root : RootInformation) (path : string list) (context : Co
         if typ.IsSome && typ.Value = enum<Json.Schema.SchemaValueType> 0 then Conversion.False
         else
 
-        if context.Converting.Contains schema then failwithf "Unhandled circular schema %O" schema
-
-        let context = { context with Type = typ; Converting = context.Converting.Add schema }
+        let context = { context with Type = typ }
 
         let allOf = pickKeyword<Json.Schema.AllOfKeyword> keywords
         let oneOf = pickKeyword<Json.Schema.OneOfKeyword> keywords
@@ -2185,6 +2218,10 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
                 // Else use the path of the type
                 complexType.Path
                 |> List.rev
+                |> function 
+                   // trim $defs"
+                   | "$defs" :: rest -> rest
+                   | rest -> rest
                 |> String.concat "_"
                 |> cleanTextForName
             )
