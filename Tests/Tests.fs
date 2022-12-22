@@ -413,7 +413,7 @@ let ``Test merged refs`` () =
     }"""
     t.RoundTrip()
     
-    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{
+    t.ShouldEqual (Test.complexSchema ["schema:index:basicType", """{
         "type":"object",
         "properties":{
             "extra":{"type":"number"},
