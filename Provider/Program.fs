@@ -366,8 +366,8 @@ let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (valu
         | JsonValueKind.True -> "boolean"
         | JsonValueKind.False -> "boolean"
         | JsonValueKind.Number -> 
-            let n = value.GetDouble()
-            if n = floor n then "integer" else "number"
+            let isInteger, _ = value.TryGetInt64()
+            if isInteger then "integer" else "number"
         | JsonValueKind.String -> "string"
         | JsonValueKind.Array -> "array"
         | JsonValueKind.Object -> "object"
@@ -383,13 +383,12 @@ let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (valu
             errorf "Value is \"%s\" but should be \"boolean\"" valueTyp
     | PrimitiveType.Integer ->
         if value.ValueKind = JsonValueKind.Number then
-            let num = value.GetDouble()
-            if num <> floor num then                 
-                errorf "Value is \"number\" but should be \"integer\"" 
-            else
+            match value.TryGetInt64() with
+            | false, _ -> errorf "Value is \"number\" but should be \"integer\"" 
+            | true, num ->
                 match validation.Numeric.Validate (decimal num) with
                 | Some err -> Error err
-                | None -> Ok num
+                | None -> Ok (float num)
                 |> Result.map Pulumi.Provider.PropertyValue
         else 
             errorf "Value is \"%s\" but should be \"integer\"" valueTyp
@@ -665,10 +664,28 @@ type EnumConversion = {
         schema
 
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
-        writePrimitive this.Type PrimitiveValidation.None value
+        let value = writePrimitive this.Type PrimitiveValidation.None value
+        let isMatch = 
+            this.Values
+            |> Seq.exists (fun node -> 
+                Json.More.JsonNodeEqualityComparer.Instance.Equals(
+                    node,
+                    Option.toObj value)
+            )
+        if isMatch then value
+        else failwith "Expected value to match one of the values specified by the enum"
 
     member this.Reader (value : JsonElement) = 
-        readPrimitive this.Type PrimitiveValidation.None value
+        let isMatch = 
+            this.Values
+            |> Seq.exists (fun node -> 
+                Json.More.JsonNodeEqualityComparer.Instance.Equals(
+                    node,
+                    Json.More.JsonElementExtensions.AsNode(value))
+            )
+
+        if isMatch then readPrimitive this.Type PrimitiveValidation.None value
+        else errorf "Expected value to match one of the values specified by the enum"
 
 type ConversionContext = {
     Type : Json.Schema.SchemaValueType option
