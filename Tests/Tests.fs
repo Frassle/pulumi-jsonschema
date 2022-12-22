@@ -193,7 +193,6 @@ let ``Test object with required properties`` () =
     |> t.ShouldRead (Test.dictToProperty [
         "foo", Pulumi.Provider.PropertyValue("string")
     ])
-    
 
 [<Fact>]
 let ``Test object with properties and additionalProperties`` () =
@@ -788,3 +787,59 @@ let ``Test object const property`` () =
 
     """{}"""
     |> t.ShouldRead (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    
+[<Fact>]
+let ``Test object with false properties`` () =
+    let t = Test.convertSchema """{
+        "type": "object",
+        "properties": {
+            "foo": { "type": "string" },
+            "bar": false
+        },
+        "additionalProperties": true
+    }"""
+    t.RoundTrip()
+    
+    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{
+        "type":"object",
+        "properties":{
+            "foo":{"type":"string"},
+            "additionalProperties":{
+                "type": "object", 
+                "additionalProperties": {
+                    "$ref": "pulumi.json#/Any"
+                }
+            }
+        }
+    }"""])
+    
+    Test.dictToProperty [
+        "foo", Pulumi.Provider.PropertyValue("a")
+        "additionalProperties", Test.dictToProperty [
+            "bob", Pulumi.Provider.PropertyValue(123)
+        ]
+    ]
+    |> t.ShouldWrite """{"foo":"a","bob":123}"""
+    
+    """{"foo":"string", "other": 54}"""
+    |> t.ShouldRead (Test.dictToProperty [
+        "foo", Pulumi.Provider.PropertyValue("string")
+        "additionalProperties", Test.dictToProperty [
+            "other", Pulumi.Provider.PropertyValue(54)
+        ]
+    ])
+
+    let exc = 
+        """{"foo":"string", "bar": true}"""
+        |> t.ShouldThrow
+    exc.Message |> Test.shouldEqual "All values fail against the false schema"
+    
+    let exc = 
+        Test.dictToProperty [
+            "foo", Pulumi.Provider.PropertyValue("a")
+            "additionalProperties", Test.dictToProperty [
+                "bar", Pulumi.Provider.PropertyValue("anything")
+            ]
+        ]
+        |> t.ShouldThrow
+    exc.Message |> Test.shouldEqual "All values fail against the false schema"
