@@ -13,17 +13,17 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
     /// </summary>
-    public sealed class OutputsPropertiesAdditionalPropertiesChoice3Of5 : global::Pulumi.InvokeArgs
+    public sealed class AdditionalPropertiesPropertiesAdditionalPropertiesChoice3Of5Args : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        public Inputs.OutputsPropertiesAdditionalProperties? AdditionalProperties { get; set; }
+        public Input<Inputs.AdditionalPropertiesArgs>? AdditionalProperties { get; set; }
 
         [Input("type", required: true)]
-        public string Type { get; set; } = null!;
+        public Input<string> Type { get; set; } = null!;
 
-        public OutputsPropertiesAdditionalPropertiesChoice3Of5()
+        public AdditionalPropertiesPropertiesAdditionalPropertiesChoice3Of5Args()
         {
         }
-        public static new OutputsPropertiesAdditionalPropertiesChoice3Of5 Empty => new OutputsPropertiesAdditionalPropertiesChoice3Of5();
+        public static new AdditionalPropertiesPropertiesAdditionalPropertiesChoice3Of5Args Empty => new AdditionalPropertiesPropertiesAdditionalPropertiesChoice3Of5Args();
     }
 }

@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object or resource property
     /// </summary>
-    public sealed class Choice1Of2PropertiesAdditionalPropertiesArgs : global::Pulumi.ResourceArgs
+    public sealed class InputsPropertiesAdditionalPropertiesArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
         private InputMap<object>? _additionalProperties;
@@ -24,10 +24,10 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("choice1Of5")]
-        public Input<Inputs.AdditionalPropertiesChoice1Of5Args>? Choice1Of5 { get; set; }
+        public Input<Inputs.TypeSpecOneOf0Args>? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Input<Inputs.Choice1Of2PropertiesAdditionalPropertiesChoice2Of5Args>? Choice2Of5 { get; set; }
+        public Input<Inputs.AdditionalPropertiesChoice2Of5Args>? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
         public Input<Inputs.OneOf2Args>? Choice3Of5 { get; set; }
@@ -36,7 +36,7 @@ namespace Pulumi.Pulumi.Inputs
         public Input<Inputs.NamedTypeArgs>? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
-        public Input<Inputs.UnionTypeArgs>? Choice5Of5 { get; set; }
+        public Input<Inputs.AdditionalPropertiesChoice5Of5Args>? Choice5Of5 { get; set; }
 
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
@@ -101,9 +101,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("willReplaceOnChanges")]
         public Input<bool>? WillReplaceOnChanges { get; set; }
 
-        public Choice1Of2PropertiesAdditionalPropertiesArgs()
+        public InputsPropertiesAdditionalPropertiesArgs()
         {
         }
-        public static new Choice1Of2PropertiesAdditionalPropertiesArgs Empty => new Choice1Of2PropertiesAdditionalPropertiesArgs();
+        public static new InputsPropertiesAdditionalPropertiesArgs Empty => new InputsPropertiesAdditionalPropertiesArgs();
     }
 }

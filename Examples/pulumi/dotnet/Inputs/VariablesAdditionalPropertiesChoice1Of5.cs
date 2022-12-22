@@ -7,21 +7,20 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Pulumi.Outputs
+namespace Pulumi.Pulumi.Inputs
 {
 
     /// <summary>
     /// A reference to a primitive type. A primitive type must have only the "type" property set.
     /// </summary>
-    [OutputType]
-    public sealed class ProviderInputPropertiesAdditionalPropertiesChoice1Of5
+    public sealed class VariablesAdditionalPropertiesChoice1Of5 : global::Pulumi.InvokeArgs
     {
-        public readonly Pulumi.Pulumi.AdditionalPropertiesChoice1Of5Type Type;
+        [Input("type", required: true)]
+        public Pulumi.Pulumi.AdditionalPropertiesChoice1Of5Type Type { get; set; }
 
-        [OutputConstructor]
-        private ProviderInputPropertiesAdditionalPropertiesChoice1Of5(Pulumi.Pulumi.AdditionalPropertiesChoice1Of5Type type)
+        public VariablesAdditionalPropertiesChoice1Of5()
         {
-            Type = type;
         }
+        public static new VariablesAdditionalPropertiesChoice1Of5 Empty => new VariablesAdditionalPropertiesChoice1Of5();
     }
 }

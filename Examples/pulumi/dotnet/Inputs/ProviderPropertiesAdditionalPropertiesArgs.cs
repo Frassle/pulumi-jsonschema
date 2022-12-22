@@ -13,30 +13,30 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object or resource property
     /// </summary>
-    public sealed class InputPropertiesAdditionalProperties : global::Pulumi.InvokeArgs
+    public sealed class ProviderPropertiesAdditionalPropertiesArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private Dictionary<string, object>? _additionalProperties;
-        public Dictionary<string, object> AdditionalProperties
+        private InputMap<object>? _additionalProperties;
+        public InputMap<object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
+            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
             set => _additionalProperties = value;
         }
 
         [Input("choice1Of5")]
-        public Inputs.InputPropertiesAdditionalPropertiesChoice1Of5? Choice1Of5 { get; set; }
+        public Input<Inputs.AdditionalPropertiesChoice1Of5Args>? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Inputs.InputPropertiesAdditionalPropertiesChoice2Of5? Choice2Of5 { get; set; }
+        public Input<Inputs.ArrayTypeArgs>? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
-        public Inputs.MapType? Choice3Of5 { get; set; }
+        public Input<Inputs.PropertiesAdditionalPropertiesChoice3Of5Args>? Choice3Of5 { get; set; }
 
         [Input("choice4Of5")]
-        public Inputs.NamedType? Choice4Of5 { get; set; }
+        public Input<Inputs.NamedTypeArgs>? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
-        public Inputs.InputPropertiesAdditionalPropertiesChoice5Of5? Choice5Of5 { get; set; }
+        public Input<Inputs.ProviderPropertiesAdditionalPropertiesChoice5Of5Args>? Choice5Of5 { get; set; }
 
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
@@ -51,29 +51,29 @@ namespace Pulumi.Pulumi.Inputs
         public object? Default { get; set; }
 
         [Input("defaultInfo")]
-        public Inputs.DefaultInfo? DefaultInfo { get; set; }
+        public Input<Inputs.DefaultInfoArgs>? DefaultInfo { get; set; }
 
         /// <summary>
         /// Indicates whether the property is deprecated
         /// </summary>
         [Input("deprecationMessage")]
-        public string? DeprecationMessage { get; set; }
+        public Input<string>? DeprecationMessage { get; set; }
 
         /// <summary>
         /// The description of the property, if any. Interpreted as Markdown.
         /// </summary>
         [Input("description")]
-        public string? Description { get; set; }
+        public Input<string>? Description { get; set; }
 
         [Input("language")]
-        private Dictionary<string, object>? _language;
+        private InputMap<object>? _language;
 
         /// <summary>
         /// Additional language-specific data about the property.
         /// </summary>
-        public Dictionary<string, object> Language
+        public InputMap<object> Language
         {
-            get => _language ?? (_language = new Dictionary<string, object>());
+            get => _language ?? (_language = new InputMap<object>());
             set => _language = value;
         }
 
@@ -81,29 +81,29 @@ namespace Pulumi.Pulumi.Inputs
         /// Indicates that when used as an input, this type does not accept eventual values.
         /// </summary>
         [Input("plain")]
-        public bool? Plain { get; set; }
+        public Input<bool>? Plain { get; set; }
 
         /// <summary>
         /// Specifies whether a change to the property causes its containing resource to be replaced instead of updated (default false).
         /// </summary>
         [Input("replaceOnChanges")]
-        public bool? ReplaceOnChanges { get; set; }
+        public Input<bool>? ReplaceOnChanges { get; set; }
 
         /// <summary>
         /// Specifies whether the property is secret (default false).
         /// </summary>
         [Input("secret")]
-        public bool? Secret { get; set; }
+        public Input<bool>? Secret { get; set; }
 
         /// <summary>
         /// Indicates that the provider will replace the resource when this property is changed.
         /// </summary>
         [Input("willReplaceOnChanges")]
-        public bool? WillReplaceOnChanges { get; set; }
+        public Input<bool>? WillReplaceOnChanges { get; set; }
 
-        public InputPropertiesAdditionalProperties()
+        public ProviderPropertiesAdditionalPropertiesArgs()
         {
         }
-        public static new InputPropertiesAdditionalProperties Empty => new InputPropertiesAdditionalProperties();
+        public static new ProviderPropertiesAdditionalPropertiesArgs Empty => new ProviderPropertiesAdditionalPropertiesArgs();
     }
 }

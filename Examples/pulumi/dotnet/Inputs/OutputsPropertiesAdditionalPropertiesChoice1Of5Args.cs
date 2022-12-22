@@ -13,14 +13,14 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// A reference to a primitive type. A primitive type must have only the "type" property set.
     /// </summary>
-    public sealed class InputPropertiesAdditionalPropertiesChoice1Of5 : global::Pulumi.InvokeArgs
+    public sealed class OutputsPropertiesAdditionalPropertiesChoice1Of5Args : global::Pulumi.ResourceArgs
     {
         [Input("type", required: true)]
-        public Pulumi.Pulumi.InputPropertiesAdditionalPropertiesChoice1Of5Type Type { get; set; }
+        public Input<Pulumi.Pulumi.Type> Type { get; set; } = null!;
 
-        public InputPropertiesAdditionalPropertiesChoice1Of5()
+        public OutputsPropertiesAdditionalPropertiesChoice1Of5Args()
         {
         }
-        public static new InputPropertiesAdditionalPropertiesChoice1Of5 Empty => new InputPropertiesAdditionalPropertiesChoice1Of5();
+        public static new OutputsPropertiesAdditionalPropertiesChoice1Of5Args Empty => new OutputsPropertiesAdditionalPropertiesChoice1Of5Args();
     }
 }

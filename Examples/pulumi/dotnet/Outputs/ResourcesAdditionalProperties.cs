@@ -14,7 +14,7 @@ namespace Pulumi.Pulumi.Outputs
     /// Describes a resource or component.
     /// </summary>
     [OutputType]
-    public sealed class ResourceDefinition
+    public sealed class ResourcesAdditionalProperties
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
         /// <summary>
@@ -32,7 +32,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from property name to propertySpec that describes the resource's input properties.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.PropertyDefinition>? InputProperties;
+        public readonly ImmutableDictionary<string, Outputs.TypeSpec>? InputProperties;
         /// <summary>
         /// Indicates whether the resource is a component.
         /// </summary>
@@ -48,7 +48,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.ProviderPropertiesAdditionalProperties>? Properties;
+        public readonly ImmutableDictionary<string, Outputs.AdditionalProperties>? Properties;
         /// <summary>
         /// A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
         /// </summary>
@@ -57,10 +57,10 @@ namespace Pulumi.Pulumi.Outputs
         /// A list of the names of the resource's required input properties.
         /// </summary>
         public readonly ImmutableArray<string> RequiredInputs;
-        public readonly Outputs.ResourceDefinition? StateInputs;
+        public readonly Outputs.ResourcesAdditionalProperties? StateInputs;
 
         [OutputConstructor]
-        private ResourceDefinition(
+        private ResourcesAdditionalProperties(
             ImmutableDictionary<string, object>? additionalProperties,
 
             ImmutableArray<Outputs.AliasDefinition> aliases,
@@ -69,7 +69,7 @@ namespace Pulumi.Pulumi.Outputs
 
             string? description,
 
-            ImmutableDictionary<string, Outputs.PropertyDefinition>? inputProperties,
+            ImmutableDictionary<string, Outputs.TypeSpec>? inputProperties,
 
             bool? isComponent,
 
@@ -77,13 +77,13 @@ namespace Pulumi.Pulumi.Outputs
 
             ImmutableDictionary<string, string>? methods,
 
-            ImmutableDictionary<string, Outputs.ProviderPropertiesAdditionalProperties>? properties,
+            ImmutableDictionary<string, Outputs.AdditionalProperties>? properties,
 
             ImmutableArray<string> required,
 
             ImmutableArray<string> requiredInputs,
 
-            Outputs.ResourceDefinition? stateInputs)
+            Outputs.ResourcesAdditionalProperties? stateInputs)
         {
             AdditionalProperties = additionalProperties;
             Aliases = aliases;

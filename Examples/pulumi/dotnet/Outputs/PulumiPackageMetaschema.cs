@@ -74,7 +74,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from type token to resourceSpec that describes the set of resources and components defined by this package.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.ObjectTypeSpec>? Resources;
+        public readonly ImmutableDictionary<string, Outputs.ResourcesAdditionalProperties>? Resources;
         /// <summary>
         /// A map from type token to complexTypeSpec that describes the set of complex types (i.e. object, enum) defined by this package.
         /// </summary>
@@ -118,7 +118,7 @@ namespace Pulumi.Pulumi.Outputs
 
             string? repository,
 
-            ImmutableDictionary<string, Outputs.ObjectTypeSpec>? resources,
+            ImmutableDictionary<string, Outputs.ResourcesAdditionalProperties>? resources,
 
             ImmutableDictionary<string, Outputs.TypeDefinition>? types,
 

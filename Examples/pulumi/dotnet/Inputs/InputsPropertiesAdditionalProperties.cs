@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object or resource property
     /// </summary>
-    public sealed class Choice1Of2PropertiesAdditionalProperties : global::Pulumi.InvokeArgs
+    public sealed class InputsPropertiesAdditionalProperties : global::Pulumi.InvokeArgs
     {
         [Input("additionalProperties")]
         private Dictionary<string, object>? _additionalProperties;
@@ -24,10 +24,10 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("choice1Of5")]
-        public Inputs.AdditionalPropertiesChoice1Of5? Choice1Of5 { get; set; }
+        public Inputs.TypeSpecOneOf0? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Inputs.Choice1Of2PropertiesAdditionalPropertiesChoice2Of5? Choice2Of5 { get; set; }
+        public Inputs.AdditionalPropertiesChoice2Of5? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
         public Inputs.OneOf2? Choice3Of5 { get; set; }
@@ -36,7 +36,7 @@ namespace Pulumi.Pulumi.Inputs
         public Inputs.NamedType? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
-        public Inputs.UnionType? Choice5Of5 { get; set; }
+        public Inputs.AdditionalPropertiesChoice5Of5? Choice5Of5 { get; set; }
 
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
@@ -101,9 +101,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("willReplaceOnChanges")]
         public bool? WillReplaceOnChanges { get; set; }
 
-        public Choice1Of2PropertiesAdditionalProperties()
+        public InputsPropertiesAdditionalProperties()
         {
         }
-        public static new Choice1Of2PropertiesAdditionalProperties Empty => new Choice1Of2PropertiesAdditionalProperties();
+        public static new InputsPropertiesAdditionalProperties Empty => new InputsPropertiesAdditionalProperties();
     }
 }

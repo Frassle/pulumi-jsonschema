@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class TypeSpecOneOf2 : global::Pulumi.InvokeArgs
     {
         [Input("additionalProperties")]
-        public Inputs.PropertiesAdditionalProperties? AdditionalProperties { get; set; }
+        public Inputs.TypeSpec? AdditionalProperties { get; set; }
 
         [Input("type", required: true)]
         public string Type { get; set; } = null!;

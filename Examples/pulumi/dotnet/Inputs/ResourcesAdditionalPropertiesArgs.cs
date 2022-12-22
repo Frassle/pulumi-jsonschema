@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes a resource or component.
     /// </summary>
-    public sealed class ResourceDefinitionArgs : global::Pulumi.ResourceArgs
+    public sealed class ResourcesAdditionalPropertiesArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
         private InputMap<object>? _additionalProperties;
@@ -48,14 +48,14 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? Description { get; set; }
 
         [Input("inputProperties")]
-        private InputMap<Inputs.PropertyDefinitionArgs>? _inputProperties;
+        private InputMap<Inputs.TypeSpecArgs>? _inputProperties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the resource's input properties.
         /// </summary>
-        public InputMap<Inputs.PropertyDefinitionArgs> InputProperties
+        public InputMap<Inputs.TypeSpecArgs> InputProperties
         {
-            get => _inputProperties ?? (_inputProperties = new InputMap<Inputs.PropertyDefinitionArgs>());
+            get => _inputProperties ?? (_inputProperties = new InputMap<Inputs.TypeSpecArgs>());
             set => _inputProperties = value;
         }
 
@@ -84,14 +84,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("properties")]
-        private InputMap<Inputs.ProviderPropertiesAdditionalPropertiesArgs>? _properties;
+        private InputMap<Inputs.AdditionalPropertiesArgs>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public InputMap<Inputs.ProviderPropertiesAdditionalPropertiesArgs> Properties
+        public InputMap<Inputs.AdditionalPropertiesArgs> Properties
         {
-            get => _properties ?? (_properties = new InputMap<Inputs.ProviderPropertiesAdditionalPropertiesArgs>());
+            get => _properties ?? (_properties = new InputMap<Inputs.AdditionalPropertiesArgs>());
             set => _properties = value;
         }
 
@@ -120,11 +120,11 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("stateInputs")]
-        public Input<Inputs.ResourceDefinitionArgs>? StateInputs { get; set; }
+        public Input<Inputs.ResourcesAdditionalPropertiesArgs>? StateInputs { get; set; }
 
-        public ResourceDefinitionArgs()
+        public ResourcesAdditionalPropertiesArgs()
         {
         }
-        public static new ResourceDefinitionArgs Empty => new ResourceDefinitionArgs();
+        public static new ResourcesAdditionalPropertiesArgs Empty => new ResourcesAdditionalPropertiesArgs();
     }
 }

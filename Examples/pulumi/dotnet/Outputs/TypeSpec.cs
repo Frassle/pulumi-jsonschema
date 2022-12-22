@@ -17,11 +17,11 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class TypeSpec
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.ProviderInputPropertiesAdditionalPropertiesChoice1Of5? Choice1Of5;
-        public readonly Outputs.Choice2Of5? Choice2Of5;
-        public readonly Outputs.Choice3Of5? Choice3Of5;
+        public readonly Outputs.PrimitiveType? Choice1Of5;
+        public readonly Outputs.OneOf1? Choice2Of5;
+        public readonly Outputs.TypeSpecOneOf2? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
-        public readonly Outputs.ProviderInputPropertiesAdditionalPropertiesChoice5Of5? Choice5Of5;
+        public readonly Outputs.InputPropertiesAdditionalPropertiesChoice5Of5? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
@@ -64,15 +64,15 @@ namespace Pulumi.Pulumi.Outputs
         private TypeSpec(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.ProviderInputPropertiesAdditionalPropertiesChoice1Of5? choice1Of5,
+            Outputs.PrimitiveType? choice1Of5,
 
-            Outputs.Choice2Of5? choice2Of5,
+            Outputs.OneOf1? choice2Of5,
 
-            Outputs.Choice3Of5? choice3Of5,
+            Outputs.TypeSpecOneOf2? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 
-            Outputs.ProviderInputPropertiesAdditionalPropertiesChoice5Of5? choice5Of5,
+            Outputs.InputPropertiesAdditionalPropertiesChoice5Of5? choice5Of5,
 
             object? @const,
 

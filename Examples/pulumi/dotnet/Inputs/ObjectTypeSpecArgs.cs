@@ -11,7 +11,7 @@ namespace Pulumi.Pulumi.Inputs
 {
 
     /// <summary>
-    /// Describes a resource or component.
+    /// Describes an object type
     /// </summary>
     public sealed class ObjectTypeSpecArgs : global::Pulumi.ResourceArgs
     {
@@ -23,75 +23,15 @@ namespace Pulumi.Pulumi.Inputs
             set => _additionalProperties = value;
         }
 
-        [Input("aliases")]
-        private InputList<Inputs.AliasDefinitionArgs>? _aliases;
-
-        /// <summary>
-        /// The list of aliases for the resource.
-        /// </summary>
-        public InputList<Inputs.AliasDefinitionArgs> Aliases
-        {
-            get => _aliases ?? (_aliases = new InputList<Inputs.AliasDefinitionArgs>());
-            set => _aliases = value;
-        }
-
-        /// <summary>
-        /// Indicates whether the resource is deprecated
-        /// </summary>
-        [Input("deprecationMessage")]
-        public Input<string>? DeprecationMessage { get; set; }
-
-        /// <summary>
-        /// The description of the resource, if any. Interpreted as Markdown.
-        /// </summary>
-        [Input("description")]
-        public Input<string>? Description { get; set; }
-
-        [Input("inputProperties")]
-        private InputMap<Inputs.InputPropertiesAdditionalPropertiesArgs>? _inputProperties;
-
-        /// <summary>
-        /// A map from property name to propertySpec that describes the resource's input properties.
-        /// </summary>
-        public InputMap<Inputs.InputPropertiesAdditionalPropertiesArgs> InputProperties
-        {
-            get => _inputProperties ?? (_inputProperties = new InputMap<Inputs.InputPropertiesAdditionalPropertiesArgs>());
-            set => _inputProperties = value;
-        }
-
-        /// <summary>
-        /// Indicates whether the resource is a component.
-        /// </summary>
-        [Input("isComponent")]
-        public Input<bool>? IsComponent { get; set; }
-
-        /// <summary>
-        /// Indicates that the implementation of the resource should not be generated from the schema, and is instead provided out-of-band by the package author
-        /// </summary>
-        [Input("isOverlay")]
-        public Input<bool>? IsOverlay { get; set; }
-
-        [Input("methods")]
-        private InputMap<string>? _methods;
-
-        /// <summary>
-        /// A map from method name to function token that describes the resource's method set.
-        /// </summary>
-        public InputMap<string> Methods
-        {
-            get => _methods ?? (_methods = new InputMap<string>());
-            set => _methods = value;
-        }
-
         [Input("properties")]
-        private InputMap<Inputs.PropertiesAdditionalPropertiesArgs>? _properties;
+        private InputMap<Inputs.InputsPropertiesAdditionalPropertiesArgs>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public InputMap<Inputs.PropertiesAdditionalPropertiesArgs> Properties
+        public InputMap<Inputs.InputsPropertiesAdditionalPropertiesArgs> Properties
         {
-            get => _properties ?? (_properties = new InputMap<Inputs.PropertiesAdditionalPropertiesArgs>());
+            get => _properties ?? (_properties = new InputMap<Inputs.InputsPropertiesAdditionalPropertiesArgs>());
             set => _properties = value;
         }
 
@@ -106,21 +46,6 @@ namespace Pulumi.Pulumi.Inputs
             get => _required ?? (_required = new InputList<string>());
             set => _required = value;
         }
-
-        [Input("requiredInputs")]
-        private InputList<string>? _requiredInputs;
-
-        /// <summary>
-        /// A list of the names of the resource's required input properties.
-        /// </summary>
-        public InputList<string> RequiredInputs
-        {
-            get => _requiredInputs ?? (_requiredInputs = new InputList<string>());
-            set => _requiredInputs = value;
-        }
-
-        [Input("stateInputs")]
-        public Input<Inputs.ObjectTypeSpecArgs>? StateInputs { get; set; }
 
         public ObjectTypeSpecArgs()
         {

@@ -17,11 +17,11 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class OutputsPropertiesAdditionalProperties
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.OneOf0? Choice1Of5;
-        public readonly Outputs.ArrayType? Choice2Of5;
-        public readonly Outputs.OutputsPropertiesAdditionalPropertiesChoice3Of5? Choice3Of5;
+        public readonly Outputs.OutputsPropertiesAdditionalPropertiesChoice1Of5? Choice1Of5;
+        public readonly Outputs.OutputsPropertiesAdditionalPropertiesChoice2Of5? Choice2Of5;
+        public readonly Outputs.Choice3Of5? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
-        public readonly Outputs.OneOf4? Choice5Of5;
+        public readonly Outputs.PropertiesAdditionalPropertiesChoice5Of5? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
@@ -64,15 +64,15 @@ namespace Pulumi.Pulumi.Outputs
         private OutputsPropertiesAdditionalProperties(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.OneOf0? choice1Of5,
+            Outputs.OutputsPropertiesAdditionalPropertiesChoice1Of5? choice1Of5,
 
-            Outputs.ArrayType? choice2Of5,
+            Outputs.OutputsPropertiesAdditionalPropertiesChoice2Of5? choice2Of5,
 
-            Outputs.OutputsPropertiesAdditionalPropertiesChoice3Of5? choice3Of5,
+            Outputs.Choice3Of5? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 
-            Outputs.OneOf4? choice5Of5,
+            Outputs.PropertiesAdditionalPropertiesChoice5Of5? choice5Of5,
 
             object? @const,
 

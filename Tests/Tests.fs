@@ -730,44 +730,7 @@ let ``Test inline oneOf`` () =
             "keyA", Pulumi.Provider.PropertyValue("hello world")
         ]
     ])
-        
-[<Fact>]
-let ``Test object const property`` () =
-    let t = Test.convertSchema """{
-        "type": "object",
-        "properties": {
-            "foo": { "type": "string" },
-            "bar": { "const": "ba ba black sheep" }
-        },
-        "additionalProperties": false
-    }"""
-    t.RoundTrip()
-    
-    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{
-        "type":"object",
-        "properties":{
-            "foo":{"type":"string"},
-            "bar":{"type":"string", "const": "ba ba black sheep"}
-        }
-    }"""])
-    
-    Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("a")
-    ]
-    |> t.ShouldWrite """{"foo":"a"}"""
-    
-    // Properties are optional by default
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
-    |> t.ShouldWrite """{}"""
 
-    """{"foo":"string"}"""
-    |> t.ShouldRead (Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("string")
-    ])
-
-    """{}"""
-    |> t.ShouldRead (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
-    
 [<Fact>]
 let ``Test object with false properties`` () =
     let t = Test.convertSchema """{

@@ -24,19 +24,19 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("choice1Of5")]
-        public Inputs.Choice1Of5? Choice1Of5 { get; set; }
+        public Inputs.VariablesAdditionalPropertiesChoice1Of5? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Inputs.AdditionalPropertiesChoice2Of5? Choice2Of5 { get; set; }
+        public Inputs.VariablesAdditionalPropertiesChoice2Of5? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
-        public Inputs.VariablesAdditionalPropertiesChoice3Of5? Choice3Of5 { get; set; }
+        public Inputs.AdditionalPropertiesChoice3Of5? Choice3Of5 { get; set; }
 
         [Input("choice4Of5")]
         public Inputs.NamedType? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
-        public Inputs.Choice5Of5? Choice5Of5 { get; set; }
+        public Inputs.UnionType? Choice5Of5 { get; set; }
 
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.

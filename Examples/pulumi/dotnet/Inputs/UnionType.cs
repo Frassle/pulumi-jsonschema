@@ -19,14 +19,14 @@ namespace Pulumi.Pulumi.Inputs
         public Inputs.Discriminator? Discriminator { get; set; }
 
         [Input("oneOf", required: true)]
-        private List<Inputs.Choice1Of2PropertiesAdditionalProperties>? _oneOf;
+        private List<Inputs.VariablesAdditionalProperties>? _oneOf;
 
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
-        public List<Inputs.Choice1Of2PropertiesAdditionalProperties> OneOf
+        public List<Inputs.VariablesAdditionalProperties> OneOf
         {
-            get => _oneOf ?? (_oneOf = new List<Inputs.Choice1Of2PropertiesAdditionalProperties>());
+            get => _oneOf ?? (_oneOf = new List<Inputs.VariablesAdditionalProperties>());
             set => _oneOf = value;
         }
 

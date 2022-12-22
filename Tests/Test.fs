@@ -203,6 +203,15 @@ type SchemaTest = {
             |> ignore)
         
     member this.ShouldThrow<'T when 'T :> exn>(json : string) : 'T =
+        let validationOptions = Json.Schema.ValidationOptions()
+        validationOptions.OutputFormat <- Json.Schema.OutputFormat.Basic
+    
+        let element = fromJson json
+        let node = Json.More.JsonElementExtensions.AsNode(element)
+        let validation = this.Schema.Validate(node, validationOptions)
+        if validation.IsValid then 
+            failwith validation.Message
+
         Assert.Throws<'T>(fun () ->
             fromJson json
             |> this.Conversion.Reader 

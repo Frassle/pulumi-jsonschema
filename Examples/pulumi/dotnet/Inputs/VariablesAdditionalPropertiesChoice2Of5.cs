@@ -13,17 +13,17 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
     /// </summary>
-    public sealed class Choice1Of2PropertiesAdditionalPropertiesChoice2Of5 : global::Pulumi.InvokeArgs
+    public sealed class VariablesAdditionalPropertiesChoice2Of5 : global::Pulumi.InvokeArgs
     {
         [Input("items", required: true)]
-        public Inputs.Choice1Of2PropertiesAdditionalProperties Items { get; set; } = null!;
+        public Inputs.VariablesAdditionalProperties Items { get; set; } = null!;
 
         [Input("type", required: true)]
         public string Type { get; set; } = null!;
 
-        public Choice1Of2PropertiesAdditionalPropertiesChoice2Of5()
+        public VariablesAdditionalPropertiesChoice2Of5()
         {
         }
-        public static new Choice1Of2PropertiesAdditionalPropertiesChoice2Of5 Empty => new Choice1Of2PropertiesAdditionalPropertiesChoice2Of5();
+        public static new VariablesAdditionalPropertiesChoice2Of5 Empty => new VariablesAdditionalPropertiesChoice2Of5();
     }
 }
