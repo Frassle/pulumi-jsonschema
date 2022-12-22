@@ -360,6 +360,19 @@ let writePrimitive (typ : PrimitiveType) (validation : PrimitiveValidation) (val
     getNode value
 
 let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (value : JsonElement) =
+    let valueTyp = 
+        match value.ValueKind with 
+        | JsonValueKind.Null -> "null"
+        | JsonValueKind.True -> "boolean"
+        | JsonValueKind.False -> "boolean"
+        | JsonValueKind.Number -> 
+            let n = value.GetDouble()
+            if n = floor n then "integer" else "number"
+        | JsonValueKind.String -> "string"
+        | JsonValueKind.Array -> "array"
+        | JsonValueKind.Object -> "object"
+        | _ -> failwith "Unexpected JsonValueKind"
+
     match typ with 
     | PrimitiveType.Boolean ->
         if value.ValueKind = JsonValueKind.True then
@@ -367,8 +380,19 @@ let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (valu
         elif value.ValueKind = JsonValueKind.False then
             Ok (Pulumi.Provider.PropertyValue false)
         else 
-            errorf "Invalid JSON document expected bool got %O" value.ValueKind
-    | PrimitiveType.Integer
+            errorf "Value is \"%s\" but should be \"boolean\"" valueTyp
+    | PrimitiveType.Integer ->
+        if value.ValueKind = JsonValueKind.Number then
+            let num = value.GetDouble()
+            if num <> floor num then                 
+                errorf "Value is \"number\" but should be \"integer\"" 
+            else
+                match validation.Numeric.Validate (decimal num) with
+                | Some err -> Error err
+                | None -> Ok num
+                |> Result.map Pulumi.Provider.PropertyValue
+        else 
+            errorf "Value is \"%s\" but should be \"integer\"" valueTyp
     | PrimitiveType.Number ->
         if value.ValueKind = JsonValueKind.Number then
             let num = value.GetDouble()
@@ -377,7 +401,7 @@ let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (valu
             | None -> Ok num
             |> Result.map Pulumi.Provider.PropertyValue
         else 
-            errorf "Invalid JSON document expected number got %O" value.ValueKind
+            errorf "Value is \"%s\" but should be \"number\"" valueTyp
     | PrimitiveType.String ->
         if value.ValueKind = JsonValueKind.String then
             let str = value.GetString()
@@ -386,7 +410,7 @@ let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (valu
             | None -> Ok str
             |> Result.map Pulumi.Provider.PropertyValue
         else 
-            errorf "Invalid JSON document expected number got %O" value.ValueKind
+            errorf "Value is \"%s\" but should be \"string\"" valueTyp
 
 type AnyConversion = {
     Description : string option
@@ -2113,31 +2137,15 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         ]))
     ]))
 
-    let validationOptions = Json.Schema.ValidationOptions()
-    validationOptions.OutputFormat <- Json.Schema.OutputFormat.Basic
-    
-    let writer (value : Pulumi.Provider.PropertyValue) = 
-        let result = conversion.Writer value
-        let validation = jsonSchema.Validate(Option.toObj result, validationOptions)
-        if not validation.IsValid then 
-            failwith validation.Message
-        else 
-            result
-
     let reader (element : JsonElement) =
-        let node = Json.More.JsonElementExtensions.AsNode(element)
-        let validation = jsonSchema.Validate(node, validationOptions)
-        if not validation.IsValid then 
-            failwith validation.Message
-        else 
-            match conversion.Reader element with 
-            | Ok ok -> ok
-            | Error msg -> failwith msg
+        match conversion.Reader element with 
+        | Ok ok -> ok
+        | Error msg -> failwith msg
 
     {
         Schema = schema
         Reader = reader
-        Writer = writer
+        Writer = conversion.Writer
     }
 
 type Provider(conversion : RootConversion, host : Pulumi.Provider.IHost) =
