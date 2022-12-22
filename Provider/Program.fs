@@ -1503,7 +1503,6 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
             | true, paths -> a.SetItem(b.Key, Set.union paths b.Value)
         ) a
 
-
 and ConversionContext = {
     Type : Json.Schema.SchemaValueType option
     // True if object types should default to additional properties

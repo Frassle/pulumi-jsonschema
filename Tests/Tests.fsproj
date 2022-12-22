@@ -13,6 +13,7 @@
 	  <Compile Include="BooleanTests.fs" />
 	  <Compile Include="NumberTests.fs" />
 	  <Compile Include="StringTests.fs" />
+	  <Compile Include="ArrayTests.fs" />
 	  <Compile Include="TupleTests.fs" />
 	  <Compile Include="SdkTests.fs" />
     <Compile Include="Program.fs" />
