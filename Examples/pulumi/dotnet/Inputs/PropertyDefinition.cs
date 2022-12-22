@@ -27,16 +27,16 @@ namespace Pulumi.Pulumi.Inputs
         public Inputs.PrimitiveType6? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Inputs.ArrayType2? Choice2Of5 { get; set; }
+        public Inputs.ArrayType6? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
-        public Inputs.MapType1? Choice3Of5 { get; set; }
+        public Inputs.MapType3? Choice3Of5 { get; set; }
 
         [Input("choice4Of5")]
         public Inputs.NamedType? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
-        public Inputs.UnionType6? Choice5Of5 { get; set; }
+        public Inputs.UnionType0? Choice5Of5 { get; set; }
 
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.

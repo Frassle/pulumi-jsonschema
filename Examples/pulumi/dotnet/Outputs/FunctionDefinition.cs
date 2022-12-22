@@ -25,7 +25,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The description of the function, if any. Interpreted as Markdown.
         /// </summary>
         public readonly string? Description;
-        public readonly Outputs.ObjectTypeDetails? Inputs;
+        public readonly Outputs.ObjectTypeDetails0? Inputs;
         /// <summary>
         /// Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author
         /// </summary>
@@ -34,7 +34,7 @@ namespace Pulumi.Pulumi.Outputs
         /// Additional language-specific data about the function.
         /// </summary>
         public readonly ImmutableDictionary<string, object>? Language;
-        public readonly Outputs.ObjectTypeDetails0? Outputs;
+        public readonly Outputs.ObjectTypeDetails? Outputs;
 
         [OutputConstructor]
         private FunctionDefinition(
@@ -44,13 +44,13 @@ namespace Pulumi.Pulumi.Outputs
 
             string? description,
 
-            Outputs.ObjectTypeDetails? inputs,
+            Outputs.ObjectTypeDetails0? inputs,
 
             bool? isOverlay,
 
             ImmutableDictionary<string, object>? language,
 
-            Outputs.ObjectTypeDetails0? outputs)
+            Outputs.ObjectTypeDetails? outputs)
         {
             AdditionalProperties = additionalProperties;
             DeprecationMessage = deprecationMessage;

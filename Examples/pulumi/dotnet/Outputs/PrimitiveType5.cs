@@ -16,10 +16,10 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class PrimitiveType5
     {
-        public readonly Pulumi.Pulumi.ProviderInputPropertiesAdditionalPropertiesChoice1Of5Type Type;
+        public readonly Pulumi.Pulumi.ConfigVariablesAdditionalPropertiesChoice1Of5Type Type;
 
         [OutputConstructor]
-        private PrimitiveType5(Pulumi.Pulumi.ProviderInputPropertiesAdditionalPropertiesChoice1Of5Type type)
+        private PrimitiveType5(Pulumi.Pulumi.ConfigVariablesAdditionalPropertiesChoice1Of5Type type)
         {
             Type = type;
         }
