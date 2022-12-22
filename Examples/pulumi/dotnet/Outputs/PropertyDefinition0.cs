@@ -17,10 +17,10 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class PropertyDefinition0
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.PrimitiveType2? Choice1Of5;
-        public readonly Outputs.ArrayType1? Choice2Of5;
-        public readonly Outputs.MapType4? Choice3Of5;
-        public readonly Outputs.NamedType6? Choice4Of5;
+        public readonly Outputs.PrimitiveType3? Choice1Of5;
+        public readonly Outputs.ArrayType? Choice2Of5;
+        public readonly Outputs.MapType2? Choice3Of5;
+        public readonly Outputs.NamedType3? Choice4Of5;
         public readonly Outputs.UnionType4? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
@@ -64,13 +64,13 @@ namespace Pulumi.Pulumi.Outputs
         private PropertyDefinition0(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.PrimitiveType2? choice1Of5,
+            Outputs.PrimitiveType3? choice1Of5,
 
-            Outputs.ArrayType1? choice2Of5,
+            Outputs.ArrayType? choice2Of5,
 
-            Outputs.MapType4? choice3Of5,
+            Outputs.MapType2? choice3Of5,
 
-            Outputs.NamedType6? choice4Of5,
+            Outputs.NamedType3? choice4Of5,
 
             Outputs.UnionType4? choice5Of5,
 

@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class MapType4 : global::Pulumi.InvokeArgs
     {
         [Input("additionalProperties")]
-        public Inputs.PropertyDefinition0? AdditionalProperties { get; set; }
+        public Inputs.PropertyDefinition5? AdditionalProperties { get; set; }
 
         [Input("type", required: true)]
         public string Type { get; set; } = null!;

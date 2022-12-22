@@ -32,7 +32,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from property name to propertySpec that describes the resource's input properties.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.PropertyDefinition6>? InputProperties;
+        public readonly ImmutableDictionary<string, Outputs.PropertyDefinition5>? InputProperties;
         /// <summary>
         /// Indicates whether the resource is a component.
         /// </summary>
@@ -48,7 +48,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.PropertyDefinition3>? Properties;
+        public readonly ImmutableDictionary<string, Outputs.PropertyDefinition1>? Properties;
         /// <summary>
         /// A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
         /// </summary>
@@ -69,7 +69,7 @@ namespace Pulumi.Pulumi.Outputs
 
             string? description,
 
-            ImmutableDictionary<string, Outputs.PropertyDefinition6>? inputProperties,
+            ImmutableDictionary<string, Outputs.PropertyDefinition5>? inputProperties,
 
             bool? isComponent,
 
@@ -77,7 +77,7 @@ namespace Pulumi.Pulumi.Outputs
 
             ImmutableDictionary<string, string>? methods,
 
-            ImmutableDictionary<string, Outputs.PropertyDefinition3>? properties,
+            ImmutableDictionary<string, Outputs.PropertyDefinition1>? properties,
 
             ImmutableArray<string> required,
 

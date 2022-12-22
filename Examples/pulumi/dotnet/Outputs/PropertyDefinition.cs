@@ -17,10 +17,10 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class PropertyDefinition
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.PrimitiveType0? Choice1Of5;
+        public readonly Outputs.PrimitiveType1? Choice1Of5;
         public readonly Outputs.ArrayType6? Choice2Of5;
-        public readonly Outputs.MapType1? Choice3Of5;
-        public readonly Outputs.NamedType5? Choice4Of5;
+        public readonly Outputs.MapType0? Choice3Of5;
+        public readonly Outputs.NamedType4? Choice4Of5;
         public readonly Outputs.UnionType6? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
@@ -30,7 +30,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The default value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
         public readonly object? Default;
-        public readonly Outputs.PropertySpecDefaultInfo2? DefaultInfo;
+        public readonly Outputs.PropertySpecDefaultInfo1? DefaultInfo;
         /// <summary>
         /// Indicates whether the property is deprecated
         /// </summary>
@@ -64,13 +64,13 @@ namespace Pulumi.Pulumi.Outputs
         private PropertyDefinition(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.PrimitiveType0? choice1Of5,
+            Outputs.PrimitiveType1? choice1Of5,
 
             Outputs.ArrayType6? choice2Of5,
 
-            Outputs.MapType1? choice3Of5,
+            Outputs.MapType0? choice3Of5,
 
-            Outputs.NamedType5? choice4Of5,
+            Outputs.NamedType4? choice4Of5,
 
             Outputs.UnionType6? choice5Of5,
 
@@ -78,7 +78,7 @@ namespace Pulumi.Pulumi.Outputs
 
             object? @default,
 
-            Outputs.PropertySpecDefaultInfo2? defaultInfo,
+            Outputs.PropertySpecDefaultInfo1? defaultInfo,
 
             string? deprecationMessage,
 

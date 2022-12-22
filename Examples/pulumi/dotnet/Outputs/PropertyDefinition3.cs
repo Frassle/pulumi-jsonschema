@@ -17,11 +17,11 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class PropertyDefinition3
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.PrimitiveType1? Choice1Of5;
-        public readonly Outputs.ArrayType2? Choice2Of5;
+        public readonly Outputs.PrimitiveType6? Choice1Of5;
+        public readonly Outputs.ArrayType1? Choice2Of5;
         public readonly Outputs.MapType5? Choice3Of5;
         public readonly Outputs.NamedType2? Choice4Of5;
-        public readonly Outputs.UnionType3? Choice5Of5;
+        public readonly Outputs.UnionType1? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
@@ -30,7 +30,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The default value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
         public readonly object? Default;
-        public readonly Outputs.PropertySpecDefaultInfo5? DefaultInfo;
+        public readonly Outputs.PropertySpecDefaultInfo4? DefaultInfo;
         /// <summary>
         /// Indicates whether the property is deprecated
         /// </summary>
@@ -64,21 +64,21 @@ namespace Pulumi.Pulumi.Outputs
         private PropertyDefinition3(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.PrimitiveType1? choice1Of5,
+            Outputs.PrimitiveType6? choice1Of5,
 
-            Outputs.ArrayType2? choice2Of5,
+            Outputs.ArrayType1? choice2Of5,
 
             Outputs.MapType5? choice3Of5,
 
             Outputs.NamedType2? choice4Of5,
 
-            Outputs.UnionType3? choice5Of5,
+            Outputs.UnionType1? choice5Of5,
 
             object? @const,
 
             object? @default,
 
-            Outputs.PropertySpecDefaultInfo5? defaultInfo,
+            Outputs.PropertySpecDefaultInfo4? defaultInfo,
 
             string? deprecationMessage,
 

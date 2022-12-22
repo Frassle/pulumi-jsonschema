@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class ArrayType5 : global::Pulumi.InvokeArgs
     {
         [Input("items", required: true)]
-        public Inputs.PropertyDefinition2 Items { get; set; } = null!;
+        public Inputs.PropertyDefinition5 Items { get; set; } = null!;
 
         [Input("type", required: true)]
         public string Type { get; set; } = null!;

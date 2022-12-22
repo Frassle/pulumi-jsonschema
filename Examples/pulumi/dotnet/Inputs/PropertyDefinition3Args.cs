@@ -24,10 +24,10 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("choice1Of5")]
-        public Input<Inputs.PrimitiveType1Args>? Choice1Of5 { get; set; }
+        public Input<Inputs.PrimitiveType6Args>? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Input<Inputs.ArrayType2Args>? Choice2Of5 { get; set; }
+        public Input<Inputs.ArrayType1Args>? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
         public Input<Inputs.MapType5Args>? Choice3Of5 { get; set; }
@@ -36,7 +36,7 @@ namespace Pulumi.Pulumi.Inputs
         public Input<Inputs.NamedType2Args>? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
-        public Input<Inputs.UnionType3Args>? Choice5Of5 { get; set; }
+        public Input<Inputs.UnionType1Args>? Choice5Of5 { get; set; }
 
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
@@ -51,7 +51,7 @@ namespace Pulumi.Pulumi.Inputs
         public object? Default { get; set; }
 
         [Input("defaultInfo")]
-        public Input<Inputs.PropertySpecDefaultInfo5Args>? DefaultInfo { get; set; }
+        public Input<Inputs.PropertySpecDefaultInfo4Args>? DefaultInfo { get; set; }
 
         /// <summary>
         /// Indicates whether the property is deprecated

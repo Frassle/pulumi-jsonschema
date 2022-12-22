@@ -16,20 +16,20 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class UnionType6
     {
-        public readonly Outputs.PropertySpecOneOf4Discriminator5? Discriminator;
+        public readonly Outputs.PropertySpecOneOf4Discriminator3? Discriminator;
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
         public readonly ImmutableArray<Outputs.PropertyDefinition> OneOf;
-        public readonly Pulumi.Pulumi.PropertySpecOneOf4Type1? Type;
+        public readonly Pulumi.Pulumi.PropertySpecOneOf4Type2? Type;
 
         [OutputConstructor]
         private UnionType6(
-            Outputs.PropertySpecOneOf4Discriminator5? discriminator,
+            Outputs.PropertySpecOneOf4Discriminator3? discriminator,
 
             ImmutableArray<Outputs.PropertyDefinition> oneOf,
 
-            Pulumi.Pulumi.PropertySpecOneOf4Type1? type)
+            Pulumi.Pulumi.PropertySpecOneOf4Type2? type)
         {
             Discriminator = discriminator;
             OneOf = oneOf;

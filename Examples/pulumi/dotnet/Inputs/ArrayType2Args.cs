@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class ArrayType2Args : global::Pulumi.ResourceArgs
     {
         [Input("items", required: true)]
-        public Input<Inputs.PropertyDefinition3Args> Items { get; set; } = null!;
+        public Input<Inputs.PropertyDefinition6Args> Items { get; set; } = null!;
 
         [Input("type", required: true)]
         public Input<string> Type { get; set; } = null!;

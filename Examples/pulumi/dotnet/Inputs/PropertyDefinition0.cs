@@ -24,16 +24,16 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("choice1Of5")]
-        public Inputs.PrimitiveType2? Choice1Of5 { get; set; }
+        public Inputs.PrimitiveType3? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Inputs.ArrayType1? Choice2Of5 { get; set; }
+        public Inputs.ArrayType? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
-        public Inputs.MapType4? Choice3Of5 { get; set; }
+        public Inputs.MapType2? Choice3Of5 { get; set; }
 
         [Input("choice4Of5")]
-        public Inputs.NamedType6? Choice4Of5 { get; set; }
+        public Inputs.NamedType3? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
         public Inputs.UnionType4? Choice5Of5 { get; set; }
