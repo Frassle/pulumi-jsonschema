@@ -118,6 +118,11 @@ let complexSchema (types : (string*string) list) : string =
         |> Seq.map (fun (k, v) -> sprintf "\"%s\": %s" k v)
         |> String.concat ","
 
+    let rootType = 
+        types
+        |> Seq.head
+        |> fst
+
     sprintf """{
     "name":"schema",
     "description":"A pulumi package generated from a json schema",
@@ -135,14 +140,14 @@ let complexSchema (types : (string*string) list) : string =
             },
             "outputs":{
                 "required": ["value"],
-                "properties": {"value": {"$ref":"#/types/schema:index:root"}}
+                "properties": {"value": {"$ref":"#/types/%s"}}
             }
         },
         "schema:index:write":{
             "description":"Read the given JSON into the object model",
             "inputs":{
                 "required": ["value"],
-                "properties": {"value": {"$ref":"#/types/schema:index:root"}}
+                "properties": {"value": {"$ref":"#/types/%s"}}
             },
             "outputs":{
                 "required": ["json"],
@@ -150,7 +155,7 @@ let complexSchema (types : (string*string) list) : string =
             }
         }
     }
-}""" typesJson
+}""" typesJson rootType rootType
     
 let dictToProperty (list : (string * Pulumi.Provider.PropertyValue) list) =
     list

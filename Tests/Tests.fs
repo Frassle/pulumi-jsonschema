@@ -671,18 +671,6 @@ let ``Test inline oneOf`` () =
     }"""
     
     t.ShouldEqual (Test.complexSchema [
-        "schema:index:oneOf0", """{
-            "type": "object",
-            "properties": {
-                "keyA": { "type": "string" }
-            }
-        }"""
-        "schema:index:oneOf1", """{
-            "type": "object",
-            "properties": {
-                "keyB": { "type": "string" }
-            }
-        }"""
         "schema:index:root", """{
             "type": "object",
             "properties": {
@@ -699,6 +687,18 @@ let ``Test inline oneOf`` () =
                 "choice2Of2": {
                     "$ref": "#/types/schema:index:oneOf1"
                 }
+            }
+        }"""
+        "schema:index:oneOf0", """{
+            "type": "object",
+            "properties": {
+                "keyA": { "type": "string" }
+            }
+        }"""
+        "schema:index:oneOf1", """{
+            "type": "object",
+            "properties": {
+                "keyB": { "type": "string" }
             }
         }"""])
 
@@ -844,6 +844,14 @@ let ``Test cyclic refs`` () =
     t.RoundTrip()
     
     t.ShouldEqual (Test.complexSchema [
+        "schema:index:root", """{
+            "type":"object",
+            "properties": {
+                "foo": {
+                    "$ref": "#/types/schema:index:myType"
+                }
+            }
+        }"""
         "schema:index:myType", """{
             "type":"object",
             "properties": {
@@ -856,14 +864,6 @@ let ``Test cyclic refs`` () =
                     "$ref": "pulumi.json#/Any"
                   }
                 }    
-            }
-        }"""
-        "schema:index:root", """{
-            "type":"object",
-            "properties": {
-                "foo": {
-                    "$ref": "#/types/schema:index:myType"
-                }
             }
         }"""])
     
