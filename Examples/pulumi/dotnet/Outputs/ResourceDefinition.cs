@@ -20,7 +20,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// The list of aliases for the resource.
         /// </summary>
-        public readonly ImmutableArray<Outputs.AliasDefinition> Aliases;
+        public readonly ImmutableArray<Outputs.AliasDefinition0> Aliases;
         /// <summary>
         /// Indicates whether the resource is deprecated
         /// </summary>
@@ -32,7 +32,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from property name to propertySpec that describes the resource's input properties.
         /// </summary>
-        public readonly ImmutableDictionary<string, object>? InputProperties;
+        public readonly ImmutableDictionary<string, Outputs.PropertyDefinition2>? InputProperties;
         /// <summary>
         /// Indicates whether the resource is a component.
         /// </summary>
@@ -48,7 +48,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public readonly ImmutableDictionary<string, object>? Properties;
+        public readonly ImmutableDictionary<string, Outputs.PropertyDefinition5>? Properties;
         /// <summary>
         /// A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
         /// </summary>
@@ -57,19 +57,19 @@ namespace Pulumi.Pulumi.Outputs
         /// A list of the names of the resource's required input properties.
         /// </summary>
         public readonly ImmutableArray<string> RequiredInputs;
-        public readonly Outputs.ObjectTypeDetails? StateInputs;
+        public readonly Outputs.ResourceDefinition? StateInputs;
 
         [OutputConstructor]
         private ResourceDefinition(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            ImmutableArray<Outputs.AliasDefinition> aliases,
+            ImmutableArray<Outputs.AliasDefinition0> aliases,
 
             string? deprecationMessage,
 
             string? description,
 
-            ImmutableDictionary<string, object>? inputProperties,
+            ImmutableDictionary<string, Outputs.PropertyDefinition2>? inputProperties,
 
             bool? isComponent,
 
@@ -77,13 +77,13 @@ namespace Pulumi.Pulumi.Outputs
 
             ImmutableDictionary<string, string>? methods,
 
-            ImmutableDictionary<string, object>? properties,
+            ImmutableDictionary<string, Outputs.PropertyDefinition5>? properties,
 
             ImmutableArray<string> required,
 
             ImmutableArray<string> requiredInputs,
 
-            Outputs.ObjectTypeDetails? stateInputs)
+            Outputs.ResourceDefinition? stateInputs)
         {
             AdditionalProperties = additionalProperties;
             Aliases = aliases;

@@ -57,7 +57,7 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("outputs")]
-        public Inputs.ObjectTypeDetails? Outputs { get; set; }
+        public Inputs.ObjectTypeDetails0? Outputs { get; set; }
 
         public FunctionDefinition()
         {

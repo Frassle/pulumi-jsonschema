@@ -106,7 +106,7 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? PluginDownloadURL { get; set; }
 
         [Input("provider")]
-        public Input<Inputs.ResourceDefinitionArgs>? Provider { get; set; }
+        public Input<Inputs.ResourceDefinition0Args>? Provider { get; set; }
 
         /// <summary>
         /// The name of the person or organization that authored and published the package.
@@ -133,14 +133,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("types")]
-        private InputMap<object>? _types;
+        private InputMap<Inputs.TypeDefinitionArgs>? _types;
 
         /// <summary>
         /// A map from type token to complexTypeSpec that describes the set of complex types (i.e. object, enum) defined by this package.
         /// </summary>
-        public InputMap<object> Types
+        public InputMap<Inputs.TypeDefinitionArgs> Types
         {
-            get => _types ?? (_types = new InputMap<object>());
+            get => _types ?? (_types = new InputMap<Inputs.TypeDefinitionArgs>());
             set => _types = value;
         }
 

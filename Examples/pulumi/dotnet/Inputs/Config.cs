@@ -28,14 +28,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("variables")]
-        private Dictionary<string, object>? _variables;
+        private Dictionary<string, Inputs.PropertyDefinition4>? _variables;
 
         /// <summary>
         /// A map from variable name to propertySpec that describes a package's configuration variables.
         /// </summary>
-        public Dictionary<string, object> Variables
+        public Dictionary<string, Inputs.PropertyDefinition4> Variables
         {
-            get => _variables ?? (_variables = new Dictionary<string, object>());
+            get => _variables ?? (_variables = new Dictionary<string, Inputs.PropertyDefinition4>());
             set => _variables = value;
         }
 

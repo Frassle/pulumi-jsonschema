@@ -1087,9 +1087,18 @@ and ObjectConversion = {
                 |> Map.ofSeq
                 
             // Check all the required keys are present
-            for key in this.Required do 
-                if obj.ContainsKey key |> not then
-                    failwithf "property '%s' is required" key
+            let requiredErr =
+                this.Required
+                |> Seq.tryPick (fun key ->
+                    if obj.ContainsKey key |> not then
+                        Some (errorf "property '%s' is required" key)
+                    else None
+                ) 
+                |> Option.defaultValue (Ok ())
+
+            match requiredErr with 
+            | Error err -> Error err
+            | Ok () ->
 
             let choice = 
                 match this.Choices with
@@ -2228,11 +2237,16 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
             // Default the empty string to "root"
             |> fun name -> if name = "" then "root" else name
 
-        if usedNames.Contains name then
-            failwith "Name conflicts not yet auto resolved"
+        let freename = 
+            if usedNames.Contains name |> not then name
+            else 
+                let mutable suffix = 0
+                while usedNames.Contains (sprintf "%s%d" name suffix) do
+                    suffix <- suffix + 1
+                sprintf "%s%d" name suffix
 
-        usedNames.Add(name) |> ignore
-        names.Add(complexType, name)
+        usedNames.Add(freename) |> ignore
+        names.Add(complexType, freename)
             
     let names = ImmutableDictionary.CreateRange(names)    
     if not names.IsEmpty then

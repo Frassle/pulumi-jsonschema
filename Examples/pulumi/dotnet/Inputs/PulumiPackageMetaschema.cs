@@ -106,7 +106,7 @@ namespace Pulumi.Pulumi.Inputs
         public string? PluginDownloadURL { get; set; }
 
         [Input("provider")]
-        public Inputs.ResourceDefinition? Provider { get; set; }
+        public Inputs.ResourceDefinition0? Provider { get; set; }
 
         /// <summary>
         /// The name of the person or organization that authored and published the package.
@@ -133,14 +133,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("types")]
-        private Dictionary<string, object>? _types;
+        private Dictionary<string, Inputs.TypeDefinition>? _types;
 
         /// <summary>
         /// A map from type token to complexTypeSpec that describes the set of complex types (i.e. object, enum) defined by this package.
         /// </summary>
-        public Dictionary<string, object> Types
+        public Dictionary<string, Inputs.TypeDefinition> Types
         {
-            get => _types ?? (_types = new Dictionary<string, object>());
+            get => _types ?? (_types = new Dictionary<string, Inputs.TypeDefinition>());
             set => _types = value;
         }
 

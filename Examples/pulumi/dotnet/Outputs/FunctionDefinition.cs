@@ -34,7 +34,7 @@ namespace Pulumi.Pulumi.Outputs
         /// Additional language-specific data about the function.
         /// </summary>
         public readonly ImmutableDictionary<string, object>? Language;
-        public readonly Outputs.ObjectTypeDetails? Outputs;
+        public readonly Outputs.ObjectTypeDetails0? Outputs;
 
         [OutputConstructor]
         private FunctionDefinition(
@@ -50,7 +50,7 @@ namespace Pulumi.Pulumi.Outputs
 
             ImmutableDictionary<string, object>? language,
 
-            Outputs.ObjectTypeDetails? outputs)
+            Outputs.ObjectTypeDetails0? outputs)
         {
             AdditionalProperties = additionalProperties;
             DeprecationMessage = deprecationMessage;
