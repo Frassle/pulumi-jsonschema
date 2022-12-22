@@ -20,13 +20,13 @@ namespace Pulumi.Pulumi.Outputs
         /// The list of possible values for the enum
         /// </summary>
         public readonly ImmutableArray<Outputs.EnumValueDefinition> Enum;
-        public readonly Pulumi.Pulumi.TypesAdditionalPropertiesChoice2Of2Type Type;
+        public readonly Pulumi.Pulumi.EnumTypeSpecPropertiesType Type;
 
         [OutputConstructor]
         private EnumTypeDefinition(
             ImmutableArray<Outputs.EnumValueDefinition> @enum,
 
-            Pulumi.Pulumi.TypesAdditionalPropertiesChoice2Of2Type type)
+            Pulumi.Pulumi.EnumTypeSpecPropertiesType type)
         {
             Enum = @enum;
             Type = type;

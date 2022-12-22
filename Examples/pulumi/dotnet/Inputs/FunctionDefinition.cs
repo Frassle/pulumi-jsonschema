@@ -36,7 +36,7 @@ namespace Pulumi.Pulumi.Inputs
         public string? Description { get; set; }
 
         [Input("inputs")]
-        public Inputs.ObjectTypeDetails0? Inputs { get; set; }
+        public Inputs.ObjectTypeDetails? Inputs { get; set; }
 
         /// <summary>
         /// Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author
@@ -57,7 +57,7 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("outputs")]
-        public Inputs.ObjectTypeDetails? Outputs { get; set; }
+        public Inputs.Outputs? Outputs { get; set; }
 
         public FunctionDefinition()
         {

@@ -17,11 +17,11 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class PropertyDefinition
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.PrimitiveType6? Choice1Of5;
-        public readonly Outputs.ArrayType6? Choice2Of5;
-        public readonly Outputs.MapType3? Choice3Of5;
+        public readonly Outputs.PrimitiveType? Choice1Of5;
+        public readonly Outputs.TypeSpecOneOf1? Choice2Of5;
+        public readonly Outputs.AdditionalPropertiesChoice3Of5? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
-        public readonly Outputs.UnionType0? Choice5Of5;
+        public readonly Outputs.AdditionalPropertiesChoice5Of5? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
@@ -30,7 +30,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The default value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
         public readonly object? Default;
-        public readonly Outputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesDefaultInfo? DefaultInfo;
+        public readonly Outputs.DefaultInfo? DefaultInfo;
         /// <summary>
         /// Indicates whether the property is deprecated
         /// </summary>
@@ -64,21 +64,21 @@ namespace Pulumi.Pulumi.Outputs
         private PropertyDefinition(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.PrimitiveType6? choice1Of5,
+            Outputs.PrimitiveType? choice1Of5,
 
-            Outputs.ArrayType6? choice2Of5,
+            Outputs.TypeSpecOneOf1? choice2Of5,
 
-            Outputs.MapType3? choice3Of5,
+            Outputs.AdditionalPropertiesChoice3Of5? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 
-            Outputs.UnionType0? choice5Of5,
+            Outputs.AdditionalPropertiesChoice5Of5? choice5Of5,
 
             object? @const,
 
             object? @default,
 
-            Outputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesDefaultInfo? defaultInfo,
+            Outputs.DefaultInfo? defaultInfo,
 
             string? deprecationMessage,
 

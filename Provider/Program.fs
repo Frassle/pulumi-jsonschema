@@ -2276,7 +2276,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     for kv in complexTypes do
         let complexType, paths = kv.Key, kv.Value
 
-        let nameRegex = System.Text.RegularExpressions.Regex("[a-z][a-z0-9]+")
+        let nameRegex = System.Text.RegularExpressions.Regex("^[a-z][A-Za-z0-9]+$")
 
         let isValid name =
             if usedNames.Contains name then None 
