@@ -17,9 +17,9 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class PropertyDefinition
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.OneOf0? Choice1Of5;
-        public readonly Outputs.TypeSpecOneOf1? Choice2Of5;
-        public readonly Outputs.InputPropertiesAdditionalPropertiesChoice3Of5? Choice3Of5;
+        public readonly Outputs.PrimitiveType? Choice1Of5;
+        public readonly Outputs.VariablesAdditionalPropertiesChoice2Of5? Choice2Of5;
+        public readonly Outputs.Choice3Of5? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
         public readonly Outputs.TypeSpecOneOf4? Choice5Of5;
         /// <summary>
@@ -64,11 +64,11 @@ namespace Pulumi.Pulumi.Outputs
         private PropertyDefinition(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.OneOf0? choice1Of5,
+            Outputs.PrimitiveType? choice1Of5,
 
-            Outputs.TypeSpecOneOf1? choice2Of5,
+            Outputs.VariablesAdditionalPropertiesChoice2Of5? choice2Of5,
 
-            Outputs.InputPropertiesAdditionalPropertiesChoice3Of5? choice3Of5,
+            Outputs.Choice3Of5? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 

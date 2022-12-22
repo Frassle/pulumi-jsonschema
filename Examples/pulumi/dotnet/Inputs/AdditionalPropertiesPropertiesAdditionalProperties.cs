@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object or resource property
     /// </summary>
-    public sealed class OutputsPropertiesAdditionalProperties : global::Pulumi.InvokeArgs
+    public sealed class AdditionalPropertiesPropertiesAdditionalProperties : global::Pulumi.InvokeArgs
     {
         [Input("additionalProperties")]
         private Dictionary<string, object>? _additionalProperties;
@@ -24,19 +24,19 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("choice1Of5")]
-        public Inputs.OutputsPropertiesAdditionalPropertiesChoice1Of5? Choice1Of5 { get; set; }
+        public Inputs.Choice1Of5? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Inputs.OutputsPropertiesAdditionalPropertiesChoice2Of5? Choice2Of5 { get; set; }
+        public Inputs.TypeSpecOneOf1? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
-        public Inputs.Choice3Of5? Choice3Of5 { get; set; }
+        public Inputs.PropertiesAdditionalPropertiesChoice3Of5? Choice3Of5 { get; set; }
 
         [Input("choice4Of5")]
         public Inputs.NamedType? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
-        public Inputs.PropertiesAdditionalPropertiesChoice5Of5? Choice5Of5 { get; set; }
+        public Inputs.AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5? Choice5Of5 { get; set; }
 
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
@@ -101,9 +101,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("willReplaceOnChanges")]
         public bool? WillReplaceOnChanges { get; set; }
 
-        public OutputsPropertiesAdditionalProperties()
+        public AdditionalPropertiesPropertiesAdditionalProperties()
         {
         }
-        public static new OutputsPropertiesAdditionalProperties Empty => new OutputsPropertiesAdditionalProperties();
+        public static new AdditionalPropertiesPropertiesAdditionalProperties Empty => new AdditionalPropertiesPropertiesAdditionalProperties();
     }
 }

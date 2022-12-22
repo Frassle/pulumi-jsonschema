@@ -36,7 +36,7 @@ namespace Pulumi.Pulumi.Inputs
         public string? Description { get; set; }
 
         [Input("inputs")]
-        public Inputs.ObjectTypeSpec? Inputs { get; set; }
+        public Inputs.Inputs? Inputs { get; set; }
 
         /// <summary>
         /// Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author

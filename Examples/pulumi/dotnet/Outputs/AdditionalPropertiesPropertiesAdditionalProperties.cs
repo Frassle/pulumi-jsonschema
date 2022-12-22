@@ -14,14 +14,14 @@ namespace Pulumi.Pulumi.Outputs
     /// Describes an object or resource property
     /// </summary>
     [OutputType]
-    public sealed class OutputsPropertiesAdditionalProperties
+    public sealed class AdditionalPropertiesPropertiesAdditionalProperties
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.OutputsPropertiesAdditionalPropertiesChoice1Of5? Choice1Of5;
-        public readonly Outputs.OutputsPropertiesAdditionalPropertiesChoice2Of5? Choice2Of5;
-        public readonly Outputs.Choice3Of5? Choice3Of5;
+        public readonly Outputs.Choice1Of5? Choice1Of5;
+        public readonly Outputs.TypeSpecOneOf1? Choice2Of5;
+        public readonly Outputs.PropertiesAdditionalPropertiesChoice3Of5? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
-        public readonly Outputs.PropertiesAdditionalPropertiesChoice5Of5? Choice5Of5;
+        public readonly Outputs.AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
@@ -61,18 +61,18 @@ namespace Pulumi.Pulumi.Outputs
         public readonly bool? WillReplaceOnChanges;
 
         [OutputConstructor]
-        private OutputsPropertiesAdditionalProperties(
+        private AdditionalPropertiesPropertiesAdditionalProperties(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.OutputsPropertiesAdditionalPropertiesChoice1Of5? choice1Of5,
+            Outputs.Choice1Of5? choice1Of5,
 
-            Outputs.OutputsPropertiesAdditionalPropertiesChoice2Of5? choice2Of5,
+            Outputs.TypeSpecOneOf1? choice2Of5,
 
-            Outputs.Choice3Of5? choice3Of5,
+            Outputs.PropertiesAdditionalPropertiesChoice3Of5? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 
-            Outputs.PropertiesAdditionalPropertiesChoice5Of5? choice5Of5,
+            Outputs.AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5? choice5Of5,
 
             object? @const,
 

@@ -121,14 +121,14 @@ namespace Pulumi.Pulumi.Inputs
         public string? Repository { get; set; }
 
         [Input("resources")]
-        private Dictionary<string, Inputs.ResourcesAdditionalProperties>? _resources;
+        private Dictionary<string, Inputs.ObjectTypeSpec>? _resources;
 
         /// <summary>
         /// A map from type token to resourceSpec that describes the set of resources and components defined by this package.
         /// </summary>
-        public Dictionary<string, Inputs.ResourcesAdditionalProperties> Resources
+        public Dictionary<string, Inputs.ObjectTypeSpec> Resources
         {
-            get => _resources ?? (_resources = new Dictionary<string, Inputs.ResourcesAdditionalProperties>());
+            get => _resources ?? (_resources = new Dictionary<string, Inputs.ObjectTypeSpec>());
             set => _resources = value;
         }
 

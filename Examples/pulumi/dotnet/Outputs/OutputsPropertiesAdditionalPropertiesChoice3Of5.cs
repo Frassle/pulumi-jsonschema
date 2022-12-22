@@ -14,14 +14,14 @@ namespace Pulumi.Pulumi.Outputs
     /// A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
     /// </summary>
     [OutputType]
-    public sealed class InputPropertiesAdditionalPropertiesChoice3Of5
+    public sealed class OutputsPropertiesAdditionalPropertiesChoice3Of5
     {
-        public readonly Outputs.PropertyDefinition? AdditionalProperties;
+        public readonly Outputs.PropertiesAdditionalProperties? AdditionalProperties;
         public readonly string Type;
 
         [OutputConstructor]
-        private InputPropertiesAdditionalPropertiesChoice3Of5(
-            Outputs.PropertyDefinition? additionalProperties,
+        private OutputsPropertiesAdditionalPropertiesChoice3Of5(
+            Outputs.PropertiesAdditionalProperties? additionalProperties,
 
             string type)
         {

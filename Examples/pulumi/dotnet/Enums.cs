@@ -74,64 +74,31 @@ namespace Pulumi.Pulumi
     }
 
     /// <summary>
-    /// The underlying primitive type of the union, if any
+    /// The primitive type, if any
     /// </summary>
     [EnumType]
-    public readonly struct AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type : IEquatable<AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type>
+    public readonly struct Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type : IEquatable<Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type>
     {
         private readonly string _value;
 
-        private AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type(string value)
+        private Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type(string value)
         {
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        public static AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type Boolean { get; } = new AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type("boolean");
-        public static AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type Integer { get; } = new AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type("integer");
-        public static AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type Number { get; } = new AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type("number");
-        public static AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type @String { get; } = new AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type("string");
+        public static Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type Boolean { get; } = new Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type("boolean");
+        public static Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type Integer { get; } = new Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type("integer");
+        public static Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type Number { get; } = new Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type("number");
+        public static Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type @String { get; } = new Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type("string");
 
-        public static bool operator ==(AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type left, AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type right) => left.Equals(right);
-        public static bool operator !=(AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type left, AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type right) => !left.Equals(right);
+        public static bool operator ==(Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type left, Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type right) => left.Equals(right);
+        public static bool operator !=(Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type left, Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type right) => !left.Equals(right);
 
-        public static explicit operator string(AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type value) => value._value;
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) => obj is AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type other && Equals(other);
-        public bool Equals(AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Type other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+        public static explicit operator string(Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type value) => value._value;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-
-        public override string ToString() => _value;
-    }
-
-    /// <summary>
-    /// The underlying primitive type of the union, if any
-    /// </summary>
-    [EnumType]
-    public readonly struct AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type : IEquatable<AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type>
-    {
-        private readonly string _value;
-
-        private AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type(string value)
-        {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
-        }
-
-        public static AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type Boolean { get; } = new AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type("boolean");
-        public static AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type Integer { get; } = new AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type("integer");
-        public static AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type Number { get; } = new AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type("number");
-        public static AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type @String { get; } = new AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type("string");
-
-        public static bool operator ==(AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type left, AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type right) => left.Equals(right);
-        public static bool operator !=(AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type left, AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type right) => !left.Equals(right);
-
-        public static explicit operator string(AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type value) => value._value;
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) => obj is AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type other && Equals(other);
-        public bool Equals(AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Type other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+        public override bool Equals(object? obj) => obj is Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type other && Equals(other);
+        public bool Equals(Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Type other) => string.Equals(_value, other._value, StringComparison.Ordinal);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value?.GetHashCode() ?? 0;
@@ -239,64 +206,31 @@ namespace Pulumi.Pulumi
     }
 
     /// <summary>
-    /// The underlying primitive type of the union, if any
-    /// </summary>
-    [EnumType]
-    public readonly struct InputPropertiesAdditionalPropertiesChoice5Of5Type : IEquatable<InputPropertiesAdditionalPropertiesChoice5Of5Type>
-    {
-        private readonly string _value;
-
-        private InputPropertiesAdditionalPropertiesChoice5Of5Type(string value)
-        {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
-        }
-
-        public static InputPropertiesAdditionalPropertiesChoice5Of5Type Boolean { get; } = new InputPropertiesAdditionalPropertiesChoice5Of5Type("boolean");
-        public static InputPropertiesAdditionalPropertiesChoice5Of5Type Integer { get; } = new InputPropertiesAdditionalPropertiesChoice5Of5Type("integer");
-        public static InputPropertiesAdditionalPropertiesChoice5Of5Type Number { get; } = new InputPropertiesAdditionalPropertiesChoice5Of5Type("number");
-        public static InputPropertiesAdditionalPropertiesChoice5Of5Type @String { get; } = new InputPropertiesAdditionalPropertiesChoice5Of5Type("string");
-
-        public static bool operator ==(InputPropertiesAdditionalPropertiesChoice5Of5Type left, InputPropertiesAdditionalPropertiesChoice5Of5Type right) => left.Equals(right);
-        public static bool operator !=(InputPropertiesAdditionalPropertiesChoice5Of5Type left, InputPropertiesAdditionalPropertiesChoice5Of5Type right) => !left.Equals(right);
-
-        public static explicit operator string(InputPropertiesAdditionalPropertiesChoice5Of5Type value) => value._value;
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) => obj is InputPropertiesAdditionalPropertiesChoice5Of5Type other && Equals(other);
-        public bool Equals(InputPropertiesAdditionalPropertiesChoice5Of5Type other) => string.Equals(_value, other._value, StringComparison.Ordinal);
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-
-        public override string ToString() => _value;
-    }
-
-    /// <summary>
     /// The primitive type, if any
     /// </summary>
     [EnumType]
-    public readonly struct InputsPropertiesAdditionalPropertiesChoice1Of5Type : IEquatable<InputsPropertiesAdditionalPropertiesChoice1Of5Type>
+    public readonly struct InputPropertiesAdditionalPropertiesChoice1Of5Type : IEquatable<InputPropertiesAdditionalPropertiesChoice1Of5Type>
     {
         private readonly string _value;
 
-        private InputsPropertiesAdditionalPropertiesChoice1Of5Type(string value)
+        private InputPropertiesAdditionalPropertiesChoice1Of5Type(string value)
         {
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        public static InputsPropertiesAdditionalPropertiesChoice1Of5Type Boolean { get; } = new InputsPropertiesAdditionalPropertiesChoice1Of5Type("boolean");
-        public static InputsPropertiesAdditionalPropertiesChoice1Of5Type Integer { get; } = new InputsPropertiesAdditionalPropertiesChoice1Of5Type("integer");
-        public static InputsPropertiesAdditionalPropertiesChoice1Of5Type Number { get; } = new InputsPropertiesAdditionalPropertiesChoice1Of5Type("number");
-        public static InputsPropertiesAdditionalPropertiesChoice1Of5Type @String { get; } = new InputsPropertiesAdditionalPropertiesChoice1Of5Type("string");
+        public static InputPropertiesAdditionalPropertiesChoice1Of5Type Boolean { get; } = new InputPropertiesAdditionalPropertiesChoice1Of5Type("boolean");
+        public static InputPropertiesAdditionalPropertiesChoice1Of5Type Integer { get; } = new InputPropertiesAdditionalPropertiesChoice1Of5Type("integer");
+        public static InputPropertiesAdditionalPropertiesChoice1Of5Type Number { get; } = new InputPropertiesAdditionalPropertiesChoice1Of5Type("number");
+        public static InputPropertiesAdditionalPropertiesChoice1Of5Type @String { get; } = new InputPropertiesAdditionalPropertiesChoice1Of5Type("string");
 
-        public static bool operator ==(InputsPropertiesAdditionalPropertiesChoice1Of5Type left, InputsPropertiesAdditionalPropertiesChoice1Of5Type right) => left.Equals(right);
-        public static bool operator !=(InputsPropertiesAdditionalPropertiesChoice1Of5Type left, InputsPropertiesAdditionalPropertiesChoice1Of5Type right) => !left.Equals(right);
+        public static bool operator ==(InputPropertiesAdditionalPropertiesChoice1Of5Type left, InputPropertiesAdditionalPropertiesChoice1Of5Type right) => left.Equals(right);
+        public static bool operator !=(InputPropertiesAdditionalPropertiesChoice1Of5Type left, InputPropertiesAdditionalPropertiesChoice1Of5Type right) => !left.Equals(right);
 
-        public static explicit operator string(InputsPropertiesAdditionalPropertiesChoice1Of5Type value) => value._value;
+        public static explicit operator string(InputPropertiesAdditionalPropertiesChoice1Of5Type value) => value._value;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) => obj is InputsPropertiesAdditionalPropertiesChoice1Of5Type other && Equals(other);
-        public bool Equals(InputsPropertiesAdditionalPropertiesChoice1Of5Type other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+        public override bool Equals(object? obj) => obj is InputPropertiesAdditionalPropertiesChoice1Of5Type other && Equals(other);
+        public bool Equals(InputPropertiesAdditionalPropertiesChoice1Of5Type other) => string.Equals(_value, other._value, StringComparison.Ordinal);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value?.GetHashCode() ?? 0;
@@ -363,6 +297,39 @@ namespace Pulumi.Pulumi
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object? obj) => obj is OneOf4PropertiesType other && Equals(other);
         public bool Equals(OneOf4PropertiesType other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    /// <summary>
+    /// The underlying primitive type of the union, if any
+    /// </summary>
+    [EnumType]
+    public readonly struct OutputsPropertiesAdditionalPropertiesChoice5Of5Type : IEquatable<OutputsPropertiesAdditionalPropertiesChoice5Of5Type>
+    {
+        private readonly string _value;
+
+        private OutputsPropertiesAdditionalPropertiesChoice5Of5Type(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public static OutputsPropertiesAdditionalPropertiesChoice5Of5Type Boolean { get; } = new OutputsPropertiesAdditionalPropertiesChoice5Of5Type("boolean");
+        public static OutputsPropertiesAdditionalPropertiesChoice5Of5Type Integer { get; } = new OutputsPropertiesAdditionalPropertiesChoice5Of5Type("integer");
+        public static OutputsPropertiesAdditionalPropertiesChoice5Of5Type Number { get; } = new OutputsPropertiesAdditionalPropertiesChoice5Of5Type("number");
+        public static OutputsPropertiesAdditionalPropertiesChoice5Of5Type @String { get; } = new OutputsPropertiesAdditionalPropertiesChoice5Of5Type("string");
+
+        public static bool operator ==(OutputsPropertiesAdditionalPropertiesChoice5Of5Type left, OutputsPropertiesAdditionalPropertiesChoice5Of5Type right) => left.Equals(right);
+        public static bool operator !=(OutputsPropertiesAdditionalPropertiesChoice5Of5Type left, OutputsPropertiesAdditionalPropertiesChoice5Of5Type right) => !left.Equals(right);
+
+        public static explicit operator string(OutputsPropertiesAdditionalPropertiesChoice5Of5Type value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is OutputsPropertiesAdditionalPropertiesChoice5Of5Type other && Equals(other);
+        public bool Equals(OutputsPropertiesAdditionalPropertiesChoice5Of5Type other) => string.Equals(_value, other._value, StringComparison.Ordinal);
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value?.GetHashCode() ?? 0;
@@ -470,7 +437,40 @@ namespace Pulumi.Pulumi
     }
 
     /// <summary>
-    /// The primitive type, if any
+    /// The underlying primitive type of the union, if any
+    /// </summary>
+    [EnumType]
+    public readonly struct ProviderPropertiesAdditionalPropertiesChoice5Of5Type : IEquatable<ProviderPropertiesAdditionalPropertiesChoice5Of5Type>
+    {
+        private readonly string _value;
+
+        private ProviderPropertiesAdditionalPropertiesChoice5Of5Type(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        public static ProviderPropertiesAdditionalPropertiesChoice5Of5Type Boolean { get; } = new ProviderPropertiesAdditionalPropertiesChoice5Of5Type("boolean");
+        public static ProviderPropertiesAdditionalPropertiesChoice5Of5Type Integer { get; } = new ProviderPropertiesAdditionalPropertiesChoice5Of5Type("integer");
+        public static ProviderPropertiesAdditionalPropertiesChoice5Of5Type Number { get; } = new ProviderPropertiesAdditionalPropertiesChoice5Of5Type("number");
+        public static ProviderPropertiesAdditionalPropertiesChoice5Of5Type @String { get; } = new ProviderPropertiesAdditionalPropertiesChoice5Of5Type("string");
+
+        public static bool operator ==(ProviderPropertiesAdditionalPropertiesChoice5Of5Type left, ProviderPropertiesAdditionalPropertiesChoice5Of5Type right) => left.Equals(right);
+        public static bool operator !=(ProviderPropertiesAdditionalPropertiesChoice5Of5Type left, ProviderPropertiesAdditionalPropertiesChoice5Of5Type right) => !left.Equals(right);
+
+        public static explicit operator string(ProviderPropertiesAdditionalPropertiesChoice5Of5Type value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is ProviderPropertiesAdditionalPropertiesChoice5Of5Type other && Equals(other);
+        public bool Equals(ProviderPropertiesAdditionalPropertiesChoice5Of5Type other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    /// <summary>
+    /// The underlying primitive type of the union, if any
     /// </summary>
     [EnumType]
     public readonly struct Type : IEquatable<Type>

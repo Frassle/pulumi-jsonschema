@@ -13,17 +13,25 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object type
     /// </summary>
-    public sealed class ObjectTypeDefinition : global::Pulumi.InvokeArgs
+    public sealed class Inputs : global::Pulumi.InvokeArgs
     {
+        [Input("additionalProperties")]
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
+        {
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
+            set => _additionalProperties = value;
+        }
+
         [Input("properties")]
-        private Dictionary<string, Inputs.Choice1Of2PropertiesAdditionalProperties>? _properties;
+        private Dictionary<string, Inputs.TypeSpec>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public Dictionary<string, Inputs.Choice1Of2PropertiesAdditionalProperties> Properties
+        public Dictionary<string, Inputs.TypeSpec> Properties
         {
-            get => _properties ?? (_properties = new Dictionary<string, Inputs.Choice1Of2PropertiesAdditionalProperties>());
+            get => _properties ?? (_properties = new Dictionary<string, Inputs.TypeSpec>());
             set => _properties = value;
         }
 
@@ -39,12 +47,9 @@ namespace Pulumi.Pulumi.Inputs
             set => _required = value;
         }
 
-        [Input("type")]
-        public string? Type { get; set; }
-
-        public ObjectTypeDefinition()
+        public Inputs()
         {
         }
-        public static new ObjectTypeDefinition Empty => new ObjectTypeDefinition();
+        public static new Inputs Empty => new Inputs();
     }
 }

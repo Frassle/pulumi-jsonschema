@@ -14,29 +14,29 @@ namespace Pulumi.Pulumi.Outputs
     /// Describes an object type
     /// </summary>
     [OutputType]
-    public sealed class ObjectTypeDefinition
+    public sealed class Inputs
     {
+        public readonly ImmutableDictionary<string, object>? AdditionalProperties;
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.Choice1Of2PropertiesAdditionalProperties>? Properties;
+        public readonly ImmutableDictionary<string, Outputs.TypeSpec>? Properties;
         /// <summary>
         /// A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
         /// </summary>
         public readonly ImmutableArray<string> Required;
-        public readonly string? Type;
 
         [OutputConstructor]
-        private ObjectTypeDefinition(
-            ImmutableDictionary<string, Outputs.Choice1Of2PropertiesAdditionalProperties>? properties,
+        private Inputs(
+            ImmutableDictionary<string, object>? additionalProperties,
 
-            ImmutableArray<string> required,
+            ImmutableDictionary<string, Outputs.TypeSpec>? properties,
 
-            string? type)
+            ImmutableArray<string> required)
         {
+            AdditionalProperties = additionalProperties;
             Properties = properties;
             Required = required;
-            Type = type;
         }
     }
 }

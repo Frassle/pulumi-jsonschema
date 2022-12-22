@@ -226,14 +226,27 @@ type NumericValidation = {
 type PrimitiveValidation = {
     String : StringValidation
     Numeric : NumericValidation
+    Const : JsonNode option
 } with 
-    static member None = { String = StringValidation.None; Numeric = NumericValidation.None }
+    static member None = { 
+        String = StringValidation.None
+        Numeric = NumericValidation.None
+        Const = None
+    }
 
     static member FromKeywords (keywords : KeywordCollection) =
         {
             String = StringValidation.FromKeywords keywords
             Numeric = NumericValidation.FromKeywords keywords
+            Const = keywords |> pickKeyword<Json.Schema.ConstKeyword> |> Option.map (fun kw -> kw.Value)
         }
+
+    member this.Validate (node : JsonNode option) =
+        match this.Const with 
+        | Some c -> 
+            if Json.More.JsonNodeEqualityComparer.Instance.Equals(c, Option.toObj node) then None
+            else Some (sprintf "Expected %s" (c.ToJsonString()))
+        | None -> None
 
 type NullConversion = {
     Description : string option
@@ -371,7 +384,10 @@ let writePrimitive (typ : PrimitiveType) (validation : PrimitiveValidation) (val
                 (fun output -> getNode output.Value),
                 (fun _ -> raise "computed")
             )
-    getNode value
+    let n = getNode value
+    match validation.Validate n with 
+    | Some err -> failwith err
+    | None -> n
 
 let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (value : JsonElement) =
     let valueTyp = 
@@ -386,6 +402,10 @@ let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (valu
         | JsonValueKind.Array -> "array"
         | JsonValueKind.Object -> "object"
         | _ -> failwith "Unexpected JsonValueKind"
+        
+    match validation.Validate (Json.More.JsonElementExtensions.AsNode value |> Option.ofObj) with 
+    | Some err -> errorf "%s" err
+    | None -> 
 
     match typ with 
     | PrimitiveType.Boolean ->
@@ -1611,10 +1631,7 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
         {
             Type = PrimitiveType.String
             Description = getDescription jsonSchema.Keywords
-            Validation = {
-                String = StringValidation.FromKeywords jsonSchema.Keywords
-                Numeric = NumericValidation.None
-            }
+            Validation = PrimitiveValidation.FromKeywords jsonSchema.Keywords
             Const = Choice1Of4 ()
         }
         |> TypeSpec.Primitive
@@ -1638,10 +1655,7 @@ let convertNumberSchema isInteger (jsonSchema : Json.Schema.JsonSchema) : Primit
     {
         Type = if isInteger then PrimitiveType.Integer else PrimitiveType.Number
         Description = getDescription jsonSchema.Keywords
-        Validation = {
-            String = StringValidation.None
-            Numeric = NumericValidation.FromKeywords jsonSchema.Keywords
-        }
+        Validation = PrimitiveValidation.FromKeywords jsonSchema.Keywords
         Const = Choice1Of4 ()
     }
 
@@ -1693,7 +1707,7 @@ let convertConst (root : RootInformation) (schema : Json.Schema.JsonSchema) (con
         { 
             Description = getDescription schema.Keywords
             Type = typ
-            Validation = PrimitiveValidation.None
+            Validation = PrimitiveValidation.FromKeywords schema.Keywords
             Const = constant
         }
         |> TypeSpec.Primitive

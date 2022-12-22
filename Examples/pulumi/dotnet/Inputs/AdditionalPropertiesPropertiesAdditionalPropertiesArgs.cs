@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object or resource property
     /// </summary>
-    public sealed class InputsPropertiesAdditionalPropertiesArgs : global::Pulumi.ResourceArgs
+    public sealed class AdditionalPropertiesPropertiesAdditionalPropertiesArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
         private InputMap<object>? _additionalProperties;
@@ -24,19 +24,19 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("choice1Of5")]
-        public Input<Inputs.TypeSpecOneOf0Args>? Choice1Of5 { get; set; }
+        public Input<Inputs.Choice1Of5Args>? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Input<Inputs.AdditionalPropertiesChoice2Of5Args>? Choice2Of5 { get; set; }
+        public Input<Inputs.TypeSpecOneOf1Args>? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
-        public Input<Inputs.OneOf2Args>? Choice3Of5 { get; set; }
+        public Input<Inputs.PropertiesAdditionalPropertiesChoice3Of5Args>? Choice3Of5 { get; set; }
 
         [Input("choice4Of5")]
         public Input<Inputs.NamedTypeArgs>? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
-        public Input<Inputs.AdditionalPropertiesChoice5Of5Args>? Choice5Of5 { get; set; }
+        public Input<Inputs.AdditionalPropertiesPropertiesAdditionalPropertiesChoice5Of5Args>? Choice5Of5 { get; set; }
 
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
@@ -101,9 +101,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("willReplaceOnChanges")]
         public Input<bool>? WillReplaceOnChanges { get; set; }
 
-        public InputsPropertiesAdditionalPropertiesArgs()
+        public AdditionalPropertiesPropertiesAdditionalPropertiesArgs()
         {
         }
-        public static new InputsPropertiesAdditionalPropertiesArgs Empty => new InputsPropertiesAdditionalPropertiesArgs();
+        public static new AdditionalPropertiesPropertiesAdditionalPropertiesArgs Empty => new AdditionalPropertiesPropertiesAdditionalPropertiesArgs();
     }
 }

@@ -17,9 +17,9 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class ProviderPropertiesAdditionalProperties
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.AdditionalPropertiesChoice1Of5? Choice1Of5;
-        public readonly Outputs.ArrayType? Choice2Of5;
-        public readonly Outputs.PropertiesAdditionalPropertiesChoice3Of5? Choice3Of5;
+        public readonly Outputs.ProviderPropertiesAdditionalPropertiesChoice1Of5? Choice1Of5;
+        public readonly Outputs.Choice2Of5? Choice2Of5;
+        public readonly Outputs.AdditionalPropertiesChoice3Of5? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
         public readonly Outputs.ProviderPropertiesAdditionalPropertiesChoice5Of5? Choice5Of5;
         /// <summary>
@@ -64,11 +64,11 @@ namespace Pulumi.Pulumi.Outputs
         private ProviderPropertiesAdditionalProperties(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.AdditionalPropertiesChoice1Of5? choice1Of5,
+            Outputs.ProviderPropertiesAdditionalPropertiesChoice1Of5? choice1Of5,
 
-            Outputs.ArrayType? choice2Of5,
+            Outputs.Choice2Of5? choice2Of5,
 
-            Outputs.PropertiesAdditionalPropertiesChoice3Of5? choice3Of5,
+            Outputs.AdditionalPropertiesChoice3Of5? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 

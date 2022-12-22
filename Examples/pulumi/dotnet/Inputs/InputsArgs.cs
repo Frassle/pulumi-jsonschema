@@ -13,38 +13,43 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object type
     /// </summary>
-    public sealed class ObjectTypeDefinition : global::Pulumi.InvokeArgs
+    public sealed class InputsArgs : global::Pulumi.ResourceArgs
     {
+        [Input("additionalProperties")]
+        private InputMap<object>? _additionalProperties;
+        public InputMap<object> AdditionalProperties
+        {
+            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            set => _additionalProperties = value;
+        }
+
         [Input("properties")]
-        private Dictionary<string, Inputs.Choice1Of2PropertiesAdditionalProperties>? _properties;
+        private InputMap<Inputs.TypeSpecArgs>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public Dictionary<string, Inputs.Choice1Of2PropertiesAdditionalProperties> Properties
+        public InputMap<Inputs.TypeSpecArgs> Properties
         {
-            get => _properties ?? (_properties = new Dictionary<string, Inputs.Choice1Of2PropertiesAdditionalProperties>());
+            get => _properties ?? (_properties = new InputMap<Inputs.TypeSpecArgs>());
             set => _properties = value;
         }
 
         [Input("required")]
-        private List<string>? _required;
+        private InputList<string>? _required;
 
         /// <summary>
         /// A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
         /// </summary>
-        public List<string> Required
+        public InputList<string> Required
         {
-            get => _required ?? (_required = new List<string>());
+            get => _required ?? (_required = new InputList<string>());
             set => _required = value;
         }
 
-        [Input("type")]
-        public string? Type { get; set; }
-
-        public ObjectTypeDefinition()
+        public InputsArgs()
         {
         }
-        public static new ObjectTypeDefinition Empty => new ObjectTypeDefinition();
+        public static new InputsArgs Empty => new InputsArgs();
     }
 }

@@ -25,7 +25,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The description of the function, if any. Interpreted as Markdown.
         /// </summary>
         public readonly string? Description;
-        public readonly Outputs.ObjectTypeSpec? Inputs;
+        public readonly Outputs.Inputs? Inputs;
         /// <summary>
         /// Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author
         /// </summary>
@@ -44,7 +44,7 @@ namespace Pulumi.Pulumi.Outputs
 
             string? description,
 
-            Outputs.ObjectTypeSpec? inputs,
+            Outputs.Inputs? inputs,
 
             bool? isOverlay,
 

@@ -23,13 +23,13 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from variable name to propertySpec that describes a package's configuration variables.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.VariablesAdditionalProperties>? Variables;
+        public readonly ImmutableDictionary<string, Outputs.PropertyDefinition>? Variables;
 
         [OutputConstructor]
         private Config(
             ImmutableArray<string> defaults,
 
-            ImmutableDictionary<string, Outputs.VariablesAdditionalProperties>? variables)
+            ImmutableDictionary<string, Outputs.PropertyDefinition>? variables)
         {
             Defaults = defaults;
             Variables = variables;

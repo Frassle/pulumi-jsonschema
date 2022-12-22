@@ -121,14 +121,14 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? Repository { get; set; }
 
         [Input("resources")]
-        private InputMap<Inputs.ResourcesAdditionalPropertiesArgs>? _resources;
+        private InputMap<Inputs.ObjectTypeSpecArgs>? _resources;
 
         /// <summary>
         /// A map from type token to resourceSpec that describes the set of resources and components defined by this package.
         /// </summary>
-        public InputMap<Inputs.ResourcesAdditionalPropertiesArgs> Resources
+        public InputMap<Inputs.ObjectTypeSpecArgs> Resources
         {
-            get => _resources ?? (_resources = new InputMap<Inputs.ResourcesAdditionalPropertiesArgs>());
+            get => _resources ?? (_resources = new InputMap<Inputs.ObjectTypeSpecArgs>());
             set => _resources = value;
         }
 
