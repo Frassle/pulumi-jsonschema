@@ -169,7 +169,7 @@ type NumericValidation = {
     member this.Validate (value : decimal) =
         let mulCheck =
             match this.MultipleOf with 
-            | Some m when Decimal.Remainder(value, m) <> 0 -> 
+            | Some m when Decimal.Remainder(value, m) <> 0M -> 
                 sprintf "%M is not a multiple of %M" value m
                 |> Some
             | _ -> None
@@ -410,6 +410,32 @@ let readPrimitive (typ: PrimitiveType) (validation : PrimitiveValidation)  (valu
             |> Result.map Pulumi.Provider.PropertyValue
         else 
             errorf "Value is \"%s\" but should be \"string\"" valueTyp
+            
+type Annotations = {
+    PrefixItems : int
+    Items : bool
+    Properties : Set<string>
+    AdditionalProperties : Set<string>
+} with
+    static member Empty =
+        {
+            PrefixItems = 0
+            Items = false
+            Properties = Set.empty
+            AdditionalProperties = Set.empty
+        }
+
+    member this.AddProperty p = { this with Properties = Set.add p this.Properties }
+
+    member this.AddAdditionalProperty p = { this with AdditionalProperties = Set.add p this.AdditionalProperties }
+
+    member this.Union (other : Annotations) =
+        {
+            PrefixItems = max this.PrefixItems other.PrefixItems
+            Items = this.Items || other.Items
+            Properties = Set.union this.Properties other.Properties
+            AdditionalProperties = Set.union this.AdditionalProperties other.AdditionalProperties
+        }
 
 let rec writeAny (validation : PrimitiveValidation) (value : Pulumi.Provider.PropertyValue) =
     value.Match<JsonNode option>(
@@ -464,7 +490,9 @@ let rec readAny (validation : PrimitiveValidation) (value : JsonElement) =
             Ok (Pulumi.Provider.PropertyValue(value.GetString()))
         elif value.ValueKind = JsonValueKind.Array then 
             value.EnumerateArray()
-            |> Seq.map (fun item -> readAny PrimitiveValidation.None item)
+            |> Seq.map (fun item -> 
+                readAny PrimitiveValidation.None item
+                |> Result.map fst)
             |> Seq.toList
             |> okList
             |> Result.mapError (fun errs -> String.concat ", " errs)
@@ -476,7 +504,7 @@ let rec readAny (validation : PrimitiveValidation) (value : JsonElement) =
             value.EnumerateObject()
             |> Seq.map (fun item -> 
                 match readAny PrimitiveValidation.None item.Value with 
-                | Ok v -> Ok (KeyValuePair.Create(item.Name, v))
+                | Ok (v, _) -> Ok (KeyValuePair.Create(item.Name, v))
                 | Error err -> Error err)
             |> Seq.toList
             |> okList
@@ -487,6 +515,7 @@ let rec readAny (validation : PrimitiveValidation) (value : JsonElement) =
                 |> Pulumi.Provider.PropertyValue)
         else 
             Error (sprintf "unexpected JsonValueKind: %O" value.ValueKind)
+        |> Result.map (fun r -> r, Annotations.Empty)
 
 type AnyConversion = {
     Description : string option
@@ -690,8 +719,7 @@ type ConversionContext = {
     AdditionalProperties : bool
 } with 
     static member Default = { Type = None; AdditionalProperties = true }
-
-                
+     
 type ArrayConversion = {
     Description : string option
     Items : Conversion option
@@ -735,10 +763,11 @@ type ArrayConversion = {
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Array then
-            let itemReader = 
+            let itemReader item = 
                 match this.Items with 
-                | Some items -> items.Reader
-                | None -> readAny PrimitiveValidation.None
+                | Some items -> items.Reader item
+                | None -> readAny PrimitiveValidation.None item
+                |> Result.map fst
 
             value.EnumerateArray()
             |> Seq.map (fun item -> itemReader item)
@@ -746,9 +775,14 @@ type ArrayConversion = {
             |> okList
             |> Result.mapError (fun errs -> String.concat ", " errs)
             |> Result.map (fun items ->
-                items
-                |> ImmutableArray.CreateRange
-                |> Pulumi.Provider.PropertyValue)
+                let result = 
+                    items
+                    |> ImmutableArray.CreateRange
+                    |> Pulumi.Provider.PropertyValue
+                match this.Items with 
+                | Some _ -> result, { Annotations.Empty with Items = true }
+                | None -> result, Annotations.Empty
+            )
         else 
             errorf "Invalid JSON document expected array got %O" value.ValueKind
 
@@ -801,15 +835,23 @@ and MapConversion = {
             value.EnumerateObject()
             |> Seq.map (fun kv -> 
                 match this.AdditionalProperties.Reader kv.Value with 
-                | Ok ok -> Ok (KeyValuePair.Create(kv.Name, ok))
+                | Ok (ok, _) -> Ok (KeyValuePair.Create(kv.Name, ok))
                 | Error err -> Error err)
             |> Seq.toList
             |> okList
             |> Result.mapError (fun errs -> String.concat ", " errs)
             |> Result.map (fun items -> 
-                items
-                |> ImmutableDictionary.CreateRange
-                |> Pulumi.Provider.PropertyValue)
+                let result = 
+                    items
+                    |> ImmutableDictionary.CreateRange
+                    |> Pulumi.Provider.PropertyValue
+
+                let annotations = 
+                    items 
+                    |> List.fold (fun (a : Annotations) i -> a.AddAdditionalProperty i.Key) Annotations.Empty
+
+                result, annotations
+            )
         else 
             errorf "Invalid JSON document expected object got %O" value.ValueKind
 
@@ -854,11 +896,11 @@ and [<RequireQualifiedAccess>] TypeSpec =
     member this.Reader (value : JsonElement) = 
         match this with 
         | Any c -> c.Reader value
-        | Null c -> c.Reader value
-        | Primitive c -> c.Reader value
+        | Null c -> c.Reader value |> Result.map (fun r -> r, Annotations.Empty)
+        | Primitive c -> c.Reader value |> Result.map (fun r -> r, Annotations.Empty)
         | Array c -> c.Reader value
-        | Map c -> c.Reader value 
-        | Union c -> c.Reader value
+        | Map c -> c.Reader value
+        | Union c -> c.Reader value|> Result.map (fun r -> r, Annotations.Empty)
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         match this with 
@@ -919,11 +961,11 @@ and DiscriminateUnionConversion = {
         |> List.mapi (fun i choice -> i, choice)
         |> List.choose (fun (i, choice) ->
             match choice.Reader value with 
-            | Ok v -> Some (KeyValuePair.Create(sprintf "choice%dOf%d" (i+1) this.Choices.Length, v))
+            | Ok (v, a) -> Some (KeyValuePair.Create(sprintf "choice%dOf%d" (i+1) this.Choices.Length, v), a)
             | Error e -> None
         )
         |> function 
-           | [result] -> Ok (Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [result]))
+           | [(result, a)] -> Ok (Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [result]), a)
            | results -> errorf "Expected 1 matching subschema but found %d" results.Length
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
@@ -1058,19 +1100,22 @@ and ObjectConversion = {
 
             let choice = 
                 match this.Choices with
-                | [] -> None 
+                | [] -> Ok None 
                 | choices -> 
                     choices
                     |> List.mapi (fun i choice -> i, choice)
                     |> List.choose (fun (i, choice) ->
                         match choice.Reader value with 
-                        | Ok v -> Some (KeyValuePair.Create(sprintf "choice%dOf%d" (i+1) this.Choices.Length, v))
+                        | Ok (v, annotations) -> Some (KeyValuePair.Create(sprintf "choice%dOf%d" (i+1) this.Choices.Length, v), annotations)
                         | Error e -> None
                     )
                     |> function 
-                       | [result] -> Ok result
+                       | [result] -> Ok (Some result)
                        | results -> errorf "Expected 1 matching subschema but found %d" results.Length
-                    |> Some
+                    
+            match choice with 
+            | Error err -> Error err
+            | Ok choice ->
                     
             let additionalProperties, addProperty = 
                 match this.AdditionalProperties with 
@@ -1086,38 +1131,53 @@ and ObjectConversion = {
                         match tryFindName kv.Key with
                         | Some (pulumiName, conversion) ->
                             match conversion.Reader kv.Value with 
-                            | Ok ok -> Ok (KeyValuePair.Create(pulumiName, ok) :: propsSoFar, addPropsSoFar)
+                            | Ok (ok, _) -> Ok (KeyValuePair.Create(pulumiName, ok) :: propsSoFar, addPropsSoFar)
                             | Error err -> Error err
-                        | None ->                        
-                            match additionalProperties.Reader kv.Value with  
-                            | Ok ok -> Ok (propsSoFar, KeyValuePair.Create(kv.Key, ok) :: addPropsSoFar)
-                            | Error err -> Error err
+                        | None ->
+                            let inChoice = 
+                                match choice with 
+                                | None -> false
+                                | Some (_, annotations) -> 
+                                    annotations.Properties.Contains kv.Key ||
+                                    annotations.AdditionalProperties.Contains kv.Key
+
+                            if inChoice then Ok (propsSoFar, addPropsSoFar)
+                            else
+                                match additionalProperties.Reader kv.Value with  
+                                | Ok (ok, _) -> Ok (propsSoFar, KeyValuePair.Create(kv.Key, ok) :: addPropsSoFar)
+                                | Error err -> Error err
                 ) (Ok ([], []))
 
             match propertiesAdditionalProperties with 
             | Error err -> Error err
             | Ok (properties, additionalProperties) ->
 
+            let annotations = 
+                properties
+                |> List.fold (fun (a : Annotations) p -> a.AddProperty p.Key) Annotations.Empty
+
             // If we have any additionalProperties add them to the properties
-            let properties = 
+            let properties, annotations = 
                 match additionalProperties, addProperty with
                 | [], _ 
-                | _, false -> properties
+                | _, false -> properties, annotations
                 | additionalProperties, true ->
                     let arr = Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange additionalProperties)
-                    KeyValuePair.Create("additionalProperties", arr) :: properties
+                    let annotations = 
+                        additionalProperties
+                        |> List.fold (fun (a : Annotations) p -> a.AddAdditionalProperty p.Key) annotations
+                    KeyValuePair.Create("additionalProperties", arr) :: properties, annotations
             
             // Add the choice to properties
-            let properties = 
+            let propertiesAnnotations = 
                 match choice with
-                | None -> Ok properties
-                | Some (Ok choice) -> Ok (choice :: properties)
-                | Some (Error err) -> Error err
+                | None -> Ok (properties, annotations)
+                | Some (choice, choiceAnnotations) -> 
+                    Ok (choice :: properties, annotations.Union choiceAnnotations)
 
-            properties
-            |> Result.map (
-                ImmutableDictionary.CreateRange
-                >> Pulumi.Provider.PropertyValue)
+            propertiesAnnotations
+            |> Result.map (fun (properties, annotations) ->
+                properties |> ImmutableDictionary.CreateRange |> Pulumi.Provider.PropertyValue, annotations)
         else 
             failwithf "Invalid JSON document expected object got %O" value.ValueKind
 
@@ -1236,15 +1296,15 @@ and TupleConversion = {
                         match List.tryItem i this.PrefixItems, this.AdditionalItems with 
                         | None, None ->                             
                             match readAny PrimitiveValidation.None item with 
-                            | Ok ok -> Ok (properties, ok :: rest)
+                            | Ok (ok, _) -> Ok (properties, ok :: rest)
                             | Error err -> Error err                            
                         | None, Some ais -> 
                             match ais.Reader item with 
-                            | Ok ok -> Ok (properties, ok :: rest)
+                            | Ok (ok, _) -> Ok (properties, ok :: rest)
                             | Error err -> Error err
                         | Some property, _ -> 
                             match property.Reader item with 
-                            | Ok ok -> Ok (Map.add (i+1) ok properties, rest)
+                            | Ok (ok, _) -> Ok (Map.add (i+1) ok properties, rest)
                             | Error err -> Error err
                 ) (Ok (Map.empty, []))
 
@@ -1276,6 +1336,7 @@ and TupleConversion = {
             |> Ok
         else 
             errorf "Invalid JSON document expected array got %O" value.ValueKind
+        |> Result.map (fun r -> r, Annotations.Empty)
 
     member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
         let complexTypes = 
@@ -1322,7 +1383,7 @@ and [<RequireQualifiedAccess>] ComplexTypeSpec =
 
     member this.Reader (value : JsonElement) =
         match this with 
-        | ComplexTypeSpec.Enum spec -> spec.Reader value
+        | ComplexTypeSpec.Enum spec -> spec.Reader value |> Result.map (fun r -> r, Annotations.Empty)
         | ComplexTypeSpec.Object spec -> spec.Reader value
         | ComplexTypeSpec.Tuple spec -> spec.Reader value
         | ComplexTypeSpec.DU spec -> spec.Reader value
@@ -1384,7 +1445,7 @@ and [<RequireQualifiedAccess>] Conversion =
         | Conversion.Type spec -> spec.Writer value
         | Conversion.ComplexType spec -> spec.Writer value
 
-    member this.Reader (value : JsonElement) : Result<Pulumi.Provider.PropertyValue, string> =
+    member this.Reader (value : JsonElement) : Result<Pulumi.Provider.PropertyValue * Annotations, string> =
         match this with 
         | Conversion.False -> errorf "All values fail against the false schema"
         | Conversion.True -> readAny PrimitiveValidation.None value
@@ -2168,7 +2229,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
 
     let reader (element : JsonElement) =
         match conversion.Reader element with 
-        | Ok ok -> ok
+        | Ok (ok, _) -> ok
         | Error msg -> failwith msg
 
     {

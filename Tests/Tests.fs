@@ -742,13 +742,15 @@ let ``Test inline oneOf`` () =
     |> t.ShouldRead (Test.dictToProperty [
         "topKey", Pulumi.Provider.PropertyValue(true)
         "choice2Of2", Test.dictToProperty [
-            "keyA", Pulumi.Provider.PropertyValue("bob")
+            "keyB", Pulumi.Provider.PropertyValue("charlie")
         ]
     ])
 
-    """{"topKey": false }"""
+    """{"keyA": "hello world" }"""
     |> t.ShouldRead (Test.dictToProperty [
-        "topKey", Pulumi.Provider.PropertyValue(false)
+        "choice1Of2", Test.dictToProperty [
+            "keyA", Pulumi.Provider.PropertyValue("hello world")
+        ]
     ])
         
 [<Fact>]
