@@ -845,3 +845,58 @@ let ``Test object with false properties`` () =
         ]
         |> t.ShouldThrow
     exc.Message |> Test.shouldEqual "All values fail against the false schema"
+
+[<Fact>]
+let ``Test cyclic refs`` () =
+    let t = Test.convertSchema """{
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "foo": { "$ref": "#/$defs/myType" }
+        },
+        "$defs": {
+            "myType": {
+                "type": "object",
+                "properties": {
+                    "anotherOne": { "$ref": "#/$defs/myType" } 
+                }
+            }
+        }
+    }"""
+    t.RoundTrip()
+    
+    t.ShouldEqual (Test.complexSchema [
+        "schema:index:myType", """{
+            "type":"object",
+            "properties": {
+                "anotherOne": {
+                    "$ref": "#/types/schema:index:myType"
+                }
+            }
+    
+        }"""
+        "schema:index:root", """{
+            "type":"object",
+            "properties": {
+                "foo": {
+                    "$ref": "#/types/schema:index:myType"
+                }
+            }
+        }"""])
+    
+    Test.dictToProperty [
+        "foo", Pulumi.Provider.PropertyValue(123)
+    ]
+    |> t.ShouldWrite """{"foo":123}"""
+    
+    // Properties are optional by default
+    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    |> t.ShouldWrite """{}"""
+
+    """{"foo":456.789}"""
+    |> t.ShouldRead (Test.dictToProperty [
+        "foo", Pulumi.Provider.PropertyValue(456.789)
+    ])
+
+    """{}"""
+    |> t.ShouldRead (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)    
