@@ -18,10 +18,10 @@ namespace Pulumi.Pulumi.Outputs
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
         public readonly Outputs.PrimitiveType? Choice1Of5;
-        public readonly Outputs.ArrayType3? Choice2Of5;
-        public readonly Outputs.MapType4? Choice3Of5;
-        public readonly Outputs.NamedType3? Choice4Of5;
-        public readonly Outputs.UnionType3? Choice5Of5;
+        public readonly Outputs.ArrayType5? Choice2Of5;
+        public readonly Outputs.MapType5? Choice3Of5;
+        public readonly Outputs.NamedType? Choice4Of5;
+        public readonly Outputs.UnionType5? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
@@ -30,7 +30,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The default value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
         public readonly object? Default;
-        public readonly Outputs.ResourcesAdditionalPropertiesPropertiesAdditionalPropertiesDefaultInfo? DefaultInfo;
+        public readonly Outputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesDefaultInfo? DefaultInfo;
         /// <summary>
         /// Indicates whether the property is deprecated
         /// </summary>
@@ -66,19 +66,19 @@ namespace Pulumi.Pulumi.Outputs
 
             Outputs.PrimitiveType? choice1Of5,
 
-            Outputs.ArrayType3? choice2Of5,
+            Outputs.ArrayType5? choice2Of5,
 
-            Outputs.MapType4? choice3Of5,
+            Outputs.MapType5? choice3Of5,
 
-            Outputs.NamedType3? choice4Of5,
+            Outputs.NamedType? choice4Of5,
 
-            Outputs.UnionType3? choice5Of5,
+            Outputs.UnionType5? choice5Of5,
 
             object? @const,
 
             object? @default,
 
-            Outputs.ResourcesAdditionalPropertiesPropertiesAdditionalPropertiesDefaultInfo? defaultInfo,
+            Outputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesDefaultInfo? defaultInfo,
 
             string? deprecationMessage,
 

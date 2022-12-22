@@ -16,14 +16,14 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class ObjectTypeDefinition : global::Pulumi.InvokeArgs
     {
         [Input("properties")]
-        private Dictionary<string, Inputs.PropertyDefinition2>? _properties;
+        private Dictionary<string, Inputs.PropertyDefinition3>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public Dictionary<string, Inputs.PropertyDefinition2> Properties
+        public Dictionary<string, Inputs.PropertyDefinition3> Properties
         {
-            get => _properties ?? (_properties = new Dictionary<string, Inputs.PropertyDefinition2>());
+            get => _properties ?? (_properties = new Dictionary<string, Inputs.PropertyDefinition3>());
             set => _properties = value;
         }
 

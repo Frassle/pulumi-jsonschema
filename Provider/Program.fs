@@ -778,9 +778,9 @@ type ArrayConversion = {
         else 
             errorf "Invalid JSON document expected array got %O" value.ValueKind
 
-    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
+    member this.CollectComplexTypes path refs : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         match this.Items with
-        | Some items -> items.CollectComplexTypes ("items" :: path)
+        | Some items -> items.CollectComplexTypes ("items" :: path) refs
         | None -> ImmutableDictionary.Empty
 
 and MapConversion = {
@@ -847,8 +847,8 @@ and MapConversion = {
         else 
             errorf "Invalid JSON document expected object got %O" value.ValueKind
 
-    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
-        this.AdditionalProperties.CollectComplexTypes ("additionalProperties" :: path)
+    member this.CollectComplexTypes path refs : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
+        this.AdditionalProperties.CollectComplexTypes ("additionalProperties" :: path) refs
 
 and [<RequireQualifiedAccess>] TypeSpec = 
     | Any of AnyConversion
@@ -894,13 +894,13 @@ and [<RequireQualifiedAccess>] TypeSpec =
         | Map c -> c.Reader value
         | Union c -> c.Reader value|> Result.map (fun r -> r, Annotations.Empty)
 
-    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
+    member this.CollectComplexTypes path refs : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         match this with 
         | Any _ -> ImmutableDictionary.Empty
         | Null _ -> ImmutableDictionary.Empty
         | Primitive _ -> ImmutableDictionary.Empty
-        | Array c -> c.CollectComplexTypes path
-        | Map c -> c.CollectComplexTypes path
+        | Array c -> c.CollectComplexTypes path refs 
+        | Map c -> c.CollectComplexTypes path refs
         | Union _ -> ImmutableDictionary.Empty
 
 and DiscriminateUnionConversion = {
@@ -959,12 +959,12 @@ and DiscriminateUnionConversion = {
            | [(result, a)] -> Ok (Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [result]), a)
            | results -> errorf "Expected 1 matching subschema but found %d" results.Length
 
-    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
+    member this.CollectComplexTypes path refs : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         this.Choices
         |> Seq.mapi (fun i c -> i, c)
         |> Seq.fold (fun types (i, choice) -> 
             let seg = sprintf "choice%dOf%d" (i+1) this.Choices.Length            
-            Conversion.UnionComplexTypes (choice.CollectComplexTypes (seg :: path)) types
+            Conversion.UnionComplexTypes (choice.CollectComplexTypes (seg :: path) refs) types
         ) ImmutableDictionary.Empty
 
 and ObjectConversion = {
@@ -1183,19 +1183,19 @@ and ObjectConversion = {
         else 
             failwithf "Invalid JSON document expected object got %O" value.ValueKind
 
-    member this.CollectComplexTypes path: ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
+    member this.CollectComplexTypes path refs : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         let complexTypes = 
             this.Properties
             |> Seq.fold (fun types kv -> 
                 let (_, prop) = kv.Value
                 let path = kv.Key :: path
-                Conversion.UnionComplexTypes (prop.CollectComplexTypes path) types
+                Conversion.UnionComplexTypes (prop.CollectComplexTypes path refs) types
             ) ImmutableDictionary.Empty
         let additionalTypes =
             match this.AdditionalProperties with
             | Choice2Of2 (Some aps) -> 
                 let path = "additionalProperties" :: path
-                Conversion.UnionComplexTypes (aps.CollectComplexTypes path) complexTypes
+                Conversion.UnionComplexTypes (aps.CollectComplexTypes path refs) complexTypes
             | _ -> complexTypes
             
         this.Choices
@@ -1203,7 +1203,7 @@ and ObjectConversion = {
         |> Seq.fold (fun types (i, kv) ->
             let name = sprintf "choice%dOf%d" (i+1) this.Choices.Length
             let path = name :: path
-            Conversion.UnionComplexTypes (kv.CollectComplexTypes path) types
+            Conversion.UnionComplexTypes (kv.CollectComplexTypes path refs) types
         ) additionalTypes
 
         
@@ -1345,15 +1345,15 @@ and TupleConversion = {
             errorf "Invalid JSON document expected array got %O" value.ValueKind
         |> Result.map (fun r -> r, Annotations.Empty)
 
-    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
+    member this.CollectComplexTypes path refs : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         let complexTypes = 
             this.PrefixItems
             |> Seq.fold (fun types item -> 
-                Conversion.UnionComplexTypes (item.CollectComplexTypes ("prefixItems" :: path)) types
+                Conversion.UnionComplexTypes (item.CollectComplexTypes ("prefixItems" :: path) refs) types
             ) ImmutableDictionary.Empty
         match this.AdditionalItems with
         | None -> complexTypes
-        | Some ais -> Conversion.UnionComplexTypes (ais.CollectComplexTypes ("items" :: path)) complexTypes
+        | Some ais -> Conversion.UnionComplexTypes (ais.CollectComplexTypes ("items" :: path) refs) complexTypes
 
 and [<RequireQualifiedAccess>] ComplexTypeSpec =
     | Enum of EnumConversion
@@ -1389,12 +1389,12 @@ and [<RequireQualifiedAccess>] ComplexTypeSpec =
         | ComplexTypeSpec.Tuple spec -> spec.Reader value
         | ComplexTypeSpec.DU spec -> spec.Reader value
 
-    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
+    member this.CollectComplexTypes path refs : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         match this with 
         | ComplexTypeSpec.Enum _ -> ImmutableDictionary.Empty
-        | ComplexTypeSpec.Object spec -> spec.CollectComplexTypes path
-        | ComplexTypeSpec.Tuple spec -> spec.CollectComplexTypes path
-        | ComplexTypeSpec.DU spec -> spec.CollectComplexTypes path
+        | ComplexTypeSpec.Object spec -> spec.CollectComplexTypes path refs
+        | ComplexTypeSpec.Tuple spec -> spec.CollectComplexTypes path refs
+        | ComplexTypeSpec.DU spec -> spec.CollectComplexTypes path refs
 
 and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
     | Ref of Conversion option ref
@@ -1414,6 +1414,14 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
             | ComplexType a, ComplexType b -> a.Equals b
             | _, _ -> false
         | _ -> false
+
+    override this.GetHashCode () : int =
+        match this with
+        | Conversion.Ref ref -> System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode ref
+        | Conversion.False -> false.GetHashCode()
+        | Conversion.True -> true.GetHashCode()
+        | Conversion.Type spec -> spec.GetHashCode()
+        | Conversion.ComplexType spec -> spec.GetHashCode()
 
     member this.IsFalseSchema = 
         match this with 
@@ -1472,14 +1480,17 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
         | Conversion.ComplexType spec -> spec.Reader value
 
     // Returns a map of complex types and the paths they we're discoved on
-    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
+    member this.CollectComplexTypes path (refs : ImmutableHashSet<_>): ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         match this with 
-        | Conversion.Ref _ -> ImmutableDictionary.Empty // This should have been collected on another path
+        | Conversion.Ref box -> 
+            match refs.Contains box with
+            | true -> ImmutableDictionary.Empty
+            | false -> box.Value.Value.CollectComplexTypes path (refs.Add box)
         | Conversion.False -> ImmutableDictionary.Empty
         | Conversion.True -> ImmutableDictionary.Empty
-        | Conversion.Type spec -> spec.CollectComplexTypes path
+        | Conversion.Type spec -> spec.CollectComplexTypes path refs
         | Conversion.ComplexType spec -> 
-            let types = spec.CollectComplexTypes path
+            let types = spec.CollectComplexTypes path refs
             match types.TryGetValue spec with 
             | false, _ -> types.Add(spec, Set.singleton path)
             | true, paths -> types.Add(spec, Set.add path paths)
@@ -1489,7 +1500,7 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
         |> Seq.fold (fun (a : ImmutableDictionary<ComplexTypeSpec, Set<string list>>) b -> 
             match a.TryGetValue b.Key with 
             | false, _ -> a.Add(b.Key, b.Value)
-            | true, paths -> a.Add(b.Key, Set.union paths b.Value)
+            | true, paths -> a.SetItem(b.Key, Set.union paths b.Value)
         ) a
 
 
@@ -1512,7 +1523,9 @@ and ConversionContext = {
 
     member this.SetRef path value =
         match this.Refs.TryFind path with 
-        | Some box -> box.contents <- Some value
+        | Some box -> 
+            box.contents <- Some value
+            Conversion.Ref box
         | None -> failwithf "Failed to set $ref %s" path
 
     member this.Clear = { this with Type = None; AdditionalProperties = true }
@@ -1842,7 +1855,6 @@ let rec convertRef (root : RootInformation) context (schema : Json.Schema.JsonSc
     |> fun result ->
         // Whatever the result of this ref set it
         context.SetRef refKey result
-        result
 
 and convertArraySchema (root : RootInformation) (context : ConversionContext) (jsonSchema : Json.Schema.JsonSchema) : Conversion =    
     let prefixItems =
@@ -2219,7 +2231,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         | false -> conversion
 
     // We need to get all complex types and make names for them, then ask for the root schema to generate a pulumi schema for itself _given_ those names
-    let complexTypes = conversion.CollectComplexTypes []
+    let complexTypes = conversion.CollectComplexTypes [] ImmutableHashSet.Empty
     let usedNames = System.Collections.Generic.HashSet()
     let names = System.Collections.Generic.Dictionary()
     for kv in complexTypes do

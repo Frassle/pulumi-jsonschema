@@ -17,10 +17,10 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class PropertyDefinition1
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.PrimitiveType6? Choice1Of5;
-        public readonly Outputs.ArrayType5? Choice2Of5;
-        public readonly Outputs.MapType0? Choice3Of5;
-        public readonly Outputs.NamedType2? Choice4Of5;
+        public readonly Outputs.PrimitiveType4? Choice1Of5;
+        public readonly Outputs.ArrayType6? Choice2Of5;
+        public readonly Outputs.MapType4? Choice3Of5;
+        public readonly Outputs.NamedType? Choice4Of5;
         public readonly Outputs.UnionType4? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
@@ -30,7 +30,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The default value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
         public readonly object? Default;
-        public readonly Outputs.ConfigVariablesAdditionalPropertiesDefaultInfo? DefaultInfo;
+        public readonly Outputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesDefaultInfo? DefaultInfo;
         /// <summary>
         /// Indicates whether the property is deprecated
         /// </summary>
@@ -64,13 +64,13 @@ namespace Pulumi.Pulumi.Outputs
         private PropertyDefinition1(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.PrimitiveType6? choice1Of5,
+            Outputs.PrimitiveType4? choice1Of5,
 
-            Outputs.ArrayType5? choice2Of5,
+            Outputs.ArrayType6? choice2Of5,
 
-            Outputs.MapType0? choice3Of5,
+            Outputs.MapType4? choice3Of5,
 
-            Outputs.NamedType2? choice4Of5,
+            Outputs.NamedType? choice4Of5,
 
             Outputs.UnionType4? choice5Of5,
 
@@ -78,7 +78,7 @@ namespace Pulumi.Pulumi.Outputs
 
             object? @default,
 
-            Outputs.ConfigVariablesAdditionalPropertiesDefaultInfo? defaultInfo,
+            Outputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesDefaultInfo? defaultInfo,
 
             string? deprecationMessage,
 

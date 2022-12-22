@@ -18,10 +18,10 @@ namespace Pulumi.Pulumi.Outputs
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
         public readonly Outputs.PrimitiveType5? Choice1Of5;
-        public readonly Outputs.ArrayType0? Choice2Of5;
-        public readonly Outputs.MapType1? Choice3Of5;
-        public readonly Outputs.NamedType5? Choice4Of5;
-        public readonly Outputs.UnionType6? Choice5Of5;
+        public readonly Outputs.ArrayType? Choice2Of5;
+        public readonly Outputs.MapType2? Choice3Of5;
+        public readonly Outputs.NamedType? Choice4Of5;
+        public readonly Outputs.UnionType3? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
@@ -30,7 +30,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The default value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
         public readonly object? Default;
-        public readonly Outputs.ProviderPropertiesAdditionalPropertiesDefaultInfo? DefaultInfo;
+        public readonly Outputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesDefaultInfo? DefaultInfo;
         /// <summary>
         /// Indicates whether the property is deprecated
         /// </summary>
@@ -66,19 +66,19 @@ namespace Pulumi.Pulumi.Outputs
 
             Outputs.PrimitiveType5? choice1Of5,
 
-            Outputs.ArrayType0? choice2Of5,
+            Outputs.ArrayType? choice2Of5,
 
-            Outputs.MapType1? choice3Of5,
+            Outputs.MapType2? choice3Of5,
 
-            Outputs.NamedType5? choice4Of5,
+            Outputs.NamedType? choice4Of5,
 
-            Outputs.UnionType6? choice5Of5,
+            Outputs.UnionType3? choice5Of5,
 
             object? @const,
 
             object? @default,
 
-            Outputs.ProviderPropertiesAdditionalPropertiesDefaultInfo? defaultInfo,
+            Outputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesDefaultInfo? defaultInfo,
 
             string? deprecationMessage,
 

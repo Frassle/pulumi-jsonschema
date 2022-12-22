@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class UnionType : global::Pulumi.InvokeArgs
     {
         [Input("discriminator")]
-        public Inputs.FunctionsAdditionalPropertiesInputsPropertiesAdditionalPropertiesChoice5Of5Discriminator? Discriminator { get; set; }
+        public Inputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Discriminator? Discriminator { get; set; }
 
         [Input("oneOf", required: true)]
         private List<Inputs.PropertyDefinition0>? _oneOf;

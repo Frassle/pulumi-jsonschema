@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class UnionType
     {
-        public readonly Outputs.FunctionsAdditionalPropertiesInputsPropertiesAdditionalPropertiesChoice5Of5Discriminator? Discriminator;
+        public readonly Outputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Discriminator? Discriminator;
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
@@ -25,7 +25,7 @@ namespace Pulumi.Pulumi.Outputs
 
         [OutputConstructor]
         private UnionType(
-            Outputs.FunctionsAdditionalPropertiesInputsPropertiesAdditionalPropertiesChoice5Of5Discriminator? discriminator,
+            Outputs.ResourcesAdditionalPropertiesInputPropertiesAdditionalPropertiesChoice5Of5Discriminator? discriminator,
 
             ImmutableArray<Outputs.PropertyDefinition0> oneOf,
 
