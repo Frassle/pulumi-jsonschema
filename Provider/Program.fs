@@ -958,11 +958,14 @@ and ObjectConversion = {
         schema.Add("properties", propertiesSchema)
         for kv in this.Properties do
             let (_, prop) = kv.Value
-            propertiesSchema.Add(kv.Key, prop.BuildPropertySpec packageName names)
+            if not prop.IsFalseSchema then
+                propertiesSchema.Add(kv.Key, prop.BuildPropertySpec packageName names)
             
         match this.AdditionalProperties with 
-        | None -> ()
-        | Some aps ->
+        | Some aps when aps.IsFalseSchema -> ()
+        | aps ->
+            let aps = Option.defaultValue Conversion.True aps 
+
             // additionalProperties is always just a map
             let additionalPropertiesSchema = JsonObject()
             additionalPropertiesSchema.Add("type", "object")
@@ -991,39 +994,35 @@ and ObjectConversion = {
             for key in this.Required do 
                 if not (obj.ContainsKey key) then
                     failwithf "property '%s' is required" key
+                    
+            let additionalProperties = Option.defaultValue Conversion.True this.AdditionalProperties
 
             obj
             |> Seq.collect (fun kv ->
-                match this.AdditionalProperties with
-                | None -> 
-                    match this.Properties.TryFind kv.Key with 
-                    | Some (jsonName, conversion) ->
-                        let node = conversion.Writer kv.Value
-                        match node with 
-                        | Some node -> [KeyValuePair.Create(jsonName, node)] :> seq<_>
-                        | None -> [KeyValuePair.Create(jsonName, null)]
-                    | None -> failwithf "unexpected property '%s'" kv.Key
-                | Some additionalProperties ->
-                    if kv.Key = "additionalProperties" then
-                        // This _should_ be an object
-                        match kv.Value.TryGetObject() with
-                        | false, _ -> failwithf "Invalid type expected object got %O" kv.Value
-                        | true, additionalObj ->
-                            additionalObj
-                            |> Seq.map (fun kv ->
+                if kv.Key = "additionalProperties" then
+                    // This _should_ be an object
+                    match kv.Value.TryGetObject() with
+                    | false, _ -> failwithf "Invalid type expected object got %O" kv.Value
+                    | true, additionalObj ->
+                        additionalObj
+                        |> Seq.map (fun kv ->
+                            // Check if this key is in the properties map, if it is it shouldn't be here
+                            match this.Properties.TryFind kv.Key with 
+                            | Some (_, _) -> failwith "All values fail against the false schema"
+                            | None ->
                                 let node = additionalProperties.Writer kv.Value
                                 match node with 
                                 | Some node -> KeyValuePair.Create(kv.Key, node)
                                 | None -> KeyValuePair.Create(kv.Key, null)
-                            )
-                    else 
-                        match this.Properties.TryFind kv.Key with 
-                        | Some (jsonName, conversion) ->
-                            let node = conversion.Writer kv.Value
-                            match node with 
-                            | Some node -> [KeyValuePair.Create(jsonName, node)]
-                            | None -> [KeyValuePair.Create(jsonName, null)]
-                        | None -> failwithf "unexpected property '%s'" kv.Key
+                        )
+                else 
+                    match this.Properties.TryFind kv.Key with 
+                    | Some (jsonName, conversion) ->
+                        let node = conversion.Writer kv.Value
+                        match node with 
+                        | Some node -> [KeyValuePair.Create(jsonName, node)]
+                        | None -> [KeyValuePair.Create(jsonName, null)]
+                    | None -> failwithf "unexpected property '%s'" kv.Key
             )
             |> JsonObject
             :> JsonNode
@@ -1064,30 +1063,23 @@ and ObjectConversion = {
                        | results -> errorf "Expected 1 matching subschema but found %d" results.Length
                     |> Some
 
+            let additionalProperties = Option.defaultValue Conversion.True this.AdditionalProperties
+
             let propertiesAdditionalProperties =
                 obj
                 |> Seq.fold (fun props kv ->
                     match props with 
                     | Error err -> Error err
                     | Ok (propsSoFar, addPropsSoFar) ->
-                        match this.AdditionalProperties with
-                        | None -> 
-                            match tryFindName kv.Key with 
-                            | Some (pulumiName, conversion) ->
-                                match conversion.Reader kv.Value with
-                                | Ok ok -> Ok (KeyValuePair.Create(pulumiName, ok) :: propsSoFar, [])
-                                | Error err -> Error err
-                            | None -> errorf "unexpected property '%s'" kv.Key
-                        | Some additionalProperties ->
-                            match tryFindName kv.Key with
-                            | Some (pulumiName, conversion) ->
-                                match conversion.Reader kv.Value with 
-                                | Ok ok -> Ok (KeyValuePair.Create(pulumiName, ok) :: propsSoFar, addPropsSoFar)
-                                | Error err -> Error err
-                            | None ->                        
-                                match additionalProperties.Reader kv.Value with  
-                                | Ok ok -> Ok (propsSoFar, KeyValuePair.Create(kv.Key, ok) :: addPropsSoFar)
-                                | Error err -> Error err
+                        match tryFindName kv.Key with
+                        | Some (pulumiName, conversion) ->
+                            match conversion.Reader kv.Value with 
+                            | Ok ok -> Ok (KeyValuePair.Create(pulumiName, ok) :: propsSoFar, addPropsSoFar)
+                            | Error err -> Error err
+                        | None ->                        
+                            match additionalProperties.Reader kv.Value with  
+                            | Ok ok -> Ok (propsSoFar, KeyValuePair.Create(kv.Key, ok) :: addPropsSoFar)
+                            | Error err -> Error err
                 ) (Ok ([], []))
 
             match propertiesAdditionalProperties with 
