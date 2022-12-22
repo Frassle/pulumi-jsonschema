@@ -24,14 +24,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("properties")]
-        private InputMap<Inputs.PropertyDefinition0Args>? _properties;
+        private InputMap<Inputs.PropertyDefinition4Args>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public InputMap<Inputs.PropertyDefinition0Args> Properties
+        public InputMap<Inputs.PropertyDefinition4Args> Properties
         {
-            get => _properties ?? (_properties = new InputMap<Inputs.PropertyDefinition0Args>());
+            get => _properties ?? (_properties = new InputMap<Inputs.PropertyDefinition4Args>());
             set => _properties = value;
         }
 

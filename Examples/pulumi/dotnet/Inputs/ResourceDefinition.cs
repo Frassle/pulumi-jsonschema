@@ -24,14 +24,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("aliases")]
-        private List<Inputs.AliasDefinition0>? _aliases;
+        private List<Inputs.AliasDefinition>? _aliases;
 
         /// <summary>
         /// The list of aliases for the resource.
         /// </summary>
-        public List<Inputs.AliasDefinition0> Aliases
+        public List<Inputs.AliasDefinition> Aliases
         {
-            get => _aliases ?? (_aliases = new List<Inputs.AliasDefinition0>());
+            get => _aliases ?? (_aliases = new List<Inputs.AliasDefinition>());
             set => _aliases = value;
         }
 
@@ -48,14 +48,14 @@ namespace Pulumi.Pulumi.Inputs
         public string? Description { get; set; }
 
         [Input("inputProperties")]
-        private Dictionary<string, Inputs.PropertyDefinition6>? _inputProperties;
+        private Dictionary<string, Inputs.PropertyDefinition3>? _inputProperties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the resource's input properties.
         /// </summary>
-        public Dictionary<string, Inputs.PropertyDefinition6> InputProperties
+        public Dictionary<string, Inputs.PropertyDefinition3> InputProperties
         {
-            get => _inputProperties ?? (_inputProperties = new Dictionary<string, Inputs.PropertyDefinition6>());
+            get => _inputProperties ?? (_inputProperties = new Dictionary<string, Inputs.PropertyDefinition3>());
             set => _inputProperties = value;
         }
 
@@ -84,14 +84,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("properties")]
-        private Dictionary<string, Inputs.PropertyDefinition2>? _properties;
+        private Dictionary<string, Inputs.PropertyDefinition6>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public Dictionary<string, Inputs.PropertyDefinition2> Properties
+        public Dictionary<string, Inputs.PropertyDefinition6> Properties
         {
-            get => _properties ?? (_properties = new Dictionary<string, Inputs.PropertyDefinition2>());
+            get => _properties ?? (_properties = new Dictionary<string, Inputs.PropertyDefinition6>());
             set => _properties = value;
         }
 

@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class UnionType1 : global::Pulumi.InvokeArgs
     {
         [Input("discriminator")]
-        public Inputs.PropertySpecOneOf4Discriminator1? Discriminator { get; set; }
+        public Inputs.ProviderInputPropertiesAdditionalPropertiesChoice5Of5Discriminator? Discriminator { get; set; }
 
         [Input("oneOf", required: true)]
         private List<Inputs.PropertyDefinition3>? _oneOf;
@@ -31,7 +31,7 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("type")]
-        public Pulumi.Pulumi.PropertySpecOneOf4Type6? Type { get; set; }
+        public Pulumi.Pulumi.ProviderInputPropertiesAdditionalPropertiesChoice5Of5Type? Type { get; set; }
 
         public UnionType1()
         {

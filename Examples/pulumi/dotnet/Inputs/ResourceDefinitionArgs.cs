@@ -24,14 +24,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("aliases")]
-        private InputList<Inputs.AliasDefinition0Args>? _aliases;
+        private InputList<Inputs.AliasDefinitionArgs>? _aliases;
 
         /// <summary>
         /// The list of aliases for the resource.
         /// </summary>
-        public InputList<Inputs.AliasDefinition0Args> Aliases
+        public InputList<Inputs.AliasDefinitionArgs> Aliases
         {
-            get => _aliases ?? (_aliases = new InputList<Inputs.AliasDefinition0Args>());
+            get => _aliases ?? (_aliases = new InputList<Inputs.AliasDefinitionArgs>());
             set => _aliases = value;
         }
 
@@ -48,14 +48,14 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? Description { get; set; }
 
         [Input("inputProperties")]
-        private InputMap<Inputs.PropertyDefinition6Args>? _inputProperties;
+        private InputMap<Inputs.PropertyDefinition3Args>? _inputProperties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the resource's input properties.
         /// </summary>
-        public InputMap<Inputs.PropertyDefinition6Args> InputProperties
+        public InputMap<Inputs.PropertyDefinition3Args> InputProperties
         {
-            get => _inputProperties ?? (_inputProperties = new InputMap<Inputs.PropertyDefinition6Args>());
+            get => _inputProperties ?? (_inputProperties = new InputMap<Inputs.PropertyDefinition3Args>());
             set => _inputProperties = value;
         }
 
@@ -84,14 +84,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("properties")]
-        private InputMap<Inputs.PropertyDefinition2Args>? _properties;
+        private InputMap<Inputs.PropertyDefinition6Args>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public InputMap<Inputs.PropertyDefinition2Args> Properties
+        public InputMap<Inputs.PropertyDefinition6Args> Properties
         {
-            get => _properties ?? (_properties = new InputMap<Inputs.PropertyDefinition2Args>());
+            get => _properties ?? (_properties = new InputMap<Inputs.PropertyDefinition6Args>());
             set => _properties = value;
         }
 

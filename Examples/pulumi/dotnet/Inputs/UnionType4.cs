@@ -16,22 +16,22 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class UnionType4 : global::Pulumi.InvokeArgs
     {
         [Input("discriminator")]
-        public Inputs.PropertySpecOneOf4Discriminator6? Discriminator { get; set; }
+        public Inputs.ConfigVariablesAdditionalPropertiesChoice5Of5Discriminator? Discriminator { get; set; }
 
         [Input("oneOf", required: true)]
-        private List<Inputs.PropertyDefinition0>? _oneOf;
+        private List<Inputs.PropertyDefinition1>? _oneOf;
 
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
-        public List<Inputs.PropertyDefinition0> OneOf
+        public List<Inputs.PropertyDefinition1> OneOf
         {
-            get => _oneOf ?? (_oneOf = new List<Inputs.PropertyDefinition0>());
+            get => _oneOf ?? (_oneOf = new List<Inputs.PropertyDefinition1>());
             set => _oneOf = value;
         }
 
         [Input("type")]
-        public Pulumi.Pulumi.PropertySpecOneOf4Type0? Type { get; set; }
+        public Pulumi.Pulumi.ConfigVariablesAdditionalPropertiesChoice5Of5Type? Type { get; set; }
 
         public UnionType4()
         {

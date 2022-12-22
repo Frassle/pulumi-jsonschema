@@ -17,10 +17,10 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class PropertyDefinition3
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.PrimitiveType6? Choice1Of5;
-        public readonly Outputs.ArrayType1? Choice2Of5;
-        public readonly Outputs.MapType5? Choice3Of5;
-        public readonly Outputs.NamedType2? Choice4Of5;
+        public readonly Outputs.PrimitiveType3? Choice1Of5;
+        public readonly Outputs.ArrayType2? Choice2Of5;
+        public readonly Outputs.MapType2? Choice3Of5;
+        public readonly Outputs.NamedType1? Choice4Of5;
         public readonly Outputs.UnionType1? Choice5Of5;
         /// <summary>
         /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
@@ -30,7 +30,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The default value for the property, if any. The type of the value must be assignable to the type of the property.
         /// </summary>
         public readonly object? Default;
-        public readonly Outputs.PropertySpecDefaultInfo4? DefaultInfo;
+        public readonly Outputs.ProviderInputPropertiesAdditionalPropertiesDefaultInfo? DefaultInfo;
         /// <summary>
         /// Indicates whether the property is deprecated
         /// </summary>
@@ -64,13 +64,13 @@ namespace Pulumi.Pulumi.Outputs
         private PropertyDefinition3(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.PrimitiveType6? choice1Of5,
+            Outputs.PrimitiveType3? choice1Of5,
 
-            Outputs.ArrayType1? choice2Of5,
+            Outputs.ArrayType2? choice2Of5,
 
-            Outputs.MapType5? choice3Of5,
+            Outputs.MapType2? choice3Of5,
 
-            Outputs.NamedType2? choice4Of5,
+            Outputs.NamedType1? choice4Of5,
 
             Outputs.UnionType1? choice5Of5,
 
@@ -78,7 +78,7 @@ namespace Pulumi.Pulumi.Outputs
 
             object? @default,
 
-            Outputs.PropertySpecDefaultInfo4? defaultInfo,
+            Outputs.ProviderInputPropertiesAdditionalPropertiesDefaultInfo? defaultInfo,
 
             string? deprecationMessage,
 

@@ -28,7 +28,7 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("type", required: true)]
-        public Input<Pulumi.Pulumi.EnumTypeSpecType> Type { get; set; } = null!;
+        public Input<Pulumi.Pulumi.TypesAdditionalPropertiesChoice2Of2Type> Type { get; set; } = null!;
 
         public EnumTypeDefinitionArgs()
         {

@@ -668,7 +668,6 @@ type UnionConversion = {
             failwithf "Invalid JSON document expected %s got %O" this.expectedTypes value.ValueKind
 
 type EnumConversion = {
-    Path : string list
     Title : string option
     Description : string option
     Type : PrimitiveType
@@ -779,10 +778,10 @@ type ArrayConversion = {
         else 
             errorf "Invalid JSON document expected array got %O" value.ValueKind
 
-    member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
+    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         match this.Items with
-        | Some items -> items.CollectComplexTypes()
-        | None -> ImmutableHashSet.Empty
+        | Some items -> items.CollectComplexTypes ("items" :: path)
+        | None -> ImmutableDictionary.Empty
 
 and MapConversion = {
     Description : string option
@@ -848,8 +847,8 @@ and MapConversion = {
         else 
             errorf "Invalid JSON document expected object got %O" value.ValueKind
 
-    member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
-        this.AdditionalProperties.CollectComplexTypes()
+    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
+        this.AdditionalProperties.CollectComplexTypes ("additionalProperties" :: path)
 
 and [<RequireQualifiedAccess>] TypeSpec = 
     | Any of AnyConversion
@@ -895,17 +894,16 @@ and [<RequireQualifiedAccess>] TypeSpec =
         | Map c -> c.Reader value
         | Union c -> c.Reader value|> Result.map (fun r -> r, Annotations.Empty)
 
-    member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
+    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         match this with 
-        | Any _ -> ImmutableHashSet.Empty
-        | Null _ -> ImmutableHashSet.Empty
-        | Primitive _ -> ImmutableHashSet.Empty
-        | Array c -> c.CollectComplexTypes()
-        | Map c -> c.CollectComplexTypes()
-        | Union _ -> ImmutableHashSet.Empty
+        | Any _ -> ImmutableDictionary.Empty
+        | Null _ -> ImmutableDictionary.Empty
+        | Primitive _ -> ImmutableDictionary.Empty
+        | Array c -> c.CollectComplexTypes path
+        | Map c -> c.CollectComplexTypes path
+        | Union _ -> ImmutableDictionary.Empty
 
 and DiscriminateUnionConversion = {
-    Path : string list
     Title : string option
     Description : string option
     Choices : Conversion list
@@ -961,13 +959,15 @@ and DiscriminateUnionConversion = {
            | [(result, a)] -> Ok (Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [result]), a)
            | results -> errorf "Expected 1 matching subschema but found %d" results.Length
 
-    member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
+    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         this.Choices
-        |> Seq.fold (fun types choice -> choice.CollectComplexTypes().Union(types)
-        ) ImmutableHashSet.Empty
+        |> Seq.mapi (fun i c -> i, c)
+        |> Seq.fold (fun types (i, choice) -> 
+            let seg = sprintf "choice%dOf%d" (i+1) this.Choices.Length            
+            Conversion.UnionComplexTypes (choice.CollectComplexTypes (seg :: path)) types
+        ) ImmutableDictionary.Empty
 
 and ObjectConversion = {
-    Path : string list
     Title : string option
     Description : string option
     Properties : Map<string, string * Conversion>
@@ -1183,26 +1183,31 @@ and ObjectConversion = {
         else 
             failwithf "Invalid JSON document expected object got %O" value.ValueKind
 
-    member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
+    member this.CollectComplexTypes path: ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         let complexTypes = 
             this.Properties
             |> Seq.fold (fun types kv -> 
                 let (_, prop) = kv.Value
-                prop.CollectComplexTypes().Union(types)
-            ) ImmutableHashSet.Empty
+                let path = kv.Key :: path
+                Conversion.UnionComplexTypes (prop.CollectComplexTypes path) types
+            ) ImmutableDictionary.Empty
         let additionalTypes =
             match this.AdditionalProperties with
-            | Choice2Of2 (Some aps) -> aps.CollectComplexTypes().Union(complexTypes)
+            | Choice2Of2 (Some aps) -> 
+                let path = "additionalProperties" :: path
+                Conversion.UnionComplexTypes (aps.CollectComplexTypes path) complexTypes
             | _ -> complexTypes
             
         this.Choices
-        |> Seq.fold (fun types kv ->
-            kv.CollectComplexTypes().Union(types)
+        |> Seq.mapi (fun i c -> i, c)
+        |> Seq.fold (fun types (i, kv) ->
+            let name = sprintf "choice%dOf%d" (i+1) this.Choices.Length
+            let path = name :: path
+            Conversion.UnionComplexTypes (kv.CollectComplexTypes path) types
         ) additionalTypes
 
         
 and TupleConversion = {
-    Path : string list
     Title : string option
     Description : string option
     PrefixItems : Conversion list
@@ -1340,27 +1345,21 @@ and TupleConversion = {
             errorf "Invalid JSON document expected array got %O" value.ValueKind
         |> Result.map (fun r -> r, Annotations.Empty)
 
-    member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
+    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         let complexTypes = 
             this.PrefixItems
-            |> Seq.fold (fun types item -> item.CollectComplexTypes().Union(types)
-            ) ImmutableHashSet.Empty
+            |> Seq.fold (fun types item -> 
+                Conversion.UnionComplexTypes (item.CollectComplexTypes ("prefixItems" :: path)) types
+            ) ImmutableDictionary.Empty
         match this.AdditionalItems with
         | None -> complexTypes
-        | Some ais -> ais.CollectComplexTypes().Union(complexTypes)
+        | Some ais -> Conversion.UnionComplexTypes (ais.CollectComplexTypes ("items" :: path)) complexTypes
 
 and [<RequireQualifiedAccess>] ComplexTypeSpec =
     | Enum of EnumConversion
     | Object of ObjectConversion
     | DU of DiscriminateUnionConversion
     | Tuple of TupleConversion
-
-    member this.Path = 
-        match this with 
-        | ComplexTypeSpec.Enum spec -> spec.Path
-        | ComplexTypeSpec.Object spec -> spec.Path
-        | ComplexTypeSpec.Tuple spec -> spec.Path
-        | ComplexTypeSpec.DU spec -> spec.Path
     
     member this.Title = 
         match this with 
@@ -1390,12 +1389,12 @@ and [<RequireQualifiedAccess>] ComplexTypeSpec =
         | ComplexTypeSpec.Tuple spec -> spec.Reader value
         | ComplexTypeSpec.DU spec -> spec.Reader value
 
-    member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
+    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         match this with 
-        | ComplexTypeSpec.Enum _ -> ImmutableHashSet.Create(this)
-        | ComplexTypeSpec.Object spec -> spec.CollectComplexTypes().Add(this)
-        | ComplexTypeSpec.Tuple spec -> spec.CollectComplexTypes().Add(this)
-        | ComplexTypeSpec.DU spec -> spec.CollectComplexTypes().Add(this)
+        | ComplexTypeSpec.Enum _ -> ImmutableDictionary.Empty
+        | ComplexTypeSpec.Object spec -> spec.CollectComplexTypes path
+        | ComplexTypeSpec.Tuple spec -> spec.CollectComplexTypes path
+        | ComplexTypeSpec.DU spec -> spec.CollectComplexTypes path
 
 and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
     | Ref of Conversion option ref
@@ -1472,13 +1471,27 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
         | Conversion.Type spec -> spec.Reader value
         | Conversion.ComplexType spec -> spec.Reader value
 
-    member this.CollectComplexTypes() : ImmutableHashSet<ComplexTypeSpec> =
+    // Returns a map of complex types and the paths they we're discoved on
+    member this.CollectComplexTypes path : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
         match this with 
-        | Conversion.Ref _ -> ImmutableHashSet.Empty // This should have been collected on another path
-        | Conversion.False -> ImmutableHashSet.Empty
-        | Conversion.True -> ImmutableHashSet.Empty
-        | Conversion.Type spec -> spec.CollectComplexTypes()
-        | Conversion.ComplexType spec -> spec.CollectComplexTypes()
+        | Conversion.Ref _ -> ImmutableDictionary.Empty // This should have been collected on another path
+        | Conversion.False -> ImmutableDictionary.Empty
+        | Conversion.True -> ImmutableDictionary.Empty
+        | Conversion.Type spec -> spec.CollectComplexTypes path
+        | Conversion.ComplexType spec -> 
+            let types = spec.CollectComplexTypes path
+            match types.TryGetValue spec with 
+            | false, _ -> types.Add(spec, Set.singleton path)
+            | true, paths -> types.Add(spec, Set.add path paths)
+
+    static member UnionComplexTypes (a : ImmutableDictionary<ComplexTypeSpec, Set<string list>>)  (b : ImmutableDictionary<ComplexTypeSpec, Set<string list>>) =        
+        b
+        |> Seq.fold (fun (a : ImmutableDictionary<ComplexTypeSpec, Set<string list>>) b -> 
+            match a.TryGetValue b.Key with 
+            | false, _ -> a.Add(b.Key, b.Value)
+            | true, paths -> a.Add(b.Key, Set.union paths b.Value)
+        ) a
+
 
 and ConversionContext = {
     Type : Json.Schema.SchemaValueType option
@@ -1554,7 +1567,7 @@ let convertBoolSchema (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversio
         Const = Choice1Of4 ()
     }
 
-let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion =
+let convertStringSchema (jsonSchema : Json.Schema.JsonSchema) : Conversion =
     let enum = pickKeyword<Json.Schema.EnumKeyword> jsonSchema.Keywords
     match enum with 
     | None -> 
@@ -1575,7 +1588,6 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
             |> Seq.toList
 
         {   
-            Path = path
             Type = PrimitiveType.String
             Description = getDescription jsonSchema.Keywords
             Title = getTitle jsonSchema.Keywords
@@ -1605,7 +1617,7 @@ let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
 
     let stringConversion =
         if typ.Type.HasFlag Json.Schema.SchemaValueType.String then
-            match convertStringSchema [] jsonSchema with 
+            match convertStringSchema jsonSchema with 
             | Conversion.Type spec -> 
                 match spec with 
                 | TypeSpec.Primitive p -> Some p
@@ -1625,7 +1637,7 @@ let convertSimpleUnion (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
         BooleanConversion = boolConversion
     }
 
-let convertConst (root : RootInformation) path (schema : Json.Schema.JsonSchema) (constKeyword : Json.Schema.ConstKeyword) : Conversion =
+let convertConst (root : RootInformation) (schema : Json.Schema.JsonSchema) (constKeyword : Json.Schema.ConstKeyword) : Conversion =
     // if we've got a "const" we can fill in the type
     match constKeyword.Value with 
     | :? JsonValue as value ->
@@ -1716,7 +1728,7 @@ let handleKeyword<'T when 'T : not struct> func keywordsMap =
             false
         | _ -> true)
 
-let rec convertRef (root : RootInformation) path context (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion =
+let rec convertRef (root : RootInformation) context (schema : Json.Schema.JsonSchema) (ref : Json.Schema.RefKeyword) : Conversion =
     let refKey = ref.Reference.ToString()
     match context.Refs.TryFind refKey with 
     | Some box -> Conversion.Ref box
@@ -1734,8 +1746,7 @@ let rec convertRef (root : RootInformation) path context (schema : Json.Schema.J
     let subschema, segments = readRef root ref
 
     if simpleRef then 
-        // We need a new path here because this _ref_ could be seen by multiple paths
-        convertSubSchema root (List.rev segments) context subschema
+        convertSubSchema root context subschema
     else 
         // This isn't a simple ref, we need to do a schema merge
         // we build a new _schema_ that merges the subschemas in ways that are possible to express in the type system (falling back to just any if we can't merge them)
@@ -1827,26 +1838,26 @@ let rec convertRef (root : RootInformation) path context (schema : Json.Schema.J
             |> TypeSpec.Any
             |> Conversion.Type
         else 
-            convertSubSchema root path context (newSchema.Build())
+            convertSubSchema root context (newSchema.Build())
     |> fun result ->
         // Whatever the result of this ref set it
         context.SetRef refKey result
         result
 
-and convertArraySchema (root : RootInformation) path (context : ConversionContext) (jsonSchema : Json.Schema.JsonSchema) : Conversion =    
+and convertArraySchema (root : RootInformation) (context : ConversionContext) (jsonSchema : Json.Schema.JsonSchema) : Conversion =    
     let prefixItems =
         jsonSchema.Keywords
         |> pickKeyword<Json.Schema.PrefixItemsKeyword>
         |> Option.map (fun kw -> 
             kw.ArraySchemas
-            |> Seq.mapi (fun i s -> convertSubSchema root (sprintf "%d" (i+1) :: "prefixItems" :: path) context.Clear s)
+            |> Seq.mapi (fun i s -> convertSubSchema root context.Clear s)
             |> Seq.toList
         )
 
     let items =
         jsonSchema.Keywords
         |> pickKeyword<Json.Schema.ItemsKeyword>
-        |> Option.map (fun ik -> convertSubSchema root ("items" :: path) context.Clear ik.SingleSchema)
+        |> Option.map (fun ik -> convertSubSchema root context.Clear ik.SingleSchema)
 
     let description = getDescription jsonSchema.Keywords
     match prefixItems with 
@@ -1859,14 +1870,13 @@ and convertArraySchema (root : RootInformation) path (context : ConversionContex
     | Some prefixItems -> 
         // Tuple type!
         {
-            Path = path
             Title = getTitle jsonSchema.Keywords
             Description = description
             PrefixItems = prefixItems
             AdditionalItems = items
-        } |> ComplexTypeSpec.Tuple |> Conversion.ComplexType
+        } |> ComplexTypeSpec.Tuple |> fun c -> Conversion.ComplexType c
 
-and convertObjectSchema (root : RootInformation) path (context : ConversionContext) (jsonSchema : Json.Schema.JsonSchema) : Conversion =
+and convertObjectSchema (root : RootInformation) (context : ConversionContext) (jsonSchema : Json.Schema.JsonSchema) : Conversion =
     let propertiesKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.PropertiesKeyword>
     let additionalPropertiesKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.AdditionalPropertiesKeyword>
     let requiredKeyword = jsonSchema.Keywords |> pickKeyword<Json.Schema.RequiredKeyword>
@@ -1877,7 +1887,7 @@ and convertObjectSchema (root : RootInformation) path (context : ConversionConte
         |> Option.map (fun pk ->
             pk.Properties
             |> Seq.map (fun kv ->
-                kv.Key, convertSubSchema root (kv.Key :: path) context.Clear kv.Value
+                kv.Key, convertSubSchema root context.Clear kv.Value
             )
             |> Map.ofSeq
         )
@@ -1886,7 +1896,7 @@ and convertObjectSchema (root : RootInformation) path (context : ConversionConte
     // If we have both we need to add an extra "additionalProperties" property to the object
     let additionalProperties =
         match context.AdditionalProperties, additionalPropertiesKeyword with 
-        | true, Some apk -> Some (convertSubSchema root ("additionalProperties" :: path) context.Clear apk.Schema)
+        | true, Some apk -> Some (convertSubSchema root context.Clear apk.Schema)
         | true, None -> Some (Conversion.True)
         | false, _ -> None
 
@@ -1903,7 +1913,6 @@ and convertObjectSchema (root : RootInformation) path (context : ConversionConte
     | None, None -> 
         // An empty object!
         {
-            Path = path
             Description = description
             Title = title
             Properties = Map.empty
@@ -1946,7 +1955,6 @@ and convertObjectSchema (root : RootInformation) path (context : ConversionConte
             | false, None -> Choice1Of2 ()
 
         {
-            Path = path
             Description = description
             Title = title
             Properties = props
@@ -1957,7 +1965,7 @@ and convertObjectSchema (root : RootInformation) path (context : ConversionConte
         |> ComplexTypeSpec.Object
         |> Conversion.ComplexType
 
-and convertAllOf (root : RootInformation) (path : string list) context (schema : Json.Schema.JsonSchema) (allOf : Json.Schema.AllOfKeyword): Conversion =
+and convertAllOf (root : RootInformation) context (schema : Json.Schema.JsonSchema) (allOf : Json.Schema.AllOfKeyword): Conversion =
 
     // allOf is a union of all the subschemas
     // we build a new _schema_ that merges the subschemas in ways that are possible to express in the type system (falling back to just any if we can't merge them)
@@ -2019,9 +2027,9 @@ and convertAllOf (root : RootInformation) (path : string list) context (schema :
     if allKeywords.Count <> 0 then
         failwithf "Needs more translation %O" allKeywords
 
-    convertSubSchema root path context (newSchema.Build()) 
+    convertSubSchema root context (newSchema.Build()) 
 
-and convertOneOf (root : RootInformation) path context (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
+and convertOneOf (root : RootInformation) context (schema : Json.Schema.JsonSchema) (oneOf : Json.Schema.OneOfKeyword) : Conversion =
 
     // See if there's any validation keywords at this level or if it's just a simple oneOf
     let simpleOneOf = 
@@ -2032,9 +2040,7 @@ and convertOneOf (root : RootInformation) path context (schema : Json.Schema.Jso
 
     let subConversions = 
         oneOf.Schemas 
-        |> Seq.mapi (fun i subschema -> 
-            let path = sprintf "oneOf%d" i :: path
-            convertSubSchema root path context subschema)
+        |> Seq.mapi (fun i subschema -> convertSubSchema root context subschema)
         |> Seq.filter (fun c -> not c.IsFalseSchema)
         |> Seq.toList
         
@@ -2061,7 +2067,6 @@ and convertOneOf (root : RootInformation) path context (schema : Json.Schema.Jso
     | true, _ ->
         // Emit a DU for each of the choices
         {
-            Path = path
             Title = getTitle schema.Keywords
             Description = getDescription schema.Keywords
             Choices = subConversions
@@ -2076,7 +2081,7 @@ and convertOneOf (root : RootInformation) path context (schema : Json.Schema.Jso
             if keyword.Equals oneOf then ()
             else newSchema.Add keyword
         )
-        let obj = convertSubSchema root path context (newSchema.Build()) 
+        let obj = convertSubSchema root context (newSchema.Build()) 
 
         match obj with 
         | Conversion.ComplexType (ComplexTypeSpec.Object obj) ->
@@ -2084,8 +2089,7 @@ and convertOneOf (root : RootInformation) path context (schema : Json.Schema.Jso
             let subConversions = 
                 oneOf.Schemas 
                 |> Seq.mapi (fun i subschema -> 
-                    let path = sprintf "oneOf%d" i :: path
-                    convertSubSchema root path { context with AdditionalProperties = false } subschema)
+                    convertSubSchema root { context with AdditionalProperties = false } subschema)
                 |> Seq.toList
 
             { obj with Choices = subConversions }
@@ -2099,7 +2103,7 @@ and convertOneOf (root : RootInformation) path context (schema : Json.Schema.Jso
             |> TypeSpec.Any
             |> Conversion.Type
 
-and convertSubSchema (root : RootInformation) (path : string list) (context : ConversionContext) (schema : Json.Schema.JsonSchema)  : Conversion =
+and convertSubSchema (root : RootInformation) (context : ConversionContext) (schema : Json.Schema.JsonSchema)  : Conversion =
     match schema.BoolValue |> Option.ofNullable with
     | Some false -> Conversion.False
     | Some true -> Conversion.True
@@ -2140,27 +2144,27 @@ and convertSubSchema (root : RootInformation) (path : string list) (context : Co
             | None -> false
         
         if constKeyword.IsSome then 
-            convertConst root path schema constKeyword.Value
+            convertConst root schema constKeyword.Value
         elif ref.IsSome then
-            convertRef root path context schema ref.Value
+            convertRef root context schema ref.Value
         elif allOf.IsSome then
-            convertAllOf root path context schema allOf.Value
+            convertAllOf root context schema allOf.Value
         elif oneOf.IsSome then
-            convertOneOf root path context schema oneOf.Value
+            convertOneOf root context schema oneOf.Value
         elif isSimpleType Json.Schema.SchemaValueType.Null then 
             convertNullSchema schema |> TypeSpec.Null |> Conversion.Type
         elif isSimpleType Json.Schema.SchemaValueType.Boolean then 
             convertBoolSchema schema |> TypeSpec.Primitive |> Conversion.Type
         elif isSimpleType Json.Schema.SchemaValueType.String then 
-            convertStringSchema path schema
+            convertStringSchema schema
         elif isSimpleType Json.Schema.SchemaValueType.Integer then 
             convertNumberSchema true schema |> TypeSpec.Primitive |> Conversion.Type
         elif isSimpleType Json.Schema.SchemaValueType.Number then 
             convertNumberSchema false schema |> TypeSpec.Primitive |> Conversion.Type
         elif isSimpleType Json.Schema.SchemaValueType.Object then 
-            convertObjectSchema root path context schema
+            convertObjectSchema root context schema
         elif isSimpleType Json.Schema.SchemaValueType.Array then 
-            convertArraySchema root path context schema
+            convertArraySchema root context schema
         elif isSimpleUnion keywords then
             convertSimpleUnion schema |> TypeSpec.Union |> Conversion.Type
         else 
@@ -2207,7 +2211,7 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         Document = jsonSchema
     }
     let jsonSchema = Json.Schema.JsonSchema.FromText (jsonSchema.GetRawText())
-    let conversion = convertSubSchema root [] ConversionContext.Default jsonSchema 
+    let conversion = convertSubSchema root ConversionContext.Default jsonSchema 
 
     let conversion = 
         match conversion.IsFalseSchema with 
@@ -2215,17 +2219,20 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
         | false -> conversion
 
     // We need to get all complex types and make names for them, then ask for the root schema to generate a pulumi schema for itself _given_ those names
-    let complexTypes = conversion.CollectComplexTypes()
+    let complexTypes = conversion.CollectComplexTypes []
     let usedNames = System.Collections.Generic.HashSet()
     let names = System.Collections.Generic.Dictionary()
-    for complexType in complexTypes do
+    for kv in complexTypes do
+        let complexType, paths = kv.Key, kv.Value
+
         let name = 
             // If we have a title use that
             complexType.Title
             |> Option.map cleanTextForName
             |> Option.defaultWith (fun () ->
-                // Else use the path of the type
-                complexType.Path
+                // Else use a path of the type
+                paths
+                |> Seq.head
                 |> List.rev
                 |> function 
                    // trim $defs"
