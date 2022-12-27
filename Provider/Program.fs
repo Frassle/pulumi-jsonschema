@@ -9,6 +9,7 @@ open System.Collections.Immutable
 open System.Text.Json
 open System.Text.Json.Nodes
 
+
 type KeywordCollection = IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>
     
 let pointerAttribute (attr : string) = Json.Pointer.PointerSegment.op_Implicit attr
@@ -1477,7 +1478,7 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
     member this.BuildTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with 
         | Conversion.Ref ref -> ref.Value.Value.BuildTypeSpec packageName names
-        | Conversion.False -> failwith "Should not try to build typeSpec for false"
+        | Conversion.False
         | Conversion.True -> 
             let schema = JsonObject()
             schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
@@ -1494,7 +1495,7 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
     member this.BuildPropertySpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with 
         | Conversion.Ref ref -> ref.Value.Value.BuildPropertySpec packageName names
-        | Conversion.False -> failwith "Should not try to build propertySpec for false"
+        | Conversion.False
         | Conversion.True -> 
             let schema = JsonObject()
             schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
