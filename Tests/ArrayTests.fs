@@ -67,3 +67,72 @@ let ``Test false array`` () =
 
     let exc = Test.listToProperty [Pulumi.Provider.PropertyValue(true)] |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "All values fail against the false schema"
+    
+[<Fact>]
+let ``Test array minItems`` () =
+    let t = Test.convertSchema """{
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 2
+    }"""
+    t.RoundTrip()
+    
+    t.ShouldEqual (Test.simpleSchema """{"type":"array","items":{"type":"string"}}""")
+    
+    Test.listToProperty [
+        Pulumi.Provider.PropertyValue("a");
+        Pulumi.Provider.PropertyValue("b");
+    ]
+    |> t.ShouldWrite """["a","b"]"""
+
+    """["foo","bar"]"""
+    |> t.ShouldRead (Test.listToProperty [
+        Pulumi.Provider.PropertyValue("foo")
+        Pulumi.Provider.PropertyValue("bar")
+    ])
+
+    let exc = 
+        Test.listToProperty [
+            Pulumi.Provider.PropertyValue("a");
+        ]
+        |> t.ShouldThrow
+    exc.Message |> Test.shouldEqual "Value has fewer than 2 items"
+    
+    let exc = 
+        """["foo"]"""
+        |> t.ShouldThrow
+    exc.Message |> Test.shouldEqual "Value has fewer than 2 items"
+
+[<Fact>]
+let ``Test array maxItems`` () =
+    let t = Test.convertSchema """{
+        "type": "array",
+        "items": { "type": "string" },
+        "maxItems": 1
+    }"""
+    t.RoundTrip()
+    
+    t.ShouldEqual (Test.simpleSchema """{"type":"array","items":{"type":"string"}}""")
+    
+    Test.listToProperty [
+        Pulumi.Provider.PropertyValue("a");
+    ]
+    |> t.ShouldWrite """["a"]"""
+
+    """["foo"]"""
+    |> t.ShouldRead (Test.listToProperty [
+        Pulumi.Provider.PropertyValue("foo")
+    ])
+
+    let exc = 
+        Test.listToProperty [
+            Pulumi.Provider.PropertyValue("a");
+            Pulumi.Provider.PropertyValue("b");
+        ]
+        |> t.ShouldThrow
+    exc.Message |> Test.shouldEqual "Value has more than 1 items"
+    
+    let exc = 
+        """["foo", "bar"]"""
+        |> t.ShouldThrow
+    exc.Message |> Test.shouldEqual "Value has more than 1 items"

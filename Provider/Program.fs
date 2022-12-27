@@ -139,7 +139,7 @@ type StringValidation = {
             | _ -> None
         let maxCheck =
             match this.MaxLength with 
-            | Some l when uint value.Length >= l -> 
+            | Some l when uint value.Length > l -> 
                 sprintf "Value is not shorter than or equal to %d characters" l
                 |> Some
             | _ -> None
@@ -248,6 +248,57 @@ type PrimitiveValidation = {
             if Json.More.JsonNodeEqualityComparer.Instance.Equals(c, Option.toObj node) then None
             else Some (sprintf "Expected %s" (c.ToJsonString()))
         | None -> None
+        
+type ArrayValidation = {
+    MinItems : uint option
+    MaxItems : uint option
+} with 
+    static member None = 
+        {
+            MinItems = None
+            MaxItems = None
+        }
+
+    static member FromKeywords (keywords : KeywordCollection) =
+        {
+            MinItems = pickKeyword<Json.Schema.MinItemsKeyword> keywords |> Option.map (fun kw -> kw.Value)
+            MaxItems = pickKeyword<Json.Schema.MaxItemsKeyword> keywords |> Option.map (fun kw -> kw.Value)
+        }
+
+    member this.Validate (value : JsonElement) =
+        if value.ValueKind <> System.Text.Json.JsonValueKind.Array then None 
+        else
+            let count = value.GetArrayLength()
+
+            let minCheck =
+                match this.MinItems with 
+                | Some l when uint count < l -> 
+                    sprintf "Value has fewer than %d items" l
+                    |> Some
+                | _ -> None
+            let maxCheck =
+                match this.MaxItems with 
+                | Some l when uint count > l -> 
+                    sprintf "Value has more than %d items" l
+                    |> Some
+                | _ -> None
+            
+            Option.orElse maxCheck minCheck
+
+    member this.Validate (value : Pulumi.Provider.PropertyValue) =
+        match value.TryGetArray () with 
+        | false, _ -> ()
+        | true, arr ->
+            match this.MinItems with 
+            | Some l when uint arr.Length < l -> 
+                failwithf "Value has fewer than %d items" l
+            | _ -> ()
+
+            match this.MaxItems with 
+            | Some l when uint arr.Length > l -> 
+                failwithf "Value has more than %d items" l
+            | _ -> ()
+
 
 type NullConversion = {
     Description : string option
@@ -751,6 +802,7 @@ type EnumConversion = {
 type ArrayConversion = {
     Description : string option
     Items : Conversion option
+    Validation : ArrayValidation
 } with
     member this.BuildTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
         let schema = JsonObject()
@@ -766,6 +818,8 @@ type ArrayConversion = {
         schema
         
     member this.Writer (value : Pulumi.Provider.PropertyValue) = 
+        this.Validation.Validate value
+
         let maybeArr = 
             value.TryUnwrap ()
             |> optionOfTry
@@ -791,6 +845,10 @@ type ArrayConversion = {
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Array then
+            match this.Validation.Validate value with 
+            | Some err -> Error err
+            | None ->
+
             let itemReader item = 
                 match this.Items with 
                 | Some items -> items.Reader item
@@ -1922,6 +1980,7 @@ and convertArraySchema (root : RootInformation) (context : ConversionContext) (p
         {
             Description = description
             Items = items
+            Validation = ArrayValidation.FromKeywords jsonSchema.Keywords
         } |> TypeSpec.Array |> Conversion.Type
     | Some prefixItems -> 
         // Tuple type!
