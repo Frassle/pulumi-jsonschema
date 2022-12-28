@@ -104,3 +104,45 @@ let ``Test tuple additionalItems`` () =
         ]
         |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"string\""
+
+[<Fact>]
+let ``Test tuple required items`` () =
+    let t = Test.convertSchema """{
+        "type": "array",
+        "prefixItems": [
+            { "type": "string" },
+            { "type": "number" }
+        ],
+        "minItems": 1,
+        "items": false
+    }"""
+    t.RoundTrip()
+    
+    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{
+        "type":"object",
+        "properties":{
+            "item1" : { "type":"string" },
+            "item2" : { "type":"number" }
+        },
+        "required": ["item1"]
+    }"""])
+    
+    Test.dictToProperty [
+        "item1", Pulumi.Provider.PropertyValue("a")
+    ]
+    |> t.ShouldWrite """["a"]"""
+
+    """["foo"]"""
+    |> t.ShouldRead (Test.dictToProperty [
+        "item1", Pulumi.Provider.PropertyValue("foo")
+    ])
+
+    let exc = 
+        """[]"""
+        |> t.ShouldThrow<exn>
+    exc.Message |> Test.shouldEqual "Value has fewer than 1 items"
+
+    let exc = 
+        Test.dictToProperty []
+        |> t.ShouldThrow<exn>
+    exc.Message |> Test.shouldEqual "property 'item1' is required"

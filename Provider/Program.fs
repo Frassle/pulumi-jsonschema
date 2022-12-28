@@ -1302,13 +1302,13 @@ and ObjectConversion = {
             Conversion.UnionComplexTypes (kv.CollectComplexTypes path refs) types
         ) additionalTypes
 
-        
 and TupleConversion = {
     Path : Json.Pointer.JsonPointer
     Title : string option
     Description : string option
     PrefixItems : Conversion list
     AdditionalItems : Conversion option
+    Validation : ArrayValidation
 } with 
 
     member this.BuildComplexTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) =
@@ -1323,6 +1323,16 @@ and TupleConversion = {
             let key = sprintf "item%d" (i+1)
             propertiesSchema.Add(key, s.BuildPropertySpec packageName names)
         )
+
+        match this.Validation.MinItems with
+        | None -> ()
+        | Some minItems ->
+            // If at least X items are required then we know item1 to item(X+1) are required
+            let required = JsonArray()
+            let requiredCount = min (int minItems) this.PrefixItems.Length
+            for i = 1 to requiredCount do
+                required.Add(sprintf "item%d" i)
+            schema.Add("required", required)
 
         match this.AdditionalItems with
         | Some ais when ais.IsFalseSchema -> ()
@@ -1350,6 +1360,16 @@ and TupleConversion = {
         | None -> failwithf "Invalid type expected object got %O" value.Type
         | Some obj ->
             let keyRegex = System.Text.RegularExpressions.Regex("^item(\d+)$")
+
+            // If minItems is set then some of the items are required
+            match this.Validation.MinItems with
+            | None -> ()
+            | Some minItems ->
+                let requiredCount = min (int minItems) this.PrefixItems.Length
+                for i = 1 to requiredCount do
+                    let key = sprintf "item%d" i
+                    if not (obj.ContainsKey key) then
+                        failwithf "property '%s' is required" key
 
             // First write out an array of the prefix items
             let items, rest = 
@@ -1390,6 +1410,10 @@ and TupleConversion = {
 
     member this.Reader (value : JsonElement) =
         if value.ValueKind = JsonValueKind.Array then
+            match this.Validation.Validate value with 
+            | Some err -> Error err
+            | None ->
+
             let propertiesRest =
                 value.EnumerateArray()
                 |> Seq.mapi (fun i item -> (i, item))
@@ -1990,6 +2014,7 @@ and convertArraySchema (root : RootInformation) (context : ConversionContext) (p
             Description = description
             PrefixItems = prefixItems
             AdditionalItems = items
+            Validation = ArrayValidation.FromKeywords jsonSchema.Keywords
         } |> ComplexTypeSpec.Tuple |> fun c -> Conversion.ComplexType c
 
 and convertObjectSchema (root : RootInformation) (context : ConversionContext) (path : Json.Pointer.JsonPointer) (jsonSchema : Json.Schema.JsonSchema) : Conversion =
