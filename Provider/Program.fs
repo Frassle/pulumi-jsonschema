@@ -1734,13 +1734,32 @@ let convertStringSchema path (jsonSchema : Json.Schema.JsonSchema) : Conversion 
         |> ComplexTypeSpec.Enum
         |> Conversion.ComplexType
 
-let convertNumberSchema isInteger (jsonSchema : Json.Schema.JsonSchema) : PrimitiveConversion =
-    {
-        Type = if isInteger then PrimitiveType.Integer else PrimitiveType.Number
-        Description = getDescription jsonSchema.Keywords
-        Validation = PrimitiveValidation.FromKeywords jsonSchema.Keywords
-        Const = Choice1Of4 ()
-    }
+let convertNumberSchema path isInteger (jsonSchema : Json.Schema.JsonSchema) : Conversion =
+    let enum = pickKeyword<Json.Schema.EnumKeyword> jsonSchema.Keywords
+    match enum with 
+    | None -> 
+        {
+            Type = if isInteger then PrimitiveType.Integer else PrimitiveType.Number
+            Description = getDescription jsonSchema.Keywords
+            Validation = PrimitiveValidation.FromKeywords jsonSchema.Keywords
+            Const = Choice1Of4 ()
+        }
+        |> TypeSpec.Primitive
+        |> Conversion.Type
+    | Some enum ->
+        let enumValues =
+            enum.Values
+            |> Seq.toList
+
+        {   
+            Path = path
+            Type = if isInteger then PrimitiveType.Integer else PrimitiveType.Number
+            Description = getDescription jsonSchema.Keywords
+            Title = getTitle jsonSchema.Keywords
+            Values = enumValues
+        }
+        |> ComplexTypeSpec.Enum
+        |> Conversion.ComplexType
 
 let convertSimpleUnion path (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
     let typ = jsonSchema.Keywords |> pickKeyword<Json.Schema.TypeKeyword> |> Option.get
@@ -2308,7 +2327,7 @@ and convertSubSchema (root : RootInformation) (context : ConversionContext) path
         elif isSimpleType Json.Schema.SchemaValueType.String then 
             convertStringSchema path schema
         elif isSimpleType Json.Schema.SchemaValueType.Integer then 
-            convertNumberSchema true schema |> TypeSpec.Primitive |> Conversion.Type
+            convertNumberSchema true schema
         elif isSimpleType Json.Schema.SchemaValueType.Number then 
             convertNumberSchema false schema |> TypeSpec.Primitive |> Conversion.Type
         elif isSimpleType Json.Schema.SchemaValueType.Object then 

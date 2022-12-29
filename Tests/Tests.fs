@@ -36,29 +36,6 @@ let ``Test null`` () =
 
     "null"
     |> t.ShouldRead Pulumi.Provider.PropertyValue.Null
-
-[<Fact>]
-let ``Test string enum`` () =
-    let t = Test.convertSchema """{
-        "type": "string",
-        "enum": ["info", "warn", "error"]
-    }"""
-    t.RoundTrip()
-    
-    t.ShouldEqual (Test.complexSchema [
-        "schema:index:root", """{"type":"string","enum":[{"value":"info"},{"value":"warn"},{"value":"error"}]}"""
-    ])
-
-    Pulumi.Provider.PropertyValue("info")
-    |> t.ShouldWrite "\"info\""
-
-    "\"info\""
-    |> t.ShouldRead (Pulumi.Provider.PropertyValue "info")
-
-    let exc = 
-        Pulumi.Provider.PropertyValue("badenum")
-        |> t.ShouldThrow<exn>
-    exc.Message |> Test.shouldEqual "Expected value to match one of the values specified by the enum"
     
 [<Fact>]
 let ``Test empty object`` () =
