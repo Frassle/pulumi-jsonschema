@@ -1,7 +1,5 @@
-﻿// Given a JSON schema generate a Pulumi schema, and a way to read/write from that pulumi type to the expected json.
-
-
-module Provider
+﻿/// Given a JSON schema generate a Pulumi schema, and a way to read/write from that pulumi type to the expected json.
+module JsonSchema.Provider
 
 open System
 open System.Collections.Generic
@@ -10,10 +8,7 @@ open System.Text.Json
 open System.Text.Json.Nodes
 
 
-type KeywordCollection = IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>
-    
-let pointerAttribute (attr : string) = Json.Pointer.PointerSegment.op_Implicit attr
-let pointerIndex (index : int) = Json.Pointer.PointerSegment.op_Implicit (uint32 index)
+type KeywordCollection = IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>    
 
 let pickKeyword<'T when 'T :> Json.Schema.IJsonSchemaKeyword> (keywords : KeywordCollection) : 'T option =
     let picked = 
@@ -1980,7 +1975,7 @@ and convertArraySchema (root : RootInformation) (context : ConversionContext) (p
         |> Option.map (fun kw -> 
             kw.ArraySchemas
             |> Seq.mapi (fun i s -> 
-                let path = path.Combine(pointerAttribute "prefixItems", pointerIndex i)
+                let path = path.Combine(Pointer.attribute "prefixItems", Pointer.index i)
                 convertSubSchema root context.Clear path s)
             |> Seq.toList
         )
@@ -1989,7 +1984,7 @@ and convertArraySchema (root : RootInformation) (context : ConversionContext) (p
         jsonSchema.Keywords
         |> pickKeyword<Json.Schema.ItemsKeyword>
         |> Option.map (fun ik -> 
-            let path = path.Combine(pointerAttribute "items")
+            let path = path.Combine(Pointer.attribute "items")
             convertSubSchema root context.Clear path ik.SingleSchema)
 
     let description = getDescription jsonSchema.Keywords
@@ -2023,7 +2018,7 @@ and convertObjectSchema (root : RootInformation) (context : ConversionContext) (
         |> Option.map (fun pk ->
             pk.Properties
             |> Seq.map (fun kv ->
-                let path = path.Combine(pointerAttribute "properties", pointerAttribute kv.Key)
+                let path = path.Combine(Pointer.attribute "properties", Pointer.attribute kv.Key)
                 kv.Key, convertSubSchema root context.Clear path kv.Value
             )
             |> Map.ofSeq
@@ -2034,7 +2029,7 @@ and convertObjectSchema (root : RootInformation) (context : ConversionContext) (
     let additionalProperties =
         match context.AdditionalProperties, additionalPropertiesKeyword with 
         | true, Some apk -> 
-            let path = path.Combine(pointerAttribute "additionalProperties")
+            let path = path.Combine(Pointer.attribute "additionalProperties")
             Some (convertSubSchema root context.Clear path apk.Schema)
         | true, None -> Some (Conversion.True)
         | false, _ -> None
@@ -2182,7 +2177,7 @@ and convertOneOf (root : RootInformation) context (path : Json.Pointer.JsonPoint
     let subConversions = 
         oneOf.Schemas 
         |> Seq.mapi (fun i subschema ->
-            let path = path.Combine(pointerAttribute "oneOf", pointerIndex i)            
+            let path = path.Combine(Pointer.attribute "oneOf", Pointer.index i)            
             convertSubSchema root context path subschema)
         |> Seq.filter (fun c -> not c.IsFalseSchema)
         |> Seq.toList
@@ -2233,7 +2228,7 @@ and convertOneOf (root : RootInformation) context (path : Json.Pointer.JsonPoint
             let subConversions = 
                 oneOf.Schemas 
                 |> Seq.mapi (fun i subschema ->
-                    let path = path.Combine(pointerAttribute "oneOf", pointerIndex i)
+                    let path = path.Combine(Pointer.attribute "oneOf", Pointer.index i)
                     convertSubSchema root { context with AdditionalProperties = false } path subschema)
                 |> Seq.toList
 

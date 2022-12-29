@@ -49,7 +49,7 @@ let ``Test githhub`` () =
         let contents = client.GetStringAsync(uri)
         System.Text.Json.JsonDocument.Parse contents.Result
         
-    let conversion = Provider.convertSchema uri schema.RootElement
+    let conversion = JsonSchema.Provider.convertSchema uri schema.RootElement
 
     Assert.NotNull(conversion)
     writeSdk conversion.Schema "github"
@@ -62,7 +62,7 @@ let ``Test pulumi`` () =
         let contents = client.GetStringAsync(uri)
         System.Text.Json.JsonDocument.Parse contents.Result
         
-    let conversion = Provider.convertSchema uri schema.RootElement
+    let conversion = JsonSchema.Provider.convertSchema uri schema.RootElement
 
     Assert.NotNull(conversion)
     writeSdk conversion.Schema "pulumi"

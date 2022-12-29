@@ -168,7 +168,7 @@ let listToProperty (list : Pulumi.Provider.PropertyValue list) =
 
 type SchemaTest = {
     Schema : Json.Schema.JsonSchema
-    Conversion : Provider.RootConversion
+    Conversion : JsonSchema.Provider.RootConversion
 } with 
 
     member this.ShouldWrite (expectedJson : string) (value : Pulumi.Provider.PropertyValue) : unit =
@@ -245,5 +245,5 @@ let convertSchema (schema: string) =
     let schema = Json.Schema.JsonSchema.FromText schema
     {
         Schema = schema
-        Conversion = Provider.convertSchema baseUri json.RootElement
+        Conversion = JsonSchema.Provider.convertSchema baseUri json.RootElement
     }
