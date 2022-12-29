@@ -2407,11 +2407,6 @@ let convertSchema (uri : Uri) (jsonSchema : JsonElement) : RootConversion =
     let jsonSchema = Json.Schema.JsonSchema.FromText (jsonSchema.GetRawText())
     let conversion = convertSubSchema root ConversionContext.Default Json.Pointer.JsonPointer.Empty jsonSchema 
 
-    let conversion = 
-        match conversion.IsFalseSchema with 
-        | true -> failwith "top level false schemas are not supported, this schema can not read or write anything"
-        | false -> conversion
-
     // We need to get all complex types and make names for them, then ask for the root schema to generate a pulumi schema for itself _given_ those names
     let complexTypes = conversion.CollectComplexTypes [] ImmutableHashSet.Empty
     let usedNames = System.Collections.Generic.HashSet()

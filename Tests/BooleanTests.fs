@@ -49,3 +49,19 @@ let ``Test true`` () =
     |> t.ShouldRoundTrip """[
         "hello", false, 45.1, { "x": 1, "y": 2 }
     ]"""
+
+[<Fact>]
+let ``Test false`` () =
+    let t = Test.convertSchema """false"""
+
+    t.ShouldEqual (Test.simpleSchema """{"$ref": "pulumi.json#/Any"}""")
+    
+    let exc =        
+        Pulumi.Provider.PropertyValue("foo")
+        |> t.ShouldThrow<exn>
+    exc.Message |> Test.shouldEqual "All values fail against the false schema"
+
+    let exc =
+        "-1"
+        |> t.ShouldThrow<exn>
+    exc.Message |> Test.shouldEqual "All values fail against the false schema"
