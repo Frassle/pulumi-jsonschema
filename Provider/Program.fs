@@ -761,7 +761,7 @@ type UnionConversion = {
     member this.Reader (value : JsonElement) = 
         if (value.ValueKind = JsonValueKind.True || value.ValueKind = JsonValueKind.False) && this.BooleanConversion.IsSome then
             this.BooleanConversion.Value.Reader value
-        elif value.ValueKind = JsonValueKind.Number && this.NumberConversion.IsSome || this.IntegerConversion.IsSome then
+        elif value.ValueKind = JsonValueKind.Number && (this.NumberConversion.IsSome || this.IntegerConversion.IsSome) then
             match tryGetNumeric value with
             | Some (Choice1Of2 i) -> 
                 if this.IntegerConversion.IsSome then
