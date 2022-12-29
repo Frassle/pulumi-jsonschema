@@ -100,6 +100,16 @@ let cleanTextForName (text : string) : string =
 
     result.ToString()
 
+let tryGetNumeric (value : JsonElement) = 
+    if value.ValueKind = JsonValueKind.Number then 
+        match value.TryGetInt64() with
+        | true, i -> Some (Choice1Of2 i)
+        | false, _ ->
+            match value.TryGetDouble() with
+            | true, n -> Some (Choice2Of2 n)
+            | false, _ -> None
+    else None
+
 [<RequireQualifiedAccess>]
 type PrimitiveType = Boolean | Integer | Number | String
 with 
@@ -653,15 +663,16 @@ type PrimitiveConversion = {
 type UnionConversion = {
     Description : string option
     BooleanConversion : PrimitiveConversion option
+    IntegerConversion : PrimitiveConversion option
     NumberConversion : PrimitiveConversion option
     StringConversion : PrimitiveConversion option
 } with
     static member OfPrimitive (conversion : PrimitiveConversion) =
         match conversion.Type with
-        | PrimitiveType.Boolean -> { Description = None; BooleanConversion = Some conversion; NumberConversion = None; StringConversion = None }
-        | PrimitiveType.Integer
-        | PrimitiveType.Number -> { Description = None; BooleanConversion = None; NumberConversion = Some conversion; StringConversion = None }
-        | PrimitiveType.String -> { Description = None; BooleanConversion = None; NumberConversion = None; StringConversion = Some conversion }
+        | PrimitiveType.Boolean -> { Description = None; BooleanConversion = Some conversion; IntegerConversion = None; NumberConversion = None; StringConversion = None }
+        | PrimitiveType.Integer -> { Description = None; BooleanConversion = None; IntegerConversion = Some conversion; NumberConversion = None; StringConversion = None }
+        | PrimitiveType.Number -> { Description = None; BooleanConversion = None; IntegerConversion = None; NumberConversion = Some conversion; StringConversion = None }
+        | PrimitiveType.String -> { Description = None; BooleanConversion = None; IntegerConversion = None; NumberConversion = None; StringConversion = Some conversion }
 
     member this.TryMerge (other : UnionConversion) =
         let unique a b = 
@@ -672,19 +683,20 @@ type UnionConversion = {
             | _, _ -> Result.Error ()
         
         let boolean = unique this.BooleanConversion other.BooleanConversion 
+        let integer = unique this.IntegerConversion other.IntegerConversion
         let number = unique this.NumberConversion other.NumberConversion 
         let str = unique this.StringConversion other.StringConversion
 
-        match boolean, number, str with 
-        | Ok b, Ok n, Ok s -> 
-            Some { Description = this.Description; BooleanConversion = b; NumberConversion = n; StringConversion = s }
+        match boolean, integer, number, str with 
+        | Ok b, Ok i, Ok n, Ok s -> 
+            Some { Description = this.Description; BooleanConversion = b; IntegerConversion = i; NumberConversion = n; StringConversion = s }
         | _ -> None
 
     member this.BuildTypeSpec () =
         let schema = JsonObject()
 
         let oneof = JsonArray()
-        [this.BooleanConversion; this.NumberConversion; this.StringConversion]
+        [this.BooleanConversion; this.IntegerConversion; this.NumberConversion; this.StringConversion]
         |> List.iter (function 
             | None -> ()
             | Some conversion -> 
@@ -698,7 +710,7 @@ type UnionConversion = {
         let schema = JsonObject()
 
         let oneof = JsonArray()
-        [this.BooleanConversion; this.NumberConversion; this.StringConversion]
+        [this.BooleanConversion; this.IntegerConversion; this.NumberConversion; this.StringConversion]
         |> List.iter (function 
             | None -> ()
             | Some conversion -> 
@@ -710,7 +722,7 @@ type UnionConversion = {
         schema
 
     member private this.expectedTypes = 
-        ["number", this.NumberConversion; "string", this.StringConversion; "boolean", this.BooleanConversion]
+        ["integer", this.IntegerConversion; "number", this.NumberConversion; "string", this.StringConversion; "boolean", this.BooleanConversion]
           |> List.choose (fun (k, opt) -> match opt with | Some _ -> Some k | None -> None)
           |> String.concat " or "      
 
@@ -723,10 +735,13 @@ type UnionConversion = {
                 | None -> raise ()
                 | Some conversion -> conversion.Writer value
             ),
-            (fun _ -> 
-                match this.NumberConversion with 
-                | None -> raise ()
-                | Some conversion -> conversion.Writer value
+            (fun n -> 
+                match this.IntegerConversion with 
+                | Some conversion when n = floor n -> conversion.Writer value
+                | _ -> 
+                    match this.NumberConversion with 
+                    | Some conversion -> conversion.Writer value
+                    | None -> raise ()
             ),
             (fun _ -> 
                 match this.StringConversion with 
@@ -746,8 +761,16 @@ type UnionConversion = {
     member this.Reader (value : JsonElement) = 
         if (value.ValueKind = JsonValueKind.True || value.ValueKind = JsonValueKind.False) && this.BooleanConversion.IsSome then
             this.BooleanConversion.Value.Reader value
-        elif value.ValueKind = JsonValueKind.Number && this.NumberConversion.IsSome then
-            this.NumberConversion.Value.Reader value
+        elif value.ValueKind = JsonValueKind.Number && this.NumberConversion.IsSome || this.IntegerConversion.IsSome then
+            match tryGetNumeric value with
+            | Some (Choice1Of2 i) -> 
+                if this.IntegerConversion.IsSome then
+                    this.IntegerConversion.Value.Reader value
+                else 
+                    this.NumberConversion.Value.Reader value
+            | Some (Choice2Of2 n) when this.NumberConversion.IsSome -> this.NumberConversion.Value.Reader value
+            | Some (Choice2Of2 _) -> failwithf "Invalid JSON document expected %s got %O" this.expectedTypes value.ValueKind
+            | None -> failwith "Expected tryGetNumeric to return a value for a number"            
         elif value.ValueKind = JsonValueKind.String && this.StringConversion.IsSome then
             this.StringConversion.Value.Reader value
         else 
@@ -1666,24 +1689,7 @@ let getType (keywords : KeywordCollection) : Json.Schema.SchemaValueType option 
     keywords
     |> pickKeyword<Json.Schema.TypeKeyword>
     |> Option.map (fun typ -> typ.Type)
-
-let isSimpleType (schemaValueType : Json.Schema.SchemaValueType) : bool =
-    schemaValueType = Json.Schema.SchemaValueType.Null ||
-    schemaValueType = Json.Schema.SchemaValueType.Boolean ||
-    schemaValueType = Json.Schema.SchemaValueType.Integer ||
-    schemaValueType = Json.Schema.SchemaValueType.Number ||
-    schemaValueType = Json.Schema.SchemaValueType.String ||
-    schemaValueType = Json.Schema.SchemaValueType.Array ||
-    schemaValueType = Json.Schema.SchemaValueType.Object
-
-let isSimpleUnion (keywords : KeywordCollection) : bool =
-    keywords
-    |> pickKeyword<Json.Schema.TypeKeyword>
-    |> Option.map (fun typ ->
-        not (typ.Type.HasFlag Json.Schema.SchemaValueType.Object) &&
-        not (typ.Type.HasFlag Json.Schema.SchemaValueType.Array)
-    ) |> Option.defaultValue false
-        
+       
 let getDescription keywords = 
     match pickKeyword<Json.Schema.DescriptionKeyword> keywords with 
     | Some kw -> Some kw.Value
@@ -1760,36 +1766,6 @@ let convertNumberSchema path isInteger (jsonSchema : Json.Schema.JsonSchema) : C
         }
         |> ComplexTypeSpec.Enum
         |> Conversion.ComplexType
-
-let convertSimpleUnion path (jsonSchema : Json.Schema.JsonSchema) : UnionConversion =
-    let typ = jsonSchema.Keywords |> pickKeyword<Json.Schema.TypeKeyword> |> Option.get
-    
-    let numberConversion =
-        if typ.Type.HasFlag Json.Schema.SchemaValueType.Number then
-            Some (convertNumberSchema false jsonSchema)
-        else None
-
-    let stringConversion =
-        if typ.Type.HasFlag Json.Schema.SchemaValueType.String then
-            match convertStringSchema path jsonSchema with 
-            | Conversion.Type spec -> 
-                match spec with 
-                | TypeSpec.Primitive p -> Some p
-                | _ -> failwith "Expected convertStringSchema to return a PrimitiveConversion"
-            | _ -> failwith "Expected convertStringSchema to return a PrimitiveConversion"
-        else None
-
-    let boolConversion =
-        if typ.Type.HasFlag Json.Schema.SchemaValueType.Boolean then
-            Some (convertBoolSchema jsonSchema)
-        else None
-
-    {
-        Description = getDescription jsonSchema.Keywords
-        NumberConversion = numberConversion
-        StringConversion = stringConversion
-        BooleanConversion = boolConversion
-    }
 
 let convertConst (root : RootInformation) (schema : Json.Schema.JsonSchema) (constKeyword : Json.Schema.ConstKeyword) : Conversion =
     // if we've got a "const" we can fill in the type
@@ -2227,7 +2203,7 @@ and convertOneOf (root : RootInformation) context (path : Json.Pointer.JsonPoint
                     | Conversion.Type (TypeSpec.Union u) ->
                         overall.TryMerge u
                     | _ -> None
-            ) (Some { Description = None; BooleanConversion = None; NumberConversion = None; StringConversion = None })
+            ) (Some { Description = None; BooleanConversion = None; IntegerConversion = None; NumberConversion = None; StringConversion = None })
 
     match simpleOneOf, simpleUnion with
     | _, Some union -> union |> TypeSpec.Union |> Conversion.Type
@@ -2307,10 +2283,10 @@ and convertSubSchema (root : RootInformation) (context : ConversionContext) path
         let ref = pickKeyword<Json.Schema.RefKeyword> keywords
         let constKeyword = pickKeyword<Json.Schema.ConstKeyword> keywords
 
-        let isSimpleType c =
+        let hasType c =
             match typ with
-            | Some t -> t = c
-            | None -> false
+            | Some t -> t.HasFlag c
+            | None -> true
         
         if constKeyword.IsSome then 
             convertConst root schema constKeyword.Value
@@ -2320,35 +2296,89 @@ and convertSubSchema (root : RootInformation) (context : ConversionContext) path
             convertAllOf root context path schema allOf.Value
         elif oneOf.IsSome then
             convertOneOf root context path schema oneOf.Value
-        elif isSimpleType Json.Schema.SchemaValueType.Null then 
-            convertNullSchema schema |> TypeSpec.Null |> Conversion.Type
-        elif isSimpleType Json.Schema.SchemaValueType.Boolean then 
-            convertBoolSchema schema |> TypeSpec.Primitive |> Conversion.Type
-        elif isSimpleType Json.Schema.SchemaValueType.String then 
-            convertStringSchema path schema
-        elif isSimpleType Json.Schema.SchemaValueType.Integer then 
-            convertNumberSchema true schema
-        elif isSimpleType Json.Schema.SchemaValueType.Number then 
-            convertNumberSchema false schema |> TypeSpec.Primitive |> Conversion.Type
-        elif isSimpleType Json.Schema.SchemaValueType.Object then 
-            convertObjectSchema root context path schema
-        elif isSimpleType Json.Schema.SchemaValueType.Array then 
-            convertArraySchema root context path schema
-        elif isSimpleUnion keywords then
-            convertSimpleUnion path schema |> TypeSpec.Union |> Conversion.Type
         else 
-            let msg =
-                keywords
-                |> Seq.map (fun kw -> kw.ToString())
-                |> String.concat ", "
-                |> sprintf "unhandled schema: %s"
+            let nullSchema = 
+                if hasType Json.Schema.SchemaValueType.Null then
+                    convertNullSchema schema |> TypeSpec.Null |> Conversion.Type |> Some
+                else 
+                    None
 
-            {
-                Description = Some msg
-                PrimitiveValidation = PrimitiveValidation.FromKeywords schema.Keywords
-            }
-            |> TypeSpec.Any 
-            |> Conversion.Type
+            let boolSchema = 
+                if hasType Json.Schema.SchemaValueType.Boolean then 
+                    convertBoolSchema schema |> TypeSpec.Primitive |> Conversion.Type |> Some
+                else
+                    None
+
+            let stringSchema = 
+                if hasType Json.Schema.SchemaValueType.String then 
+                    convertStringSchema path schema |> Some
+                else 
+                    None
+
+            let intSchema = 
+                if hasType Json.Schema.SchemaValueType.Integer then 
+                    convertNumberSchema path true schema |> Some
+                else 
+                    None
+
+            let numSchema = 
+                if hasType Json.Schema.SchemaValueType.Number then 
+                    convertNumberSchema path false schema |> Some
+                else 
+                    None
+
+            let objSchema = 
+                if hasType Json.Schema.SchemaValueType.Object then 
+                    convertObjectSchema root context path schema |> Some
+                else 
+                    None
+
+            let arrSchema = 
+                if hasType Json.Schema.SchemaValueType.Array then 
+                    convertArraySchema root context path schema |> Some
+                else
+                    None
+
+            let (|MaybePrimitive|) (value : Conversion option) =
+                match value with
+                | Some (Conversion.Type (TypeSpec.Primitive x)) -> Some x
+                | _ -> None
+
+            match nullSchema, boolSchema, stringSchema, intSchema, numSchema, objSchema, arrSchema with
+            // No type valid, just return false
+            | None, None, None, None, None, None, None -> Conversion.False
+            // Just one type valid, return it
+            | Some c, None, None, None, None, None, None -> c
+            | None, Some c, None, None, None, None, None -> c
+            | None, None, Some c, None, None, None, None -> c
+            | None, None, None, Some c, None, None, None -> c
+            | None, None, None, None, Some c, None, None -> c
+            | None, None, None, None, None, Some c, None -> c
+            | None, None, None, None, None, None, Some c -> c
+            // Only basic types
+            | None, MaybePrimitive b, MaybePrimitive s, MaybePrimitive i, MaybePrimitive n, None, None ->
+                {
+                    Description = None
+                    BooleanConversion = b
+                    StringConversion = s
+                    IntegerConversion = i
+                    NumberConversion = n
+                }
+                |> TypeSpec.Union
+                |> Conversion.Type
+            | _ -> 
+                let msg =
+                    keywords
+                    |> Seq.map (fun kw -> kw.ToString())
+                    |> String.concat ", "
+                    |> sprintf "unhandled schema: %s"
+
+                {
+                    Description = Some msg
+                    PrimitiveValidation = PrimitiveValidation.FromKeywords schema.Keywords
+                }
+                |> TypeSpec.Any 
+                |> Conversion.Type
 
 type RootConversion = {
     Schema: JsonObject
