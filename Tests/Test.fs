@@ -217,6 +217,12 @@ type SchemaTest = {
             |> this.Conversion.Reader 
             |> ignore)
 
+    member this.ShouldRoundTrip (json : string) (value : Pulumi.Provider.PropertyValue) : unit =
+        value 
+        |> this.ShouldWrite json
+        json
+        |> this.ShouldRead value
+
     member this.RoundTrip () =
         // Use Json.Schema.Data to generate some json, check we can read and write it
         let data = Json.Schema.DataGeneration.JsonSchemaExtensions.GenerateData(this.Schema)
