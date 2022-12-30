@@ -27,9 +27,11 @@ let ``Test boolean`` () =
         |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"boolean\""
 
-[<Fact>]
-let ``Test true`` () =
-    let t = Test.convertSchema """true"""
+[<Theory>]
+[<InlineData "true">]
+[<InlineData "{}">]
+let ``Test true`` schema =
+    let t = Test.convertSchema schema
     t.RoundTrip()
 
     t.ShouldEqual (Test.simpleSchema """{"$ref": "pulumi.json#/Any"}""")

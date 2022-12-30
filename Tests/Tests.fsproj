@@ -15,6 +15,7 @@
 	  <Compile Include="NumberTests.fs" />
 	  <Compile Include="StringTests.fs" />
 	  <Compile Include="ArrayTests.fs" />
+	  <Compile Include="ObjectTests.fs" />
 	  <Compile Include="TupleTests.fs" />
 	  <Compile Include="ConstTests.fs" />
 	  <Compile Include="EnumTests.fs" />
