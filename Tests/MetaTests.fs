@@ -40,7 +40,7 @@ let ``Test property description`` () =
     }"""])
 
 [<Fact>]
-let ``Test simple title`` () =
+let ``Test simple object title`` () =
     let t = Test.convertSchema """{
         "type": "object",
         "title": "The object",
@@ -56,4 +56,22 @@ let ``Test simple title`` () =
         "properties":{
             "foo": { "type":"string" }
         }
+    }"""])
+
+[<Fact>]
+let ``Test simple enum title`` () =
+    let t = Test.convertSchema """{
+        "title": "an enum",
+        "type":"string",
+        "enum": ["info", "warn", "error"]
+    }"""
+    t.RoundTrip()
+    
+    t.ShouldEqual (Test.complexSchema ["schema:index:anEnum", """{
+        "type": "string",
+        "enum": [
+            { "value": "info" },
+            { "value": "warn" },
+            { "value": "error" }
+        ]
     }"""])
