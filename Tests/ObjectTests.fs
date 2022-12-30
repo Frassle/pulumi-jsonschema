@@ -5,85 +5,94 @@ open System.Collections.Immutable
 
 [<Fact>]
 let ``Test empty object`` () =
-    let t = Test.convertSchema """{
+    let t =
+        Test.convertSchema
+            """{
         "type": "object" 
-    }""" 
+    }"""
+
     t.RoundTrip()
-    
-    t.ShouldEqual (Test.simpleSchema """{
+
+    t.ShouldEqual(
+        Test.simpleSchema
+            """{
         "type":"object",
         "additionalProperties": {
             "$ref": "pulumi.json#/Any"
         }
-    }""")
-    
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
-    |> t.ShouldWrite "{}"
-    
-    Test.dictToProperty [
-        "hello", Pulumi.Provider.PropertyValue("a")
-        "test", Pulumi.Provider.PropertyValue(123)
-    ]
+    }"""
+    )
+
+    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty) |> t.ShouldWrite "{}"
+
+    Test.dictToProperty
+        [ "hello", Pulumi.Provider.PropertyValue("a")
+          "test", Pulumi.Provider.PropertyValue(123) ]
     |> t.ShouldWrite """{"hello": "a", "test": 123}"""
 
-    "{}"
-    |> t.ShouldRead (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    "{}" |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test object with additional properties`` () =
-    let t = Test.convertSchema """{
+    let t =
+        Test.convertSchema
+            """{
         "type": "object",
         "additionalProperties": { "type": "string" }
     }"""
+
     t.RoundTrip()
-    
-    t.ShouldEqual (Test.simpleSchema """{"type":"object","additionalProperties":{"type":"string"}}""")
-    
-    Test.dictToProperty [
-        "hello", Pulumi.Provider.PropertyValue("a")
-        "test", Pulumi.Provider.PropertyValue("b")
-    ]
+
+    t.ShouldEqual(Test.simpleSchema """{"type":"object","additionalProperties":{"type":"string"}}""")
+
+    Test.dictToProperty
+        [ "hello", Pulumi.Provider.PropertyValue("a")
+          "test", Pulumi.Provider.PropertyValue("b") ]
     |> t.ShouldWrite """{"test":"b","hello":"a"}"""
 
     """{"a":"string","b":"number"}"""
-    |> t.ShouldRead (Test.dictToProperty [
-        "a", Pulumi.Provider.PropertyValue("string")
-        "b", Pulumi.Provider.PropertyValue("number")
-    ])
+    |> t.ShouldRead(
+        Test.dictToProperty
+            [ "a", Pulumi.Provider.PropertyValue("string")
+              "b", Pulumi.Provider.PropertyValue("number") ]
+    )
 
 [<Fact>]
 let ``Test object with properties`` () =
-    let t = Test.convertSchema """{
+    let t =
+        Test.convertSchema
+            """{
         "type": "object",
         "properties": {
             "foo": { "type": "string" }
         },
         "additionalProperties": false
     }"""
+
     t.RoundTrip()
-    
-    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}"""])
-    
-    Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("a")
-    ]
+
+    t.ShouldEqual(
+        Test.complexSchema [ "schema:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}""" ]
+    )
+
+    Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("a") ]
     |> t.ShouldWrite """{"foo":"a"}"""
-    
+
     // Properties are optional by default
     Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":"string"}"""
-    |> t.ShouldRead (Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("string")
-    ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("string") ])
 
     """{}"""
-    |> t.ShouldRead (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test object with required properties`` () =
-    let t = Test.convertSchema """{
+    let t =
+        Test.convertSchema
+            """{
         "type": "object",
         "properties": {
             "foo": { "type": "string" }
@@ -91,76 +100,82 @@ let ``Test object with required properties`` () =
         "additionalProperties": false,
         "required": ["foo"]
     }"""
+
     t.RoundTrip()
-    
-    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{
+
+    t.ShouldEqual(
+        Test.complexSchema
+            [ "schema:index:root",
+              """{
         "type":"object",
         "properties":{"foo":{"type":"string"}},
         "required": ["foo"]
-    }"""])
-    
-    Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("a")
-    ]
+    }""" ]
+    )
+
+    Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("a") ]
     |> t.ShouldWrite """{"foo":"a"}"""
 
-    
+
     let exc =
-        Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
-        |> t.ShouldThrow<exn>
+        Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty) |> t.ShouldThrow<exn>
+
     exc.Message |> Test.shouldEqual "property 'foo' is required"
 
     """{"foo":"string"}"""
-    |> t.ShouldRead (Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("string")
-    ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("string") ])
 
 [<Fact>]
 let ``Test object with properties and additionalProperties`` () =
-    let t = Test.convertSchema """{
+    let t =
+        Test.convertSchema
+            """{
         "type": "object",
         "properties": {
             "foo": { "type": "string" }
         },
         "additionalProperties": { "type": "number" }
     }"""
+
     t.RoundTrip()
-    
-    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{
+
+    t.ShouldEqual(
+        Test.complexSchema
+            [ "schema:index:root",
+              """{
         "type":"object",
         "properties":{
             "foo":{"type":"string"},
             "additionalProperties":{"type": "object", "additionalProperties": {"type": "number"}}
         }
-    }"""])
-    
-    Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("a")
-        "additionalProperties", Test.dictToProperty [
-            "bob", Pulumi.Provider.PropertyValue(123)
-        ]
-    ]
+    }""" ]
+    )
+
+    Test.dictToProperty
+        [ "foo", Pulumi.Provider.PropertyValue("a")
+          "additionalProperties", Test.dictToProperty [ "bob", Pulumi.Provider.PropertyValue(123) ] ]
     |> t.ShouldWrite """{"foo":"a","bob":123}"""
-    
+
     // Properties are optional by default
     Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":"string", "other": 54}"""
-    |> t.ShouldRead (Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("string")
-        "additionalProperties", Test.dictToProperty [
-            "other", Pulumi.Provider.PropertyValue(54)
-        ]
-    ])
+    |> t.ShouldRead(
+        Test.dictToProperty
+            [ "foo", Pulumi.Provider.PropertyValue("string")
+              "additionalProperties", Test.dictToProperty [ "other", Pulumi.Provider.PropertyValue(54) ] ]
+    )
 
     """{}"""
-    |> t.ShouldRead (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
-    
+    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+
 [<Fact>]
 let ``Test complex object`` () =
     // This schema can't emit to Pulumi as a single nested object because we need to declare a "complexTypeSpec"
-    let t = Test.convertSchema """{
+    let t =
+        Test.convertSchema
+            """{
         "type": "object",
         "properties": {
             "foo": { 
@@ -173,35 +188,33 @@ let ``Test complex object`` () =
         },
         "additionalProperties": false
     }"""
+
     t.RoundTrip()
-    
-    t.ShouldEqual (Test.complexSchema [
-        "schema:index:root", """{"type":"object","properties":{"foo":{"$ref":"#/types/schema:index:foo"}}}"""
-        "schema:index:foo", """{"type":"object","properties":{"bar":{"type":"number"}}}"""
-    ])
-    
-    Test.dictToProperty [
-        "foo", Test.dictToProperty [
-            "bar", Pulumi.Provider.PropertyValue(4)
-        ]
-    ]
+
+    t.ShouldEqual(
+        Test.complexSchema
+            [ "schema:index:root", """{"type":"object","properties":{"foo":{"$ref":"#/types/schema:index:foo"}}}"""
+              "schema:index:foo", """{"type":"object","properties":{"bar":{"type":"number"}}}""" ]
+    )
+
+    Test.dictToProperty [ "foo", Test.dictToProperty [ "bar", Pulumi.Provider.PropertyValue(4) ] ]
     |> t.ShouldWrite """{"foo":{"bar":4}}"""
-    
+
     // Properties are optional by default
     Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":{}}"""
-    |> t.ShouldRead (Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
-    ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty) ])
 
     """{}"""
-    |> t.ShouldRead (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)    
+    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test properties are Pulumi-ized`` () =
-    let t = Test.convertSchema """{
+    let t =
+        Test.convertSchema
+            """{
         "type": "object",
         "properties": {
             "foo": { "type": "string" },
@@ -218,9 +231,13 @@ let ``Test properties are Pulumi-ized`` () =
         },
         "additionalProperties": false
     }"""
+
     t.RoundTrip()
-    
-    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{
+
+    t.ShouldEqual(
+        Test.complexSchema
+            [ "schema:index:root",
+              """{
         "type":"object",
         "properties":{
             "foo": { "type": "string" },
@@ -235,28 +252,27 @@ let ``Test properties are Pulumi-ized`` () =
             "anHTTPClient": { "type": "string" },
             "choice1Of2": { "type": "string" }
         }
-    }"""])
-    
-    Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("a")
-    ]
+    }""" ]
+    )
+
+    Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("a") ]
     |> t.ShouldWrite """{"foo":"a"}"""
-    
+
     // Properties are optional by default
     Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":"string"}"""
-    |> t.ShouldRead (Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("string")
-    ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("string") ])
 
     """{}"""
-    |> t.ShouldRead (Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test object with false properties`` () =
-    let t = Test.convertSchema """{
+    let t =
+        Test.convertSchema
+            """{
         "type": "object",
         "properties": {
             "foo": { "type": "string" },
@@ -264,9 +280,13 @@ let ``Test object with false properties`` () =
         },
         "additionalProperties": true
     }"""
+
     t.RoundTrip()
-    
-    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{
+
+    t.ShouldEqual(
+        Test.complexSchema
+            [ "schema:index:root",
+              """{
         "type":"object",
         "properties":{
             "foo":{"type":"string"},
@@ -277,35 +297,28 @@ let ``Test object with false properties`` () =
                 }
             }
         }
-    }"""])
-    
-    Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("a")
-        "additionalProperties", Test.dictToProperty [
-            "bob", Pulumi.Provider.PropertyValue(123)
-        ]
-    ]
-    |> t.ShouldWrite """{"foo":"a","bob":123}"""
-    
-    """{"foo":"string", "other": 54}"""
-    |> t.ShouldRead (Test.dictToProperty [
-        "foo", Pulumi.Provider.PropertyValue("string")
-        "additionalProperties", Test.dictToProperty [
-            "other", Pulumi.Provider.PropertyValue(54)
-        ]
-    ])
+    }""" ]
+    )
 
-    let exc = 
-        """{"foo":"string", "bar": true}"""
-        |> t.ShouldThrow
+    Test.dictToProperty
+        [ "foo", Pulumi.Provider.PropertyValue("a")
+          "additionalProperties", Test.dictToProperty [ "bob", Pulumi.Provider.PropertyValue(123) ] ]
+    |> t.ShouldWrite """{"foo":"a","bob":123}"""
+
+    """{"foo":"string", "other": 54}"""
+    |> t.ShouldRead(
+        Test.dictToProperty
+            [ "foo", Pulumi.Provider.PropertyValue("string")
+              "additionalProperties", Test.dictToProperty [ "other", Pulumi.Provider.PropertyValue(54) ] ]
+    )
+
+    let exc = """{"foo":"string", "bar": true}""" |> t.ShouldThrow
     exc.Message |> Test.shouldEqual "All values fail against the false schema"
-    
-    let exc = 
-        Test.dictToProperty [
-            "foo", Pulumi.Provider.PropertyValue("a")
-            "additionalProperties", Test.dictToProperty [
-                "bar", Pulumi.Provider.PropertyValue("anything")
-            ]
-        ]
+
+    let exc =
+        Test.dictToProperty
+            [ "foo", Pulumi.Provider.PropertyValue("a")
+              "additionalProperties", Test.dictToProperty [ "bar", Pulumi.Provider.PropertyValue("anything") ] ]
         |> t.ShouldThrow
+
     exc.Message |> Test.shouldEqual "All values fail against the false schema"

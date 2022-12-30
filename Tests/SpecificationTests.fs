@@ -47,4 +47,4 @@ open System.Collections.Immutable
 //        JsonSchema.AnnotationOrError = Error ""
 //        JsonSchema.NestedResults = []
 //    }
-//)    
+//)
