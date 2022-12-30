@@ -65,14 +65,14 @@ type [<RequireQualifiedAccess>] TypeSpec =
                 schema.Add("oneOf", oneOf)
             schema
 
-        member this.GetComplexTypes types =
+        member this.GetComplexTypes path types =
             match this with 
-            | Array typ -> typ.GetComplexTypes types
-            | Map typ -> typ.GetComplexTypes types
-            | ComplexType typ -> typ.GetComplexTypes types
+            | Array typ -> typ.GetComplexTypes ("items" :: path) types
+            | Map typ -> typ.GetComplexTypes ("additionalProperties" :: path) types
+            | ComplexType typ -> typ.GetComplexTypes path types
             | Union typ ->
                 typ.OneOf
-                |> Set.fold (fun types typ -> typ.GetComplexTypes types) types
+                |> Set.fold (fun types typ -> typ.GetComplexTypes ("oneOf" :: path) types) types
             | _ -> types
             
 
@@ -100,16 +100,16 @@ and [<RequireQualifiedAccess>] ComplexType =
             | Object o -> o.AsSchema nameMap
             | Enum e -> e.AsSchema ()
 
-        member this.GetComplexTypes types =
-            if Set.contains this types then 
-                types
-            else 
-                let types = Set.add this types
+        member this.GetComplexTypes path types =
+            match Map.tryFind this types with
+            | Some paths -> Map.add this (Set.add path paths) types
+            | None ->
+                let types = Map.add this (Set.singleton path) types
                 match this with 
                 | Object o -> 
                     o.Properties
-                    |> Map.fold (fun types _ v ->
-                        v.Type.GetComplexTypes types
+                    |> Map.fold (fun types k v ->
+                        v.Type.GetComplexTypes (k :: path) types
                     ) types
                 | Enum e -> types
 

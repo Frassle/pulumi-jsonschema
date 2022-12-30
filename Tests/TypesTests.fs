@@ -73,3 +73,72 @@ let ``Test named`` (ref, expected) =
 
     t.AsSchema Map.empty
     |> shouldEqual expected
+
+[<Fact>]
+let ``Test get complex`` () =
+    let complexEnum = ComplexType.Enum {
+        Description = None
+        Type = PrimitiveType.String
+        Enum = Set.ofList [{
+            Name = None
+            Description = None
+            Value = Choice4Of4 "a"
+        }]
+    }
+
+    let complexObject = ComplexType.Object {
+            Description = None
+            Required = Set.empty
+            Properties = Map.ofList [
+                "foo", { 
+                    Description = None
+                    Const = None
+                    Type = TypeSpec.Array (TypeSpec.ComplexType complexEnum)
+                }
+            ]
+        }
+
+    let t = TypeSpec.Map (TypeSpec.ComplexType complexObject)
+
+    t.GetComplexTypes [] Map.empty
+    |> Test.shouldEqual (Map.ofList [
+        complexEnum, Set.ofList [["items"; "foo"; "additionalProperties"]]
+        complexObject, Set.ofList [["additionalProperties"]]
+    ])
+
+[<Fact>]
+let ``Test get complex with multiple paths`` () =
+    let complexEnum = ComplexType.Enum {
+        Description = None
+        Type = PrimitiveType.String
+        Enum = Set.ofList [{
+            Name = None
+            Description = None
+            Value = Choice4Of4 "a"
+        }]
+    }
+
+    let complexObject = ComplexType.Object {
+            Description = None
+            Required = Set.empty
+            Properties = Map.ofList [
+                "foo", { 
+                    Description = None
+                    Const = None
+                    Type = TypeSpec.Array (TypeSpec.ComplexType complexEnum)
+                }
+                "bar", { 
+                    Description = None
+                    Const = None
+                    Type = TypeSpec.ComplexType complexEnum
+                }
+            ]
+        }
+
+    let t = TypeSpec.Map (TypeSpec.ComplexType complexObject)
+
+    t.GetComplexTypes [] Map.empty
+    |> Test.shouldEqual (Map.ofList [
+        complexEnum, Set.ofList [["items"; "foo"; "additionalProperties"]; ["bar"; "additionalProperties"]]
+        complexObject, Set.ofList [["additionalProperties"]]
+    ])
