@@ -897,19 +897,21 @@ type ArrayConversion = {
 
 and MapConversion = {
     Description : string option
-    AdditionalProperties : Conversion
+    AdditionalProperties : Conversion option
 } with
     member this.BuildTypeSpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) = 
         let schema = JsonObject()
         schema.Add("type", JsonValue.Create("object"))
-        let additionalProperties, desc = this.AdditionalProperties.BuildTypeSpec packageName names
+        let aps = Option.defaultValue Conversion.True this.AdditionalProperties
+        let additionalProperties, desc = aps.BuildTypeSpec packageName names
         schema.Add("additionalProperties", additionalProperties)
         schema, this.Description
 
     member this.BuildPropertySpec packageName (names : ImmutableDictionary<ComplexTypeSpec, string>) = 
         let schema = JsonObject()
         schema.Add("type", JsonValue.Create("object"))
-        let additionalProperties, desc = this.AdditionalProperties.BuildTypeSpec packageName names
+        let aps = Option.defaultValue Conversion.True this.AdditionalProperties
+        let additionalProperties, desc = aps.BuildTypeSpec packageName names
         schema.Add("additionalProperties", additionalProperties)
         this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
         schema
@@ -923,9 +925,11 @@ and MapConversion = {
         match maybeObj with 
         | None -> failwithf "Invalid type expected object got %O" value.Type
         | Some obj ->
+            let aps = Option.defaultValue Conversion.True this.AdditionalProperties
+
             obj
             |> Seq.map (fun kv ->
-                let node = this.AdditionalProperties.Writer kv.Value
+                let node = aps.Writer kv.Value
                 match node with
                 | Some node -> KeyValuePair.Create(kv.Key, node)
                 | None -> KeyValuePair.Create(kv.Key, null)
@@ -936,9 +940,11 @@ and MapConversion = {
 
     member this.Reader (value : JsonElement) = 
         if value.ValueKind = JsonValueKind.Object then
+            let aps = Option.defaultValue Conversion.True this.AdditionalProperties
+
             value.EnumerateObject()
             |> Seq.map (fun kv -> 
-                match this.AdditionalProperties.Reader kv.Value with 
+                match aps.Reader kv.Value with 
                 | Ok (ok, _) -> Ok (KeyValuePair.Create(kv.Name, ok))
                 | Error err -> Error err)
             |> Seq.toList
@@ -960,7 +966,8 @@ and MapConversion = {
             errorf "Invalid JSON document expected object got %O" value.ValueKind
 
     member this.CollectComplexTypes path refs : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
-        this.AdditionalProperties.CollectComplexTypes ("additionalProperties" :: path) refs
+        let aps = Option.defaultValue Conversion.True this.AdditionalProperties
+        aps.CollectComplexTypes ("additionalProperties" :: path) refs
 
 and [<RequireQualifiedAccess>] TypeSpec = 
     | Any of AnyConversion
@@ -2044,20 +2051,7 @@ and convertObjectSchema (root : RootInformation) (context : ConversionContext) (
     let title = getTitle jsonSchema.Keywords
 
     match properties, additionalProperties with 
-    | None, None -> 
-        // An empty object!
-        {
-            Path = path
-            Description = description
-            Title = title
-            Properties = Map.empty
-            AdditionalProperties = if context.AdditionalProperties then Choice2Of2 None else Choice1Of2 ()
-            Required = required
-            Choices = []
-        }
-        |> ComplexTypeSpec.Object
-        |> Conversion.ComplexType
-    | None, Some aps -> 
+    | None, aps -> 
         // A map
         {
             Description = description
