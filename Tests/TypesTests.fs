@@ -64,3 +64,12 @@ let ``Test map`` (additionalProperties, expected) =
 
     t.AsSchema Map.empty
     |> shouldEqual expected
+
+[<Theory>]
+[<InlineData("pulumi.json#/Any", """{ "$ref": "pulumi.json#/Any" }""")>]
+[<InlineData("pulumi.json#/Archive", """{ "$ref": "pulumi.json#/Archive" }""")>]
+let ``Test named`` (ref, expected) =
+    let t = TypeSpec.Named ref
+
+    t.AsSchema Map.empty
+    |> shouldEqual expected
