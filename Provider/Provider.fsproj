@@ -8,7 +8,8 @@
   <ItemGroup>
     <Compile Include="Pointer.fs" />
     <Compile Include="OutputUnit.fs" />
-    <Compile Include="Program.fs" />
+	<Compile Include="Converter.fs" />
+	<Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
