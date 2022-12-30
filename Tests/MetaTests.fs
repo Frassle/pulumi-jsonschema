@@ -75,3 +75,78 @@ let ``Test simple enum title`` () =
             { "value": "error" }
         ]
     }"""])
+
+[<Fact>]
+let ``Test ref title`` () =
+    let t = Test.convertSchema """{
+        "type": "object",
+        "title": "The Object",
+        "properties": {
+            "extra": { "type": "number" }
+        },
+        "$ref": "#/$defs/basicType",
+        "$defs": {
+            "basicType": { 
+                "title": "A basic object",
+                "properties": {
+                    "basic": { "type": "number" }
+                }
+            }
+        }
+    }"""
+    t.RoundTrip()
+    
+    t.ShouldEqual (Test.complexSchema ["schema:index:theObject", """{
+        "type": "object",
+        "properties": {
+            "basic": {
+                "type": "number"
+            },
+            "extra": {
+                "type": "number"
+            },
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                    "$ref": "pulumi.json#/Any"
+                }
+            }
+        }
+    }"""])
+
+[<Fact>]
+let ``Test allOf title`` () =
+    let t = Test.convertSchema """{
+        "type": "object",
+        "title": "The Object",
+        "properties": {
+            "extra": { "type": "number" }
+        },
+        "allOf": [
+            {
+                "title": "A basic object",
+                "properties": {
+                    "basic": { "type": "number" }
+                }
+            }
+        ]
+    }"""
+    t.RoundTrip()
+    
+    t.ShouldEqual (Test.complexSchema ["schema:index:theObject", """{
+        "type": "object",
+        "properties": {
+            "basic": {
+                "type": "number"
+            },
+            "extra": {
+                "type": "number"
+            },
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                    "$ref": "pulumi.json#/Any"
+                }
+            }
+        }
+    }"""])
