@@ -79,43 +79,6 @@ let ``Test simple type union`` () =
 
     "\"testing\""
     |> t.ShouldRead (Pulumi.Provider.PropertyValue "testing")
-
-[<Fact>]
-let ``Test simple description`` () =
-    let t = Test.convertSchema """{
-        "type": "number",
-        "description": "This is a number"
-    }"""
-    t.RoundTrip()
-    
-    t.ShouldEqual (Test.simpleSchema """{
-        "type":"number",
-        "description": "This is a number"
-    }""")
-
-[<Fact>]
-let ``Test property description`` () =    
-    let t = Test.convertSchema """{
-        "type": "object",
-        "properties": {
-            "foo": { 
-                "type": "string",
-                "description": "This is a string"
-            }
-        },
-        "additionalProperties": false
-    }"""
-    t.RoundTrip()
-    
-    t.ShouldEqual (Test.complexSchema ["schema:index:root", """{
-        "type":"object",
-        "properties":{
-            "foo":{
-                "type":"string",
-                "description": "This is a string"
-            }
-        }
-    }"""])
     
 [<Fact>]
 let ``Test allOf`` () =

@@ -20,6 +20,7 @@
 	  <Compile Include="ConstTests.fs" />
 	  <Compile Include="EnumTests.fs" />
 	  <Compile Include="OneOfTests.fs" />
+	  <Compile Include="MetaTests.fs" />
 	  <Compile Include="SdkTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
