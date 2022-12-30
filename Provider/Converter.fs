@@ -7,7 +7,6 @@ open System.Collections.Immutable
 open System.Text.Json
 open System.Text.Json.Nodes
 
-
 type KeywordCollection = IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>
 
 let pickKeyword<'T when 'T :> Json.Schema.IJsonSchemaKeyword> (keywords: KeywordCollection) : 'T option =
@@ -105,20 +104,6 @@ let tryGetNumeric (value: JsonElement) =
             | false, _ -> None
     else
         None
-
-[<RequireQualifiedAccess>]
-type PrimitiveType =
-    | Boolean
-    | Integer
-    | Number
-    | String
-
-    member this.JsonValue =
-        match this with
-        | Boolean -> JsonValue.Create("boolean")
-        | Integer -> JsonValue.Create("integer")
-        | Number -> JsonValue.Create("number")
-        | String -> JsonValue.Create("string")
 
 // The schema keywords that can apply to string validation
 type StringValidation =
@@ -348,10 +333,10 @@ type NullConversion =
         else
             errorf "Invalid JSON document expected null got %O" value.ValueKind
 
-let writePrimitive (typ: PrimitiveType) (validation: PrimitiveValidation) (value: Pulumi.Provider.PropertyValue) =
+let writePrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) (value: Pulumi.Provider.PropertyValue) =
     let rec getNode (value: Pulumi.Provider.PropertyValue) =
         match typ with
-        | PrimitiveType.Boolean ->
+        | Types.PrimitiveType.Boolean ->
             let raise (typ: string) =
                 failwithf "Value is \"%s\" but should be \"boolean\"" typ
 
@@ -369,7 +354,7 @@ let writePrimitive (typ: PrimitiveType) (validation: PrimitiveValidation) (value
                 (fun output -> getNode output.Value),
                 (fun _ -> raise "computed")
             )
-        | PrimitiveType.Integer ->
+        | Types.PrimitiveType.Integer ->
             let raise (typ: string) =
                 failwithf "Value is \"%s\" but should be \"integer\"" typ
 
@@ -395,7 +380,7 @@ let writePrimitive (typ: PrimitiveType) (validation: PrimitiveValidation) (value
                 (fun output -> getNode output.Value),
                 (fun _ -> raise "computed")
             )
-        | PrimitiveType.Number ->
+        | Types.PrimitiveType.Number ->
             let raise (typ: string) =
                 failwithf "Value is \"%s\" but should be \"number\"" typ
 
@@ -418,7 +403,7 @@ let writePrimitive (typ: PrimitiveType) (validation: PrimitiveValidation) (value
                 (fun output -> getNode output.Value),
                 (fun _ -> raise "computed")
             )
-        | PrimitiveType.String ->
+        | Types.PrimitiveType.String ->
             let raise (typ: string) =
                 failwithf "Value is \"%s\" but should be \"string\"" typ
 
@@ -448,7 +433,7 @@ let writePrimitive (typ: PrimitiveType) (validation: PrimitiveValidation) (value
     | Some err -> failwith err
     | None -> n
 
-let readPrimitive (typ: PrimitiveType) (validation: PrimitiveValidation) (value: JsonElement) =
+let readPrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) (value: JsonElement) =
     let valueTyp =
         match value.ValueKind with
         | JsonValueKind.Null -> "null"
@@ -467,14 +452,14 @@ let readPrimitive (typ: PrimitiveType) (validation: PrimitiveValidation) (value:
     | None ->
 
         match typ with
-        | PrimitiveType.Boolean ->
+        | Types.PrimitiveType.Boolean ->
             if value.ValueKind = JsonValueKind.True then
                 Ok(Pulumi.Provider.PropertyValue true)
             elif value.ValueKind = JsonValueKind.False then
                 Ok(Pulumi.Provider.PropertyValue false)
             else
                 errorf "Value is \"%s\" but should be \"boolean\"" valueTyp
-        | PrimitiveType.Integer ->
+        | Types.PrimitiveType.Integer ->
             if value.ValueKind = JsonValueKind.Number then
                 match value.TryGetInt64() with
                 | false, _ -> errorf "Value is \"number\" but should be \"integer\""
@@ -485,7 +470,7 @@ let readPrimitive (typ: PrimitiveType) (validation: PrimitiveValidation) (value:
                     |> Result.map Pulumi.Provider.PropertyValue
             else
                 errorf "Value is \"%s\" but should be \"integer\"" valueTyp
-        | PrimitiveType.Number ->
+        | Types.PrimitiveType.Number ->
             if value.ValueKind = JsonValueKind.Number then
                 let num = value.GetDouble()
 
@@ -495,7 +480,7 @@ let readPrimitive (typ: PrimitiveType) (validation: PrimitiveValidation) (value:
                 |> Result.map Pulumi.Provider.PropertyValue
             else
                 errorf "Value is \"%s\" but should be \"number\"" valueTyp
-        | PrimitiveType.String ->
+        | Types.PrimitiveType.String ->
             if value.ValueKind = JsonValueKind.String then
                 let str = value.GetString()
 
@@ -623,7 +608,7 @@ type AnyConversion =
 type PrimitiveConversion =
     { Description: string option
       Const: Choice<unit, bool, double, string>
-      Type: PrimitiveType
+      Type: Types.PrimitiveType
       Validation: PrimitiveValidation }
 
     member this.BuildTypeSpec() =
@@ -659,25 +644,25 @@ type UnionConversion =
 
     static member OfPrimitive(conversion: PrimitiveConversion) =
         match conversion.Type with
-        | PrimitiveType.Boolean ->
+        | Types.PrimitiveType.Boolean ->
             { Description = None
               BooleanConversion = Some conversion
               IntegerConversion = None
               NumberConversion = None
               StringConversion = None }
-        | PrimitiveType.Integer ->
+        | Types.PrimitiveType.Integer ->
             { Description = None
               BooleanConversion = None
               IntegerConversion = Some conversion
               NumberConversion = None
               StringConversion = None }
-        | PrimitiveType.Number ->
+        | Types.PrimitiveType.Number ->
             { Description = None
               BooleanConversion = None
               IntegerConversion = None
               NumberConversion = Some conversion
               StringConversion = None }
-        | PrimitiveType.String ->
+        | Types.PrimitiveType.String ->
             { Description = None
               BooleanConversion = None
               IntegerConversion = None
@@ -817,7 +802,7 @@ type EnumConversion =
     { Path: Json.Pointer.JsonPointer
       Title: string option
       Description: string option
-      Type: PrimitiveType
+      Type: Types.PrimitiveType
       Values: JsonNode list }
 
     member this.BuildComplexTypeSpec() =
@@ -1765,7 +1750,7 @@ let convertNullSchema (jsonSchema: Json.Schema.JsonSchema) : NullConversion =
     { Description = getDescription jsonSchema.Keywords }
 
 let convertBoolSchema (jsonSchema: Json.Schema.JsonSchema) : PrimitiveConversion =
-    { Type = PrimitiveType.Boolean
+    { Type = Types.PrimitiveType.Boolean
       Description = getDescription jsonSchema.Keywords
       Validation = PrimitiveValidation.None
       Const = Choice1Of4() }
@@ -1775,7 +1760,7 @@ let convertStringSchema path (jsonSchema: Json.Schema.JsonSchema) : Conversion =
 
     match enum with
     | None ->
-        { Type = PrimitiveType.String
+        { Type = Types.PrimitiveType.String
           Description = getDescription jsonSchema.Keywords
           Validation = PrimitiveValidation.FromKeywords jsonSchema.Keywords
           Const = Choice1Of4() }
@@ -1785,7 +1770,7 @@ let convertStringSchema path (jsonSchema: Json.Schema.JsonSchema) : Conversion =
         let enumValues = enum.Values |> Seq.toList
 
         { Path = path
-          Type = PrimitiveType.String
+          Type = Types.PrimitiveType.String
           Description = getDescription jsonSchema.Keywords
           Title = getTitle jsonSchema.Keywords
           Values = enumValues }
@@ -1799,9 +1784,9 @@ let convertNumberSchema path isInteger (jsonSchema: Json.Schema.JsonSchema) : Co
     | None ->
         { Type =
             if isInteger then
-                PrimitiveType.Integer
+                Types.PrimitiveType.Integer
             else
-                PrimitiveType.Number
+                Types.PrimitiveType.Number
           Description = getDescription jsonSchema.Keywords
           Validation = PrimitiveValidation.FromKeywords jsonSchema.Keywords
           Const = Choice1Of4() }
@@ -1813,9 +1798,9 @@ let convertNumberSchema path isInteger (jsonSchema: Json.Schema.JsonSchema) : Co
         { Path = path
           Type =
             if isInteger then
-                PrimitiveType.Integer
+                Types.PrimitiveType.Integer
             else
-                PrimitiveType.Number
+                Types.PrimitiveType.Number
           Description = getDescription jsonSchema.Keywords
           Title = getTitle jsonSchema.Keywords
           Values = enumValues }
@@ -1832,13 +1817,13 @@ let convertConst
     | :? JsonValue as value ->
         let typ, constant =
             match value.TryGetValue<bool>() |> optionOfTry with
-            | Some b -> PrimitiveType.Boolean, Choice2Of4 b
+            | Some b -> Types.PrimitiveType.Boolean, Choice2Of4 b
             | None ->
                 match value.TryGetValue<double>() |> optionOfTry with
-                | Some n -> PrimitiveType.Number, Choice3Of4 n
+                | Some n -> Types.PrimitiveType.Number, Choice3Of4 n
                 | None ->
                     match value.TryGetValue<string>() |> optionOfTry with
-                    | Some s -> PrimitiveType.String, Choice4Of4 s
+                    | Some s -> Types.PrimitiveType.String, Choice4Of4 s
                     | None -> failwith "constant value wasn't a bool, number or string"
 
         { Description = getDescription schema.Keywords

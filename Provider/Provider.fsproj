@@ -6,10 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Pointer.fs" />
-    <Compile Include="OutputUnit.fs" />
-	<Compile Include="Converter.fs" />
-	<Compile Include="Program.fs" />
+	  <Compile Include="Pointer.fs" />
+	  <Compile Include="OutputUnit.fs" />
+	  <Compile Include="Types.fs" />
+	  <Compile Include="Converter.fs" />
+	  <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>

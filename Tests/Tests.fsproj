@@ -10,6 +10,7 @@
   <ItemGroup>
 	  <Compile Include="Test.fs" />
 	  <Compile Include="SpecificationTests.fs" />
+	  <Compile Include="TypesTests.fs" />
 	  <Compile Include="Tests.fs" />
 	  <Compile Include="BooleanTests.fs" />
 	  <Compile Include="NumberTests.fs" />
