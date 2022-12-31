@@ -297,16 +297,15 @@ type ArrayValidation =
 type NullConversion =
     { Description: string option }
 
-    member this.BuildTypeSpec() =
-        let schema = JsonObject()
-        schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
-        schema, this.Description
+    member this.BuildTypeReference () =
+        Types.TypeReference.Named "pulumi.json#/Any"
 
-    member this.BuildPropertySpec() =
-        let schema = JsonObject()
-        schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
-        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
-        schema
+    member this.BuildPropertyDefinition() =
+        {
+            Types.PropertyDefinition.Const = None
+            Types.PropertyDefinition.Description = this.Description
+            Types.PropertyDefinition.Type = this.BuildTypeReference ()
+        }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let raise (typ: string) =
@@ -589,17 +588,16 @@ let rec readAny (validation: PrimitiveValidation) (value: JsonElement) =
 type AnyConversion =
     { Description: string option
       PrimitiveValidation: PrimitiveValidation }
+      
+    member this.BuildTypeReference () =
+        Types.TypeReference.Named "pulumi.json#/Any"
 
-    member this.BuildTypeSpec() =
-        let schema = JsonObject()
-        schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
-        schema, this.Description
-
-    member this.BuildPropertySpec() =
-        let schema = JsonObject()
-        schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
-        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
-        schema
+    member this.BuildPropertyDefinition() =
+        {
+            Types.PropertyDefinition.Const = None
+            Types.PropertyDefinition.Description = this.Description
+            Types.PropertyDefinition.Type = this.BuildTypeReference ()
+        }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) = writeAny this.PrimitiveValidation value
 
@@ -607,27 +605,24 @@ type AnyConversion =
 
 type PrimitiveConversion =
     { Description: string option
-      Const: Choice<unit, bool, double, string>
+      Const: Choice<unit, bool, float, string>
       Type: Types.PrimitiveType
       Validation: PrimitiveValidation }
 
-    member this.BuildTypeSpec() =
-        let schema = JsonObject()
-        schema.Add("type", this.Type.JsonValue)
-        schema, this.Description
+    member this.BuildTypeReference() =
+        Types.TypeReference.Primitive this.Type
 
-    member this.BuildPropertySpec() =
-        let schema = JsonObject()
-        schema.Add("type", this.Type.JsonValue)
-        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
-
-        match this.Const with
-        | Choice1Of4() -> ()
-        | Choice2Of4 b -> schema.Add("const", b)
-        | Choice3Of4 n -> schema.Add("const", n)
-        | Choice4Of4 s -> schema.Add("const", s)
-
-        schema
+    member this.BuildPropertyDefinition() =        
+        {
+            Types.PropertyDefinition.Const = 
+                match this.Const with
+                | Choice1Of4() -> None
+                | Choice2Of4 b -> Some (Choice1Of3 b)
+                | Choice3Of4 n -> Some (Choice2Of3 n)
+                | Choice4Of4 s -> Some (Choice3Of3 s)
+            Types.PropertyDefinition.Description = this.Description
+            Types.PropertyDefinition.Type = this.BuildTypeReference ()
+        }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         writePrimitive this.Type this.Validation value
@@ -692,44 +687,29 @@ type UnionConversion =
                   StringConversion = s }
         | _ -> None
 
-    member this.BuildTypeSpec() =
-        let schema = JsonObject()
+    member this.BuildTypeReference() =
+        let oneOf = 
+            [ this.BooleanConversion
+              this.IntegerConversion
+              this.NumberConversion
+              this.StringConversion ]
+            |> List.fold (fun set conversion ->
+                match conversion with
+                | None -> set
+                | Some conversion ->
+                    Set.add (conversion.BuildTypeReference()) set) Set.empty
 
-        let oneof = JsonArray()
+        {
+            Types.UnionType.Type = None
+            Types.UnionType.OneOf = oneOf
+        } |> Types.TypeReference.Union
 
-        [ this.BooleanConversion
-          this.IntegerConversion
-          this.NumberConversion
-          this.StringConversion ]
-        |> List.iter (function
-            | None -> ()
-            | Some conversion ->
-                let spec, _ = conversion.BuildTypeSpec()
-                oneof.Add(spec))
-
-        schema.Add("oneOf", oneof)
-
-        schema, this.Description
-
-    member this.BuildPropertySpec() =
-        let schema = JsonObject()
-
-        let oneof = JsonArray()
-
-        [ this.BooleanConversion
-          this.IntegerConversion
-          this.NumberConversion
-          this.StringConversion ]
-        |> List.iter (function
-            | None -> ()
-            | Some conversion ->
-                let spec, _ = conversion.BuildTypeSpec()
-                oneof.Add(spec))
-
-        schema.Add("oneOf", oneof)
-
-        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
-        schema
+    member this.BuildPropertyDefinition() =
+        {
+            Types.PropertyDefinition.Const = None
+            Types.PropertyDefinition.Description = this.Description
+            Types.PropertyDefinition.Type = this.BuildTypeReference ()
+        }
 
     member private this.expectedTypes =
         [ "integer", this.IntegerConversion
@@ -806,20 +786,37 @@ type EnumConversion =
       Values: JsonNode list }
 
     member this.BuildComplexTypeSpec() =
-        let schema = JsonObject()
-        schema.Add("type", this.Type.JsonValue)
-
-        let values =
+        let enum = 
             this.Values
-            |> Seq.map (fun v ->
-                let value = Json.More.JsonNodeExtensions.Copy(v)
-                JsonObject([ KeyValuePair.Create("value", value) ]) :> JsonNode)
-            |> Seq.toArray
-            |> JsonArray
+            |> List.map (fun n ->
+                // TODO This should be checked at conversion time, not here
+                let value = n.AsValue()
+                let choice = 
+                    match value.TryGetValue<bool>() with
+                    | true, b -> Choice1Of4 b
+                    | false, _ ->                        
+                        match value.TryGetValue<int64>() with
+                        | true, i -> Choice2Of4 i
+                        | false, _ ->               
+                            match value.TryGetValue<float>() with
+                            | true, n -> Choice3Of4 n
+                            | false, _ ->        
+                                match value.TryGetValue<string>() with
+                                | true, s -> Choice4Of4 s
+                                | false, _ -> failwith "Expected enum value to be bool, int, float, or string"
 
-        schema.Add("enum", values)
-        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
-        schema
+                {
+                    Types.EnumValueDefinition.Name = None
+                    Types.EnumValueDefinition.Description = None
+                    Types.EnumValueDefinition.Value = choice
+                }
+            )
+
+        {
+            Types.EnumTypeDefinition.Type = this.Type
+            Types.EnumTypeDefinition.Description = this.Description
+            Types.EnumTypeDefinition.Enum = enum
+        } |> Types.TypeDefinition.Enum
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let value = writePrimitive this.Type PrimitiveValidation.None value
@@ -849,18 +846,17 @@ type ArrayConversion =
       Items: Conversion option
       Validation: ArrayValidation }
 
-    member this.BuildTypeSpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
-        let schema = JsonObject()
-        schema.Add("type", JsonValue.Create("array"))
+    member this.BuildTypeReference packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
         let items = Option.defaultValue Conversion.True this.Items
-        let itemsSpec, desc = items.BuildTypeSpec packageName names
-        schema.Add("items", itemsSpec)
-        schema, this.Description
+        let itemsReference = items.BuildTypeReference packageName names
+        Types.TypeReference.Array itemsReference
 
-    member this.BuildPropertySpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
-        let schema, desc = this.BuildTypeSpec packageName names
-        desc |> Option.iter (fun desc -> schema.Add("description", desc))
-        schema
+    member this.BuildPropertyDefinition packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
+        {
+            Types.PropertyDefinition.Const = None
+            Types.PropertyDefinition.Description = this.Description
+            Types.PropertyDefinition.Type = this.BuildTypeReference packageName names
+        }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         this.Validation.Validate value
@@ -920,22 +916,17 @@ and MapConversion =
     { Description: string option
       AdditionalProperties: Conversion option }
 
-    member this.BuildTypeSpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
-        let schema = JsonObject()
-        schema.Add("type", JsonValue.Create("object"))
-        let aps = Option.defaultValue Conversion.True this.AdditionalProperties
-        let additionalProperties, desc = aps.BuildTypeSpec packageName names
-        schema.Add("additionalProperties", additionalProperties)
-        schema, this.Description
+    member this.BuildTypeReference packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
+        let additionalProperties = Option.defaultValue Conversion.True this.AdditionalProperties
+        let additionalPropertiesReference = additionalProperties.BuildTypeReference packageName names
+        Types.TypeReference.Map additionalPropertiesReference
 
-    member this.BuildPropertySpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
-        let schema = JsonObject()
-        schema.Add("type", JsonValue.Create("object"))
-        let aps = Option.defaultValue Conversion.True this.AdditionalProperties
-        let additionalProperties, desc = aps.BuildTypeSpec packageName names
-        schema.Add("additionalProperties", additionalProperties)
-        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
-        schema
+    member this.BuildPropertyDefinition packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
+        {
+            Types.PropertyDefinition.Const = None
+            Types.PropertyDefinition.Description = this.Description
+            Types.PropertyDefinition.Type = this.BuildTypeReference packageName names
+        }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let maybeObj =
@@ -995,23 +986,23 @@ and [<RequireQualifiedAccess>] TypeSpec =
     | Map of MapConversion
     | Union of UnionConversion
 
-    member this.BuildTypeSpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
+    member this.BuildTypeReference packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with
-        | Any c -> c.BuildTypeSpec()
-        | Null c -> c.BuildTypeSpec()
-        | Primitive c -> c.BuildTypeSpec()
-        | Array c -> c.BuildTypeSpec packageName names
-        | Map c -> c.BuildTypeSpec packageName names
-        | Union c -> c.BuildTypeSpec()
+        | Any c -> c.BuildTypeReference()
+        | Null c -> c.BuildTypeReference()
+        | Primitive c -> c.BuildTypeReference()
+        | Array c -> c.BuildTypeReference packageName names
+        | Map c -> c.BuildTypeReference packageName names
+        | Union c -> c.BuildTypeReference()
 
-    member this.BuildPropertySpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
+    member this.BuildPropertyDefinition packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with
-        | Any c -> c.BuildPropertySpec()
-        | Null c -> c.BuildPropertySpec()
-        | Primitive c -> c.BuildPropertySpec()
-        | Array c -> c.BuildPropertySpec packageName names
-        | Map c -> c.BuildPropertySpec packageName names
-        | Union c -> c.BuildPropertySpec()
+        | Any c -> c.BuildPropertyDefinition()
+        | Null c -> c.BuildPropertyDefinition()
+        | Primitive c -> c.BuildPropertyDefinition()
+        | Array c -> c.BuildPropertyDefinition packageName names
+        | Map c -> c.BuildPropertyDefinition packageName names
+        | Union c -> c.BuildPropertyDefinition()
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         match this with
@@ -1047,19 +1038,18 @@ and DiscriminateUnionConversion =
       Choices: Conversion list }
 
     member this.BuildComplexTypeSpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
-        let schema = JsonObject()
-        schema.Add("type", JsonValue.Create("object"))
-        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
+        let properties = 
+            this.Choices
+            |> Seq.mapi (fun i choice ->
+                let name = sprintf "choice%dOf%d" (i + 1) this.Choices.Length
+                name, choice.BuildPropertyDefinition packageName names)
+            |> Map.ofSeq
 
-        let propertiesSchema = JsonObject()
-        schema.Add("properties", propertiesSchema)
-
-        this.Choices
-        |> Seq.iteri (fun i choice ->
-            let name = sprintf "choice%dOf%d" (i + 1) this.Choices.Length
-            propertiesSchema.Add(name, choice.BuildPropertySpec packageName names))
-
-        schema
+        {
+            Types.ObjectTypeDefinition.Description = this.Description
+            Types.ObjectTypeDefinition.Required = Set.empty
+            Types.ObjectTypeDefinition.Properties = properties
+        } |> Types.TypeDefinition.Object
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let maybeObj =
@@ -1120,47 +1110,49 @@ and ObjectConversion =
       Required: Set<string> }
 
     member this.BuildComplexTypeSpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
-        let schema = JsonObject()
-        schema.Add("type", JsonValue.Create("object"))
-        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
+        let properties = 
+            this.Properties
+            |> Map.map (fun k (_, v) ->
+                if v.IsFalseSchema then 
+                    None
+                else                
+                    v.BuildPropertyDefinition packageName names
+                    |> Some                
+            )
+            // A poor mans `choose`
+            |> Map.filter (fun _ v -> Option.isSome v)
+            |> Map.map (fun _ v -> v.Value)
 
-        if not this.Required.IsEmpty then
-            let requiredArray =
-                this.Required
-                |> Seq.map (fun str -> JsonValue.Create(str) :> JsonNode)
-                |> Seq.toArray
-                |> JsonArray
+        let properties = 
+            match this.AdditionalProperties with
+            | Choice1Of2() -> properties
+            | Choice2Of2(Some aps) when aps.IsFalseSchema -> properties
+            | Choice2Of2 aps ->
+                let aps = Option.defaultValue Conversion.True aps
 
-            schema.Add("required", requiredArray)
+                // additionalProperties is always just a map                
+                let apsTypeReference = aps.BuildTypeReference packageName names
+                let additionalProperties = {
+                    Types.PropertyDefinition.Type = Types.TypeReference.Map apsTypeReference
+                    Types.PropertyDefinition.Description = None
+                    Types.PropertyDefinition.Const = None
+                }
+                Map.add "additionalProperties" additionalProperties properties
+                
+        let properties = 
+            this.Choices
+            |> Seq.mapi (fun i choice ->
+                let name = sprintf "choice%dOf%d" (i + 1) this.Choices.Length
+                name, choice.BuildPropertyDefinition packageName names)
+            |> Seq.fold (fun properties (name, property) ->
+                Map.add name property properties
+            ) properties
 
-        let propertiesSchema = JsonObject()
-        schema.Add("properties", propertiesSchema)
-
-        for kv in this.Properties do
-            let (_, prop) = kv.Value
-
-            if not prop.IsFalseSchema then
-                propertiesSchema.Add(kv.Key, prop.BuildPropertySpec packageName names)
-
-        match this.AdditionalProperties with
-        | Choice1Of2() -> ()
-        | Choice2Of2(Some aps) when aps.IsFalseSchema -> ()
-        | Choice2Of2 aps ->
-            let aps = Option.defaultValue Conversion.True aps
-
-            // additionalProperties is always just a map
-            let additionalPropertiesSchema = JsonObject()
-            additionalPropertiesSchema.Add("type", "object")
-            let items, _ = aps.BuildTypeSpec packageName names
-            additionalPropertiesSchema.Add("additionalProperties", items)
-            propertiesSchema.Add("additionalProperties", additionalPropertiesSchema)
-
-        this.Choices
-        |> Seq.iteri (fun i choice ->
-            let name = sprintf "choice%dOf%d" (i + 1) this.Choices.Length
-            propertiesSchema.Add(name, choice.BuildPropertySpec packageName names))
-
-        schema
+        {
+            Types.ObjectTypeDefinition.Description = this.Description
+            Types.ObjectTypeDefinition.Required = this.Required
+            Types.ObjectTypeDefinition.Properties = properties
+        } |> Types.TypeDefinition.Object
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let maybeObj =
@@ -1366,44 +1358,44 @@ and TupleConversion =
       Validation: ArrayValidation }
 
     member this.BuildComplexTypeSpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
-        let schema = JsonObject()
-        schema.Add("type", JsonValue.Create("object"))
-        this.Description |> Option.iter (fun desc -> schema.Add("description", desc))
-        let propertiesSchema = JsonObject()
-        schema.Add("properties", propertiesSchema)
+        let properties = 
+            this.PrefixItems
+            |> Seq.mapi (fun i s ->
+                let key = sprintf "item%d" (i + 1)
+                key, s.BuildPropertyDefinition packageName names)
+            |> Map.ofSeq
 
-        this.PrefixItems
-        |> Seq.iteri (fun i s ->
-            let key = sprintf "item%d" (i + 1)
-            propertiesSchema.Add(key, s.BuildPropertySpec packageName names))
+        let required =
+            match this.Validation.MinItems with
+            | None -> Set.empty
+            | Some minItems ->
+                // If at least X items are required then we know item1 to item(X+1) are required
+                let requiredCount = min (int minItems) this.PrefixItems.Length
+                Seq.init requiredCount (fun i -> sprintf "item%d" (i + 1))
+                |> Set.ofSeq
 
-        match this.Validation.MinItems with
-        | None -> ()
-        | Some minItems ->
-            // If at least X items are required then we know item1 to item(X+1) are required
-            let required = JsonArray()
-            let requiredCount = min (int minItems) this.PrefixItems.Length
+        let properties = 
+            match this.AdditionalItems with
+            | Some ais when ais.IsFalseSchema -> properties
+            // AdditionalItems is false so no need for the extra property
+            | ais ->
+                // AdditionalItems is either unset (behaves like true) or set to something
+                let ais = Option.defaultValue Conversion.True ais
 
-            for i = 1 to requiredCount do
-                required.Add(sprintf "item%d" i)
+                // additionalItems is always just an array
+                let aisTypeReference = ais.BuildTypeReference packageName names
+                let additionalItems = {
+                    Types.PropertyDefinition.Type = Types.TypeReference.Array aisTypeReference
+                    Types.PropertyDefinition.Description = None
+                    Types.PropertyDefinition.Const = None
+                }
+                Map.add "additionalItems" additionalItems properties
 
-            schema.Add("required", required)
-
-        match this.AdditionalItems with
-        | Some ais when ais.IsFalseSchema -> ()
-        // AdditionalItems is false so no need for the extra property
-        | ais ->
-            // AdditionalItems is either unset (behaves like true) or set to something
-            let ais = Option.defaultValue Conversion.True ais
-
-            // additionalItems is always just an array
-            let additionalItemsSchema = JsonObject()
-            additionalItemsSchema.Add("type", "array")
-            let items, _ = ais.BuildTypeSpec packageName names
-            additionalItemsSchema.Add("items", items)
-            propertiesSchema.Add("additionalItems", additionalItemsSchema)
-
-        schema
+        {
+            Types.ObjectTypeDefinition.Description = this.Description 
+            Types.ObjectTypeDefinition.Properties = properties
+            Types.ObjectTypeDefinition.Required = required
+        } |> Types.TypeDefinition.Object
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let maybeObj =
@@ -1560,7 +1552,7 @@ and [<RequireQualifiedAccess>] ComplexTypeSpec =
 
     member this.BuildComplexTypeSpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with
-        | ComplexTypeSpec.Enum spec -> spec.BuildComplexTypeSpec()
+        | ComplexTypeSpec.Enum spec -> spec.BuildComplexTypeSpec ()
         | ComplexTypeSpec.Object spec -> spec.BuildComplexTypeSpec packageName names
         | ComplexTypeSpec.Tuple spec -> spec.BuildComplexTypeSpec packageName names
         | ComplexTypeSpec.DU spec -> spec.BuildComplexTypeSpec packageName names
@@ -1619,39 +1611,40 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
         | Conversion.False -> true
         | _ -> false
 
-    member this.BuildTypeSpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
+    member this.BuildTypeReference packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with
-        | Conversion.Ref ref -> ref.Value.Value.BuildTypeSpec packageName names
+        | Conversion.Ref ref -> ref.Value.Value.BuildTypeReference packageName names
         | Conversion.False
-        | Conversion.True ->
-            let schema = JsonObject()
-            schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
-            schema, None
-        | Conversion.Type spec -> spec.BuildTypeSpec packageName names
+        | Conversion.True -> Types.TypeReference.Named "pulumi.json#/Any"
+        | Conversion.Type spec -> spec.BuildTypeReference packageName names
         | Conversion.ComplexType spec ->
             match names.TryGetValue spec with
             | false, _ -> failwithf "Could not find name for %O" spec
-            | true, name ->
-                let schema = JsonObject()
-                schema.Add("$ref", JsonValue.Create("#/types/" + packageName + ":index:" + name))
-                schema, None
+            | true, name -> 
+                let ref = "#/types/" + packageName + ":index:" + name
+                Types.TypeReference.Named ref
 
-    member this.BuildPropertySpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
+    member this.BuildPropertyDefinition packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with
-        | Conversion.Ref ref -> ref.Value.Value.BuildPropertySpec packageName names
+        | Conversion.Ref ref -> ref.Value.Value.BuildPropertyDefinition packageName names
         | Conversion.False
-        | Conversion.True ->
-            let schema = JsonObject()
-            schema.Add("$ref", JsonValue.Create("pulumi.json#/Any"))
-            schema
-        | Conversion.Type spec -> spec.BuildPropertySpec packageName names
+        | Conversion.True -> 
+            {
+                Types.PropertyDefinition.Description = None
+                Types.PropertyDefinition.Const = None
+                Types.PropertyDefinition.Type = Types.TypeReference.Named "pulumi.json#/Any"
+            }
+        | Conversion.Type spec -> spec.BuildPropertyDefinition packageName names
         | Conversion.ComplexType spec ->
             match names.TryGetValue spec with
             | false, _ -> failwithf "Could not find name for %O" spec
             | true, name ->
-                let schema = JsonObject()
-                schema.Add("$ref", JsonValue.Create("#/types/" + packageName + ":index:" + name))
-                schema
+                let ref = "#/types/" + packageName + ":index:" + name
+                {
+                    Types.PropertyDefinition.Description = None
+                    Types.PropertyDefinition.Const = None
+                    Types.PropertyDefinition.Type = Types.TypeReference.Named ref
+                }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) : JsonNode option =
         match this with
@@ -1819,7 +1812,7 @@ let convertConst
             match value.TryGetValue<bool>() |> optionOfTry with
             | Some b -> Types.PrimitiveType.Boolean, Choice2Of4 b
             | None ->
-                match value.TryGetValue<double>() |> optionOfTry with
+                match value.TryGetValue<float>() |> optionOfTry with
                 | Some n -> Types.PrimitiveType.Number, Choice3Of4 n
                 | None ->
                     match value.TryGetValue<string>() |> optionOfTry with
@@ -2545,12 +2538,12 @@ let convertSchema (uri: Uri) (jsonSchema: JsonElement) : RootConversion =
 
         for kv in names do
             let complexTypeSpec = kv.Key.BuildComplexTypeSpec packageName names
-            types.Add(packageName + ":index:" + kv.Value, complexTypeSpec)
+            types.Add(packageName + ":index:" + kv.Value, complexTypeSpec.AsSchema ())
 
     // if the schema is a valid complex type then embed it into types and return that, else we'll embed it directly
     let names = ImmutableDictionary.CreateRange(names)
-    let readObjectType = conversion.BuildPropertySpec packageName names
-    let writeObjectType = conversion.BuildPropertySpec packageName names
+    let readObjectType = conversion.BuildPropertyDefinition packageName names
+    let writeObjectType = conversion.BuildPropertyDefinition packageName names
 
     let jsonProperty () =
         let node = JsonObject()
@@ -2574,7 +2567,7 @@ let convertSchema (uri: Uri) (jsonSchema: JsonElement) : RootConversion =
         "outputs",
         JsonObject(
             [ mkkv "required" (JsonArray(JsonValue.Create "value"))
-              mkkv "properties" (JsonObject([ mkkv "value" readObjectType ])) ]
+              mkkv "properties" (JsonObject([ mkkv "value" (readObjectType.AsSchema ()) ])) ]
         )
     )
 
@@ -2584,7 +2577,7 @@ let convertSchema (uri: Uri) (jsonSchema: JsonElement) : RootConversion =
         "inputs",
         JsonObject(
             [ mkkv "required" (JsonArray(JsonValue.Create "value"))
-              mkkv "properties" (JsonObject([ mkkv "value" writeObjectType ])) ]
+              mkkv "properties" (JsonObject([ mkkv "value" (writeObjectType.AsSchema ()) ])) ]
         )
     )
 
