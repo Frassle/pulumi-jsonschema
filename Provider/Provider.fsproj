@@ -9,6 +9,7 @@
 	  <Compile Include="Pointer.fs" />
 	  <Compile Include="OutputUnit.fs" />
 	  <Compile Include="Types.fs" />
+	  <Compile Include="Schema.fs" />
 	  <Compile Include="Converter.fs" />
 	  <Compile Include="Program.fs" />
   </ItemGroup>

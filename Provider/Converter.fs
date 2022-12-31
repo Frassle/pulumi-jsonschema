@@ -7,22 +7,6 @@ open System.Collections.Immutable
 open System.Text.Json
 open System.Text.Json.Nodes
 
-type KeywordCollection = IReadOnlyCollection<Json.Schema.IJsonSchemaKeyword>
-
-let pickKeyword<'T when 'T :> Json.Schema.IJsonSchemaKeyword> (keywords: KeywordCollection) : 'T option =
-    let picked =
-        keywords
-        |> Seq.choose (function
-            | :? 'T as t -> Some t
-            | _ -> None)
-        |> Seq.toArray
-
-    // Error if we see more than 1 of the same type of keyword, mostly for sanity
-    if picked.Length > 1 then
-        failwithf "Found more than one keyword of type %s" (typeof<'T>.FullName)
-
-    if picked.Length = 1 then Some picked[0] else None
-
 let allPrefixes (list: 'T list) : 'T list seq =
     Seq.init list.Length (fun i -> List.take (i + 1) list)
 
@@ -118,13 +102,13 @@ type StringValidation =
 
     static member FromKeywords(keywords: KeywordCollection) =
         { MinLength =
-            pickKeyword<Json.Schema.MinLengthKeyword> keywords
+            Schema.pickKeyword<Json.Schema.MinLengthKeyword> keywords
             |> Option.map (fun kw -> kw.Value)
           MaxLength =
-            pickKeyword<Json.Schema.MaxLengthKeyword> keywords
+            Schema.pickKeyword<Json.Schema.MaxLengthKeyword> keywords
             |> Option.map (fun kw -> kw.Value)
           Pattern =
-            pickKeyword<Json.Schema.PatternKeyword> keywords
+            Schema.pickKeyword<Json.Schema.PatternKeyword> keywords
             |> Option.map (fun kw -> kw.Value.ToString()) }
 
     member this.Validate(value: string) =
@@ -174,19 +158,19 @@ type NumericValidation =
 
     static member FromKeywords(keywords: KeywordCollection) =
         { MultipleOf =
-            pickKeyword<Json.Schema.MultipleOfKeyword> keywords
+            Schema.pickKeyword<Json.Schema.MultipleOfKeyword> keywords
             |> Option.map (fun kw -> kw.Value)
           Maximum =
-            pickKeyword<Json.Schema.MaximumKeyword> keywords
+            Schema.pickKeyword<Json.Schema.MaximumKeyword> keywords
             |> Option.map (fun kw -> kw.Value)
           ExclusiveMaximum =
-            pickKeyword<Json.Schema.ExclusiveMaximumKeyword> keywords
+            Schema.pickKeyword<Json.Schema.ExclusiveMaximumKeyword> keywords
             |> Option.map (fun kw -> kw.Value)
           Minimum =
-            pickKeyword<Json.Schema.MinimumKeyword> keywords
+            Schema.pickKeyword<Json.Schema.MinimumKeyword> keywords
             |> Option.map (fun kw -> kw.Value)
           ExclusiveMinimum =
-            pickKeyword<Json.Schema.ExclusiveMinimumKeyword> keywords
+            Schema.pickKeyword<Json.Schema.ExclusiveMinimumKeyword> keywords
             |> Option.map (fun kw -> kw.Value) }
 
     member this.Validate(value: decimal) =
@@ -237,7 +221,7 @@ type PrimitiveValidation =
           Numeric = NumericValidation.FromKeywords keywords
           Const =
             keywords
-            |> pickKeyword<Json.Schema.ConstKeyword>
+            |> Schema.pickKeyword<Json.Schema.ConstKeyword>
             |> Option.map (fun kw -> kw.Value) }
 
     member this.Validate(node: JsonNode option) =
@@ -257,10 +241,10 @@ type ArrayValidation =
 
     static member FromKeywords(keywords: KeywordCollection) =
         { MinItems =
-            pickKeyword<Json.Schema.MinItemsKeyword> keywords
+            Schema.pickKeyword<Json.Schema.MinItemsKeyword> keywords
             |> Option.map (fun kw -> kw.Value)
           MaxItems =
-            pickKeyword<Json.Schema.MaxItemsKeyword> keywords
+            Schema.pickKeyword<Json.Schema.MaxItemsKeyword> keywords
             |> Option.map (fun kw -> kw.Value) }
 
     member this.Validate(value: JsonElement) =
@@ -1726,16 +1710,16 @@ type RootInformation = { BaseUri: Uri; Document: JsonElement }
 
 let getType (keywords: KeywordCollection) : Json.Schema.SchemaValueType option =
     keywords
-    |> pickKeyword<Json.Schema.TypeKeyword>
+    |> Schema.pickKeyword<Json.Schema.TypeKeyword>
     |> Option.map (fun typ -> typ.Type)
 
 let getDescription keywords =
-    match pickKeyword<Json.Schema.DescriptionKeyword> keywords with
+    match Schema.pickKeyword<Json.Schema.DescriptionKeyword> keywords with
     | Some kw -> Some kw.Value
     | None -> None
 
 let getTitle keywords =
-    match pickKeyword<Json.Schema.TitleKeyword> keywords with
+    match Schema.pickKeyword<Json.Schema.TitleKeyword> keywords with
     | Some kw -> Some kw.Value
     | None -> None
 
@@ -1749,7 +1733,7 @@ let convertBoolSchema (jsonSchema: Json.Schema.JsonSchema) : PrimitiveConversion
       Const = Choice1Of4() }
 
 let convertStringSchema path (jsonSchema: Json.Schema.JsonSchema) : Conversion =
-    let enum = pickKeyword<Json.Schema.EnumKeyword> jsonSchema.Keywords
+    let enum = Schema.pickKeyword<Json.Schema.EnumKeyword> jsonSchema.Keywords
 
     match enum with
     | None ->
@@ -1771,7 +1755,7 @@ let convertStringSchema path (jsonSchema: Json.Schema.JsonSchema) : Conversion =
         |> Conversion.ComplexType
 
 let convertNumberSchema path isInteger (jsonSchema: Json.Schema.JsonSchema) : Conversion =
-    let enum = pickKeyword<Json.Schema.EnumKeyword> jsonSchema.Keywords
+    let enum = Schema.pickKeyword<Json.Schema.EnumKeyword> jsonSchema.Keywords
 
     match enum with
     | None ->
@@ -1974,11 +1958,11 @@ let rec convertRef
                     // Next handle title and description, we just take these from the main schema ignoring the merged in ref
                     |> handleKeyword<Json.Schema.TitleKeyword> (fun _ ->
                         schema.Keywords
-                        |> pickKeyword<Json.Schema.TitleKeyword>
+                        |> Schema.pickKeyword<Json.Schema.TitleKeyword>
                         |> Option.iter newSchema.Add)
                     |> handleKeyword<Json.Schema.DescriptionKeyword> (fun _ ->
                         schema.Keywords
-                        |> pickKeyword<Json.Schema.DescriptionKeyword>
+                        |> Schema.pickKeyword<Json.Schema.DescriptionKeyword>
                         |> Option.iter newSchema.Add)
 
                     // Next find the "properties" keyword
@@ -2018,7 +2002,7 @@ and convertArraySchema
     : Conversion =
     let prefixItems =
         jsonSchema.Keywords
-        |> pickKeyword<Json.Schema.PrefixItemsKeyword>
+        |> Schema.pickKeyword<Json.Schema.PrefixItemsKeyword>
         |> Option.map (fun kw ->
             kw.ArraySchemas
             |> Seq.mapi (fun i s ->
@@ -2028,7 +2012,7 @@ and convertArraySchema
 
     let items =
         jsonSchema.Keywords
-        |> pickKeyword<Json.Schema.ItemsKeyword>
+        |> Schema.pickKeyword<Json.Schema.ItemsKeyword>
         |> Option.map (fun ik ->
             let path = path.Combine(Pointer.attribute "items")
             convertSubSchema root context.Clear path ik.SingleSchema)
@@ -2061,16 +2045,16 @@ and convertObjectSchema
     (jsonSchema: Json.Schema.JsonSchema)
     : Conversion =
     let propertiesKeyword =
-        jsonSchema.Keywords |> pickKeyword<Json.Schema.PropertiesKeyword>
+        jsonSchema.Keywords |> Schema.pickKeyword<Json.Schema.PropertiesKeyword>
 
     let additionalPropertiesKeyword =
-        jsonSchema.Keywords |> pickKeyword<Json.Schema.AdditionalPropertiesKeyword>
+        jsonSchema.Keywords |> Schema.pickKeyword<Json.Schema.AdditionalPropertiesKeyword>
 
     let requiredKeyword =
-        jsonSchema.Keywords |> pickKeyword<Json.Schema.RequiredKeyword>
+        jsonSchema.Keywords |> Schema.pickKeyword<Json.Schema.RequiredKeyword>
 
     let unevaluatedPropertiesKeyword =
-        jsonSchema.Keywords |> pickKeyword<Json.Schema.UnevaluatedPropertiesKeyword>
+        jsonSchema.Keywords |> Schema.pickKeyword<Json.Schema.UnevaluatedPropertiesKeyword>
 
     let properties =
         propertiesKeyword
@@ -2343,10 +2327,10 @@ and convertSubSchema
 
                 let context = { context with Type = typ }
 
-                let allOf = pickKeyword<Json.Schema.AllOfKeyword> keywords
-                let oneOf = pickKeyword<Json.Schema.OneOfKeyword> keywords
-                let ref = pickKeyword<Json.Schema.RefKeyword> keywords
-                let constKeyword = pickKeyword<Json.Schema.ConstKeyword> keywords
+                let allOf = Schema.pickKeyword<Json.Schema.AllOfKeyword> keywords
+                let oneOf = Schema.pickKeyword<Json.Schema.OneOfKeyword> keywords
+                let ref = Schema.pickKeyword<Json.Schema.RefKeyword> keywords
+                let constKeyword = Schema.pickKeyword<Json.Schema.ConstKeyword> keywords
 
                 let hasType c =
                     match typ with
