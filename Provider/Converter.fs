@@ -282,12 +282,12 @@ type NullConversion =
     { Description: string option }
 
     member this.BuildTypeReference() =
-        Types.TypeReference.Named "pulumi.json#/Any"
+        TypeSchema.TypeReference.Named "pulumi.json#/Any"
 
     member this.BuildPropertyDefinition() =
-        { Types.PropertyDefinition.Const = None
-          Types.PropertyDefinition.Description = this.Description
-          Types.PropertyDefinition.Type = this.BuildTypeReference() }
+        { TypeSchema.PropertyDefinition.Const = None
+          TypeSchema.PropertyDefinition.Description = this.Description
+          TypeSchema.PropertyDefinition.Type = this.BuildTypeReference() }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let raise (typ: string) =
@@ -314,10 +314,10 @@ type NullConversion =
         else
             errorf "Invalid JSON document expected null got %O" value.ValueKind
 
-let writePrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) (value: Pulumi.Provider.PropertyValue) =
+let writePrimitive (typ: TypeSchema.PrimitiveType) (validation: PrimitiveValidation) (value: Pulumi.Provider.PropertyValue) =
     let rec getNode (value: Pulumi.Provider.PropertyValue) =
         match typ with
-        | Types.PrimitiveType.Boolean ->
+        | TypeSchema.PrimitiveType.Boolean ->
             let raise (typ: string) =
                 failwithf "Value is \"%s\" but should be \"boolean\"" typ
 
@@ -335,7 +335,7 @@ let writePrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) 
                 (fun output -> getNode output.Value),
                 (fun _ -> raise "computed")
             )
-        | Types.PrimitiveType.Integer ->
+        | TypeSchema.PrimitiveType.Integer ->
             let raise (typ: string) =
                 failwithf "Value is \"%s\" but should be \"integer\"" typ
 
@@ -361,7 +361,7 @@ let writePrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) 
                 (fun output -> getNode output.Value),
                 (fun _ -> raise "computed")
             )
-        | Types.PrimitiveType.Number ->
+        | TypeSchema.PrimitiveType.Number ->
             let raise (typ: string) =
                 failwithf "Value is \"%s\" but should be \"number\"" typ
 
@@ -384,7 +384,7 @@ let writePrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) 
                 (fun output -> getNode output.Value),
                 (fun _ -> raise "computed")
             )
-        | Types.PrimitiveType.String ->
+        | TypeSchema.PrimitiveType.String ->
             let raise (typ: string) =
                 failwithf "Value is \"%s\" but should be \"string\"" typ
 
@@ -414,7 +414,7 @@ let writePrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) 
     | Some err -> failwith err
     | None -> n
 
-let readPrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) (value: JsonElement) =
+let readPrimitive (typ: TypeSchema.PrimitiveType) (validation: PrimitiveValidation) (value: JsonElement) =
     let valueTyp =
         match value.ValueKind with
         | JsonValueKind.Null -> "null"
@@ -433,14 +433,14 @@ let readPrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) (
     | None ->
 
         match typ with
-        | Types.PrimitiveType.Boolean ->
+        | TypeSchema.PrimitiveType.Boolean ->
             if value.ValueKind = JsonValueKind.True then
                 Ok(Pulumi.Provider.PropertyValue true)
             elif value.ValueKind = JsonValueKind.False then
                 Ok(Pulumi.Provider.PropertyValue false)
             else
                 errorf "Value is \"%s\" but should be \"boolean\"" valueTyp
-        | Types.PrimitiveType.Integer ->
+        | TypeSchema.PrimitiveType.Integer ->
             if value.ValueKind = JsonValueKind.Number then
                 match value.TryGetInt64() with
                 | false, _ -> errorf "Value is \"number\" but should be \"integer\""
@@ -451,7 +451,7 @@ let readPrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) (
                     |> Result.map Pulumi.Provider.PropertyValue
             else
                 errorf "Value is \"%s\" but should be \"integer\"" valueTyp
-        | Types.PrimitiveType.Number ->
+        | TypeSchema.PrimitiveType.Number ->
             if value.ValueKind = JsonValueKind.Number then
                 let num = value.GetDouble()
 
@@ -461,7 +461,7 @@ let readPrimitive (typ: Types.PrimitiveType) (validation: PrimitiveValidation) (
                 |> Result.map Pulumi.Provider.PropertyValue
             else
                 errorf "Value is \"%s\" but should be \"number\"" valueTyp
-        | Types.PrimitiveType.String ->
+        | TypeSchema.PrimitiveType.String ->
             if value.ValueKind = JsonValueKind.String then
                 let str = value.GetString()
 
@@ -572,12 +572,12 @@ type AnyConversion =
       PrimitiveValidation: PrimitiveValidation }
 
     member this.BuildTypeReference() =
-        Types.TypeReference.Named "pulumi.json#/Any"
+        TypeSchema.TypeReference.Named "pulumi.json#/Any"
 
     member this.BuildPropertyDefinition() =
-        { Types.PropertyDefinition.Const = None
-          Types.PropertyDefinition.Description = this.Description
-          Types.PropertyDefinition.Type = this.BuildTypeReference() }
+        { TypeSchema.PropertyDefinition.Const = None
+          TypeSchema.PropertyDefinition.Description = this.Description
+          TypeSchema.PropertyDefinition.Type = this.BuildTypeReference() }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) = writeAny this.PrimitiveValidation value
 
@@ -586,20 +586,20 @@ type AnyConversion =
 type PrimitiveConversion =
     { Description: string option
       Const: Choice<unit, bool, float, string>
-      Type: Types.PrimitiveType
+      Type: TypeSchema.PrimitiveType
       Validation: PrimitiveValidation }
 
-    member this.BuildTypeReference() = Types.TypeReference.Primitive this.Type
+    member this.BuildTypeReference() = TypeSchema.TypeReference.Primitive this.Type
 
     member this.BuildPropertyDefinition() =
-        { Types.PropertyDefinition.Const =
+        { TypeSchema.PropertyDefinition.Const =
             match this.Const with
             | Choice1Of4() -> None
             | Choice2Of4 b -> Some(Choice1Of3 b)
             | Choice3Of4 n -> Some(Choice2Of3 n)
             | Choice4Of4 s -> Some(Choice3Of3 s)
-          Types.PropertyDefinition.Description = this.Description
-          Types.PropertyDefinition.Type = this.BuildTypeReference() }
+          TypeSchema.PropertyDefinition.Description = this.Description
+          TypeSchema.PropertyDefinition.Type = this.BuildTypeReference() }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         writePrimitive this.Type this.Validation value
@@ -616,25 +616,25 @@ type UnionConversion =
 
     static member OfPrimitive(conversion: PrimitiveConversion) =
         match conversion.Type with
-        | Types.PrimitiveType.Boolean ->
+        | TypeSchema.PrimitiveType.Boolean ->
             { Description = None
               BooleanConversion = Some conversion
               IntegerConversion = None
               NumberConversion = None
               StringConversion = None }
-        | Types.PrimitiveType.Integer ->
+        | TypeSchema.PrimitiveType.Integer ->
             { Description = None
               BooleanConversion = None
               IntegerConversion = Some conversion
               NumberConversion = None
               StringConversion = None }
-        | Types.PrimitiveType.Number ->
+        | TypeSchema.PrimitiveType.Number ->
             { Description = None
               BooleanConversion = None
               IntegerConversion = None
               NumberConversion = Some conversion
               StringConversion = None }
-        | Types.PrimitiveType.String ->
+        | TypeSchema.PrimitiveType.String ->
             { Description = None
               BooleanConversion = None
               IntegerConversion = None
@@ -677,14 +677,14 @@ type UnionConversion =
                     | Some conversion -> Set.add (conversion.BuildTypeReference()) set)
                 Set.empty
 
-        { Types.UnionType.Type = None
-          Types.UnionType.OneOf = oneOf }
-        |> Types.TypeReference.Union
+        { TypeSchema.UnionType.Type = None
+          TypeSchema.UnionType.OneOf = oneOf }
+        |> TypeSchema.TypeReference.Union
 
     member this.BuildPropertyDefinition() =
-        { Types.PropertyDefinition.Const = None
-          Types.PropertyDefinition.Description = this.Description
-          Types.PropertyDefinition.Type = this.BuildTypeReference() }
+        { TypeSchema.PropertyDefinition.Const = None
+          TypeSchema.PropertyDefinition.Description = this.Description
+          TypeSchema.PropertyDefinition.Type = this.BuildTypeReference() }
 
     member private this.expectedTypes =
         [ "integer", this.IntegerConversion
@@ -757,7 +757,7 @@ type EnumConversion =
     { Path: Json.Pointer.JsonPointer
       Title: string option
       Description: string option
-      Type: Types.PrimitiveType
+      Type: TypeSchema.PrimitiveType
       Values: JsonNode list }
 
     member this.BuildComplexTypeSpec() =
@@ -781,14 +781,14 @@ type EnumConversion =
                                 | true, s -> Choice4Of4 s
                                 | false, _ -> failwith "Expected enum value to be bool, int, float, or string"
 
-                { Types.EnumValueDefinition.Name = None
-                  Types.EnumValueDefinition.Description = None
-                  Types.EnumValueDefinition.Value = choice })
+                { TypeSchema.EnumValueDefinition.Name = None
+                  TypeSchema.EnumValueDefinition.Description = None
+                  TypeSchema.EnumValueDefinition.Value = choice })
 
-        { Types.EnumTypeDefinition.Type = this.Type
-          Types.EnumTypeDefinition.Description = this.Description
-          Types.EnumTypeDefinition.Enum = enum }
-        |> Types.TypeDefinition.Enum
+        { TypeSchema.EnumTypeDefinition.Type = this.Type
+          TypeSchema.EnumTypeDefinition.Description = this.Description
+          TypeSchema.EnumTypeDefinition.Enum = enum }
+        |> TypeSchema.TypeDefinition.Enum
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let value = writePrimitive this.Type PrimitiveValidation.None value
@@ -821,12 +821,12 @@ type ArrayConversion =
     member this.BuildTypeReference packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
         let items = Option.defaultValue Conversion.True this.Items
         let itemsReference = items.BuildTypeReference packageName names
-        Types.TypeReference.Array itemsReference
+        TypeSchema.TypeReference.Array itemsReference
 
     member this.BuildPropertyDefinition packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
-        { Types.PropertyDefinition.Const = None
-          Types.PropertyDefinition.Description = this.Description
-          Types.PropertyDefinition.Type = this.BuildTypeReference packageName names }
+        { TypeSchema.PropertyDefinition.Const = None
+          TypeSchema.PropertyDefinition.Description = this.Description
+          TypeSchema.PropertyDefinition.Type = this.BuildTypeReference packageName names }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         this.Validation.Validate value
@@ -893,12 +893,12 @@ and MapConversion =
         let additionalPropertiesReference =
             additionalProperties.BuildTypeReference packageName names
 
-        Types.TypeReference.Map additionalPropertiesReference
+        TypeSchema.TypeReference.Map additionalPropertiesReference
 
     member this.BuildPropertyDefinition packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
-        { Types.PropertyDefinition.Const = None
-          Types.PropertyDefinition.Description = this.Description
-          Types.PropertyDefinition.Type = this.BuildTypeReference packageName names }
+        { TypeSchema.PropertyDefinition.Const = None
+          TypeSchema.PropertyDefinition.Description = this.Description
+          TypeSchema.PropertyDefinition.Type = this.BuildTypeReference packageName names }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let maybeObj =
@@ -1017,10 +1017,10 @@ and DiscriminateUnionConversion =
                 name, choice.BuildPropertyDefinition packageName names)
             |> Map.ofSeq
 
-        { Types.ObjectTypeDefinition.Description = this.Description
-          Types.ObjectTypeDefinition.Required = Set.empty
-          Types.ObjectTypeDefinition.Properties = properties }
-        |> Types.TypeDefinition.Object
+        { TypeSchema.ObjectTypeDefinition.Description = this.Description
+          TypeSchema.ObjectTypeDefinition.Required = Set.empty
+          TypeSchema.ObjectTypeDefinition.Properties = properties }
+        |> TypeSchema.TypeDefinition.Object
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let maybeObj =
@@ -1103,9 +1103,9 @@ and ObjectConversion =
                 let apsTypeReference = aps.BuildTypeReference packageName names
 
                 let additionalProperties =
-                    { Types.PropertyDefinition.Type = Types.TypeReference.Map apsTypeReference
-                      Types.PropertyDefinition.Description = None
-                      Types.PropertyDefinition.Const = None }
+                    { TypeSchema.PropertyDefinition.Type = TypeSchema.TypeReference.Map apsTypeReference
+                      TypeSchema.PropertyDefinition.Description = None
+                      TypeSchema.PropertyDefinition.Const = None }
 
                 Map.add "additionalProperties" additionalProperties properties
 
@@ -1116,10 +1116,10 @@ and ObjectConversion =
                 name, choice.BuildPropertyDefinition packageName names)
             |> Seq.fold (fun properties (name, property) -> Map.add name property properties) properties
 
-        { Types.ObjectTypeDefinition.Description = this.Description
-          Types.ObjectTypeDefinition.Required = this.Required
-          Types.ObjectTypeDefinition.Properties = properties }
-        |> Types.TypeDefinition.Object
+        { TypeSchema.ObjectTypeDefinition.Description = this.Description
+          TypeSchema.ObjectTypeDefinition.Required = this.Required
+          TypeSchema.ObjectTypeDefinition.Properties = properties }
+        |> TypeSchema.TypeDefinition.Object
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let maybeObj =
@@ -1352,16 +1352,16 @@ and TupleConversion =
                 let aisTypeReference = ais.BuildTypeReference packageName names
 
                 let additionalItems =
-                    { Types.PropertyDefinition.Type = Types.TypeReference.Array aisTypeReference
-                      Types.PropertyDefinition.Description = None
-                      Types.PropertyDefinition.Const = None }
+                    { TypeSchema.PropertyDefinition.Type = TypeSchema.TypeReference.Array aisTypeReference
+                      TypeSchema.PropertyDefinition.Description = None
+                      TypeSchema.PropertyDefinition.Const = None }
 
                 Map.add "additionalItems" additionalItems properties
 
-        { Types.ObjectTypeDefinition.Description = this.Description
-          Types.ObjectTypeDefinition.Properties = properties
-          Types.ObjectTypeDefinition.Required = required }
-        |> Types.TypeDefinition.Object
+        { TypeSchema.ObjectTypeDefinition.Description = this.Description
+          TypeSchema.ObjectTypeDefinition.Properties = properties
+          TypeSchema.ObjectTypeDefinition.Required = required }
+        |> TypeSchema.TypeDefinition.Object
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) =
         let maybeObj =
@@ -1581,23 +1581,23 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
         match this with
         | Conversion.Ref ref -> ref.Value.Value.BuildTypeReference packageName names
         | Conversion.False
-        | Conversion.True -> Types.TypeReference.Named "pulumi.json#/Any"
+        | Conversion.True -> TypeSchema.TypeReference.Named "pulumi.json#/Any"
         | Conversion.Type spec -> spec.BuildTypeReference packageName names
         | Conversion.ComplexType spec ->
             match names.TryGetValue spec with
             | false, _ -> failwithf "Could not find name for %O" spec
             | true, name ->
                 let ref = "#/types/" + packageName + ":index:" + name
-                Types.TypeReference.Named ref
+                TypeSchema.TypeReference.Named ref
 
     member this.BuildPropertyDefinition packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with
         | Conversion.Ref ref -> ref.Value.Value.BuildPropertyDefinition packageName names
         | Conversion.False
         | Conversion.True ->
-            { Types.PropertyDefinition.Description = None
-              Types.PropertyDefinition.Const = None
-              Types.PropertyDefinition.Type = Types.TypeReference.Named "pulumi.json#/Any" }
+            { TypeSchema.PropertyDefinition.Description = None
+              TypeSchema.PropertyDefinition.Const = None
+              TypeSchema.PropertyDefinition.Type = TypeSchema.TypeReference.Named "pulumi.json#/Any" }
         | Conversion.Type spec -> spec.BuildPropertyDefinition packageName names
         | Conversion.ComplexType spec ->
             match names.TryGetValue spec with
@@ -1605,9 +1605,9 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
             | true, name ->
                 let ref = "#/types/" + packageName + ":index:" + name
 
-                { Types.PropertyDefinition.Description = None
-                  Types.PropertyDefinition.Const = None
-                  Types.PropertyDefinition.Type = Types.TypeReference.Named ref }
+                { TypeSchema.PropertyDefinition.Description = None
+                  TypeSchema.PropertyDefinition.Const = None
+                  TypeSchema.PropertyDefinition.Type = TypeSchema.TypeReference.Named ref }
 
     member this.Writer(value: Pulumi.Provider.PropertyValue) : JsonNode option =
         match this with
@@ -1706,7 +1706,7 @@ let convertNullSchema (jsonSchema: Json.Schema.JsonSchema) : NullConversion =
     { Description = getDescription jsonSchema.Keywords }
 
 let convertBoolSchema (jsonSchema: Json.Schema.JsonSchema) : PrimitiveConversion =
-    { Type = Types.PrimitiveType.Boolean
+    { Type = TypeSchema.PrimitiveType.Boolean
       Description = getDescription jsonSchema.Keywords
       Validation = PrimitiveValidation.None
       Const = Choice1Of4() }
@@ -1716,7 +1716,7 @@ let convertStringSchema path (jsonSchema: Json.Schema.JsonSchema) : Conversion =
 
     match enum with
     | None ->
-        { Type = Types.PrimitiveType.String
+        { Type = TypeSchema.PrimitiveType.String
           Description = getDescription jsonSchema.Keywords
           Validation = PrimitiveValidation.FromKeywords jsonSchema.Keywords
           Const = Choice1Of4() }
@@ -1726,7 +1726,7 @@ let convertStringSchema path (jsonSchema: Json.Schema.JsonSchema) : Conversion =
         let enumValues = enum.Values |> Seq.toList
 
         { Path = path
-          Type = Types.PrimitiveType.String
+          Type = TypeSchema.PrimitiveType.String
           Description = getDescription jsonSchema.Keywords
           Title = getTitle jsonSchema.Keywords
           Values = enumValues }
@@ -1740,9 +1740,9 @@ let convertNumberSchema path isInteger (jsonSchema: Json.Schema.JsonSchema) : Co
     | None ->
         { Type =
             if isInteger then
-                Types.PrimitiveType.Integer
+                TypeSchema.PrimitiveType.Integer
             else
-                Types.PrimitiveType.Number
+                TypeSchema.PrimitiveType.Number
           Description = getDescription jsonSchema.Keywords
           Validation = PrimitiveValidation.FromKeywords jsonSchema.Keywords
           Const = Choice1Of4() }
@@ -1754,9 +1754,9 @@ let convertNumberSchema path isInteger (jsonSchema: Json.Schema.JsonSchema) : Co
         { Path = path
           Type =
             if isInteger then
-                Types.PrimitiveType.Integer
+                TypeSchema.PrimitiveType.Integer
             else
-                Types.PrimitiveType.Number
+                TypeSchema.PrimitiveType.Number
           Description = getDescription jsonSchema.Keywords
           Title = getTitle jsonSchema.Keywords
           Values = enumValues }
@@ -1773,13 +1773,13 @@ let convertConst
     | :? JsonValue as value ->
         let typ, constant =
             match value.TryGetValue<bool>() |> optionOfTry with
-            | Some b -> Types.PrimitiveType.Boolean, Choice2Of4 b
+            | Some b -> TypeSchema.PrimitiveType.Boolean, Choice2Of4 b
             | None ->
                 match value.TryGetValue<float>() |> optionOfTry with
-                | Some n -> Types.PrimitiveType.Number, Choice3Of4 n
+                | Some n -> TypeSchema.PrimitiveType.Number, Choice3Of4 n
                 | None ->
                     match value.TryGetValue<string>() |> optionOfTry with
-                    | Some s -> Types.PrimitiveType.String, Choice4Of4 s
+                    | Some s -> TypeSchema.PrimitiveType.String, Choice4Of4 s
                     | None -> failwith "constant value wasn't a bool, number or string"
 
         { Description = getDescription schema.Keywords

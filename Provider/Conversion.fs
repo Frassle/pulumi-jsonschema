@@ -1,5 +1,9 @@
 ﻿namespace JsonSchema
 
+open System.Text.Json
+open System.Text.Json.Nodes
+open Pulumi.Provider
+
 // There are three cases we need to deal with
 // Root schemas, that is something like { "type": "string"}
 // Child subschemas, that is something like { "items": { "type": "string" } }
@@ -14,6 +18,17 @@
 // Now the root schema gives an intersection constraint that the inplace schema must be of the same JSON Type, but it might not be the same translated type.
 // E.g. { "type": "array", "prefixItems": [{"type": "string"}], "allOf": [ { "minItems": 2 } ] }
 // The root schema here would want to translate as a tuple type, but the inplace all off would just assume a plain array.
+
+type Annotations = {
+    PrefixItems : int
+}
+
+
+type Schema = {    
+    Title : string option
+    Description : string option
+    Conversion : int
+}
 
 module Conversion =
     let x = 1

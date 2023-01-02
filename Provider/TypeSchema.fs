@@ -1,4 +1,4 @@
-﻿module JsonSchema.Types
+﻿module JsonSchema.TypeSchema
 
 open System.Text.Json.Nodes
 
