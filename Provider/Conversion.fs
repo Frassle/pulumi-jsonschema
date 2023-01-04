@@ -24,7 +24,7 @@ type Annotations = {
 }
 
 
-type Schema = {    
+type SchemaT = {
     Title : string option
     Description : string option
     Conversion : int

@@ -2,7 +2,7 @@ module TypesTests
 
 open System.Text.Json.Nodes
 open Xunit
-open JsonSchema.Types
+open JsonSchema.TypeSchema
 
 let shouldEqual (json: string) (node: JsonNode) =
     node |> Some |> Test.toJson |> Test.shouldJsonEqual json
