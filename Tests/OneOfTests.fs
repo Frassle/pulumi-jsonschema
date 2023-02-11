@@ -5,6 +5,7 @@ open System.Text.Json
 open Xunit
 open System.Collections.Generic
 open System.Collections.Immutable
+open Pulumi.Experimental.Provider
 
 [<Fact>]
 let ``Test oneOf primitives`` () =
@@ -28,13 +29,13 @@ let ``Test oneOf primitives`` () =
     }"""
     )
 
-    Pulumi.Provider.PropertyValue(45) |> t.ShouldWrite "45"
+    PropertyValue(45) |> t.ShouldWrite "45"
 
-    Pulumi.Provider.PropertyValue("hello") |> t.ShouldWrite "\"hello\""
+    PropertyValue("hello") |> t.ShouldWrite "\"hello\""
 
-    "123" |> t.ShouldRead(Pulumi.Provider.PropertyValue 123)
+    "123" |> t.ShouldRead(PropertyValue 123)
 
-    "\"testing\"" |> t.ShouldRead(Pulumi.Provider.PropertyValue "testing")
+    "\"testing\"" |> t.ShouldRead(PropertyValue "testing")
 
 [<Fact>]
 let ``Test oneOf objects`` () =
@@ -76,11 +77,11 @@ let ``Test oneOf objects`` () =
     )
 
     "123"
-    |> t.ShouldRead(Test.dictToProperty [ "choice1Of3", Pulumi.Provider.PropertyValue(123) ])
+    |> t.ShouldRead(Test.dictToProperty [ "choice1Of3", PropertyValue(123) ])
 
     "[\"testing\"]"
     |> t.ShouldRead(
-        Test.dictToProperty [ "choice2Of3", Test.listToProperty [ Pulumi.Provider.PropertyValue("testing") ] ]
+        Test.dictToProperty [ "choice2Of3", Test.listToProperty [ PropertyValue("testing") ] ]
     )
 
 [<Fact>]
@@ -110,20 +111,20 @@ let ``Test string pattern with oneOf`` () =
     }""" ]
     )
 
-    Test.dictToProperty [ "choice1Of2", Pulumi.Provider.PropertyValue("123") ]
+    Test.dictToProperty [ "choice1Of2", PropertyValue("123") ]
     |> t.ShouldWrite "\"123\""
 
-    Test.dictToProperty [ "choice2Of2", Pulumi.Provider.PropertyValue("test") ]
+    Test.dictToProperty [ "choice2Of2", PropertyValue("test") ]
     |> t.ShouldWrite "\"test\""
 
     "\"456\""
-    |> t.ShouldRead(Test.dictToProperty [ "choice1Of2", Pulumi.Provider.PropertyValue("456") ])
+    |> t.ShouldRead(Test.dictToProperty [ "choice1Of2", PropertyValue("456") ])
 
     "\"test\""
-    |> t.ShouldRead(Test.dictToProperty [ "choice2Of2", Pulumi.Provider.PropertyValue("test") ])
+    |> t.ShouldRead(Test.dictToProperty [ "choice2Of2", PropertyValue("test") ])
 
     let exc =
-        Test.dictToProperty [ "choice2Of2", Pulumi.Provider.PropertyValue("hello") ]
+        Test.dictToProperty [ "choice2Of2", PropertyValue("hello") ]
         |> t.ShouldThrow<exn>
 
     exc.Message
@@ -200,8 +201,8 @@ let ``Test inline oneOf`` () =
     }"""
     |> t.ShouldRead(
         Test.dictToProperty
-            [ "topKey", Pulumi.Provider.PropertyValue(true)
-              "choice1Of2", Test.dictToProperty [ "keyA", Pulumi.Provider.PropertyValue("bob") ] ]
+            [ "topKey", PropertyValue(true)
+              "choice1Of2", Test.dictToProperty [ "keyA", PropertyValue("bob") ] ]
     )
 
     """{
@@ -210,12 +211,12 @@ let ``Test inline oneOf`` () =
     }"""
     |> t.ShouldRead(
         Test.dictToProperty
-            [ "topKey", Pulumi.Provider.PropertyValue(true)
-              "choice2Of2", Test.dictToProperty [ "keyB", Pulumi.Provider.PropertyValue("charlie") ] ]
+            [ "topKey", PropertyValue(true)
+              "choice2Of2", Test.dictToProperty [ "keyB", PropertyValue("charlie") ] ]
     )
 
     """{"keyA": "hello world" }"""
     |> t.ShouldRead(
         Test.dictToProperty
-            [ "choice1Of2", Test.dictToProperty [ "keyA", Pulumi.Provider.PropertyValue("hello world") ] ]
+            [ "choice1Of2", Test.dictToProperty [ "keyA", PropertyValue("hello world") ] ]
     )

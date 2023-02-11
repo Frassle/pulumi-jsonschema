@@ -2,6 +2,7 @@ module EnumTests
 
 open Xunit
 open System.Collections.Immutable
+open Pulumi.Experimental.Provider
 
 [<Fact>]
 let ``Test string enum`` () =
@@ -27,11 +28,11 @@ let ``Test string enum`` () =
         }""" ]
     )
 
-    Pulumi.Provider.PropertyValue("info") |> t.ShouldWrite "\"info\""
+    PropertyValue("info") |> t.ShouldWrite "\"info\""
 
-    "\"info\"" |> t.ShouldRead(Pulumi.Provider.PropertyValue "info")
+    "\"info\"" |> t.ShouldRead(PropertyValue "info")
 
-    let exc = Pulumi.Provider.PropertyValue("badenum") |> t.ShouldThrow<exn>
+    let exc = PropertyValue("badenum") |> t.ShouldThrow<exn>
 
     exc.Message
     |> Test.shouldEqual "Expected value to match one of the values specified by the enum"
@@ -60,11 +61,11 @@ let ``Test integer enum`` () =
         }""" ]
     )
 
-    Pulumi.Provider.PropertyValue(3) |> t.ShouldWrite "3"
+    PropertyValue(3) |> t.ShouldWrite "3"
 
-    "1" |> t.ShouldRead(Pulumi.Provider.PropertyValue 1)
+    "1" |> t.ShouldRead(PropertyValue 1)
 
-    let exc = Pulumi.Provider.PropertyValue(4) |> t.ShouldThrow<exn>
+    let exc = PropertyValue(4) |> t.ShouldThrow<exn>
 
     exc.Message
     |> Test.shouldEqual "Expected value to match one of the values specified by the enum"

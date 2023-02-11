@@ -17,12 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="JsonSchema.Net" Version="3.3.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Pulumi">
-      <HintPath>..\Pulumi.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Pulumi" Version="3.53.0" />
   </ItemGroup>
 
 </Project>

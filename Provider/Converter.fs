@@ -7,6 +7,8 @@ open System.Collections.Immutable
 open System.Text.Json
 open System.Text.Json.Nodes
 
+open Pulumi.Experimental.Provider
+
 let allPrefixes (list: 'T list) : 'T list seq =
     Seq.init list.Length (fun i -> List.take (i + 1) list)
 
@@ -265,7 +267,7 @@ type ArrayValidation =
 
             Option.orElse maxCheck minCheck
 
-    member this.Validate(value: Pulumi.Provider.PropertyValue) =
+    member this.Validate(value: PropertyValue) =
         match value.TryGetArray() with
         | false, _ -> ()
         | true, arr ->
@@ -289,7 +291,7 @@ type NullConversion =
           TypeSchema.PropertyDefinition.Description = this.Description
           TypeSchema.PropertyDefinition.Type = this.BuildTypeReference() }
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         let raise (typ: string) =
             failwithf "Invalid type expected null got %s" typ
 
@@ -310,12 +312,12 @@ type NullConversion =
 
     member this.Reader(value: JsonElement) =
         if value.ValueKind = JsonValueKind.Null then
-            Ok(Pulumi.Provider.PropertyValue.Null)
+            Ok(PropertyValue.Null)
         else
             errorf "Invalid JSON document expected null got %O" value.ValueKind
 
-let writePrimitive (typ: TypeSchema.PrimitiveType) (validation: PrimitiveValidation) (value: Pulumi.Provider.PropertyValue) =
-    let rec getNode (value: Pulumi.Provider.PropertyValue) =
+let writePrimitive (typ: TypeSchema.PrimitiveType) (validation: PrimitiveValidation) (value: PropertyValue) =
+    let rec getNode (value: PropertyValue) =
         match typ with
         | TypeSchema.PrimitiveType.Boolean ->
             let raise (typ: string) =
@@ -435,9 +437,9 @@ let readPrimitive (typ: TypeSchema.PrimitiveType) (validation: PrimitiveValidati
         match typ with
         | TypeSchema.PrimitiveType.Boolean ->
             if value.ValueKind = JsonValueKind.True then
-                Ok(Pulumi.Provider.PropertyValue true)
+                Ok(PropertyValue true)
             elif value.ValueKind = JsonValueKind.False then
-                Ok(Pulumi.Provider.PropertyValue false)
+                Ok(PropertyValue false)
             else
                 errorf "Value is \"%s\" but should be \"boolean\"" valueTyp
         | TypeSchema.PrimitiveType.Integer ->
@@ -448,7 +450,7 @@ let readPrimitive (typ: TypeSchema.PrimitiveType) (validation: PrimitiveValidati
                     match validation.Numeric.Validate(decimal num) with
                     | Some err -> Error err
                     | None -> Ok(float num)
-                    |> Result.map Pulumi.Provider.PropertyValue
+                    |> Result.map PropertyValue
             else
                 errorf "Value is \"%s\" but should be \"integer\"" valueTyp
         | TypeSchema.PrimitiveType.Number ->
@@ -458,7 +460,7 @@ let readPrimitive (typ: TypeSchema.PrimitiveType) (validation: PrimitiveValidati
                 match validation.Numeric.Validate(decimal num) with
                 | Some err -> Error err
                 | None -> Ok num
-                |> Result.map Pulumi.Provider.PropertyValue
+                |> Result.map PropertyValue
             else
                 errorf "Value is \"%s\" but should be \"number\"" valueTyp
         | TypeSchema.PrimitiveType.String ->
@@ -468,7 +470,7 @@ let readPrimitive (typ: TypeSchema.PrimitiveType) (validation: PrimitiveValidati
                 match validation.String.Validate str with
                 | Some err -> Error err
                 | None -> Ok str
-                |> Result.map Pulumi.Provider.PropertyValue
+                |> Result.map PropertyValue
             else
                 errorf "Value is \"%s\" but should be \"string\"" valueTyp
 
@@ -496,7 +498,7 @@ type Annotations =
           Properties = Set.union this.Properties other.Properties
           AdditionalProperties = Set.union this.AdditionalProperties other.AdditionalProperties }
 
-let rec writeAny (validation: PrimitiveValidation) (value: Pulumi.Provider.PropertyValue) =
+let rec writeAny (validation: PrimitiveValidation) (value: PropertyValue) =
     value.Match<JsonNode option>(
         (fun () -> None),
         (fun b -> JsonValue.Create(b) :> JsonNode |> Some),
@@ -537,22 +539,22 @@ let rec writeAny (validation: PrimitiveValidation) (value: Pulumi.Provider.Prope
 
 let rec readAny (validation: PrimitiveValidation) (value: JsonElement) =
     if value.ValueKind = JsonValueKind.Null then
-        Ok(Pulumi.Provider.PropertyValue.Null)
+        Ok(PropertyValue.Null)
     elif value.ValueKind = JsonValueKind.False then
-        Ok(Pulumi.Provider.PropertyValue false)
+        Ok(PropertyValue false)
     elif value.ValueKind = JsonValueKind.True then
-        Ok(Pulumi.Provider.PropertyValue true)
+        Ok(PropertyValue true)
     elif value.ValueKind = JsonValueKind.Number then
-        Ok(Pulumi.Provider.PropertyValue(value.GetDouble()))
+        Ok(PropertyValue(value.GetDouble()))
     elif value.ValueKind = JsonValueKind.String then
-        Ok(Pulumi.Provider.PropertyValue(value.GetString()))
+        Ok(PropertyValue(value.GetString()))
     elif value.ValueKind = JsonValueKind.Array then
         value.EnumerateArray()
         |> Seq.map (fun item -> readAny PrimitiveValidation.None item |> Result.map fst)
         |> Seq.toList
         |> okList
         |> Result.mapError (fun errs -> String.concat ", " errs)
-        |> Result.map (fun items -> items |> ImmutableArray.CreateRange |> Pulumi.Provider.PropertyValue)
+        |> Result.map (fun items -> items |> ImmutableArray.CreateRange |> PropertyValue)
     elif value.ValueKind = JsonValueKind.Object then
         value.EnumerateObject()
         |> Seq.map (fun item ->
@@ -562,7 +564,7 @@ let rec readAny (validation: PrimitiveValidation) (value: JsonElement) =
         |> Seq.toList
         |> okList
         |> Result.mapError (fun errs -> String.concat ", " errs)
-        |> Result.map (fun items -> items |> ImmutableDictionary.CreateRange |> Pulumi.Provider.PropertyValue)
+        |> Result.map (fun items -> items |> ImmutableDictionary.CreateRange |> PropertyValue)
     else
         Error(sprintf "unexpected JsonValueKind: %O" value.ValueKind)
     |> Result.map (fun r -> r, Annotations.Empty)
@@ -579,7 +581,7 @@ type AnyConversion =
           TypeSchema.PropertyDefinition.Description = this.Description
           TypeSchema.PropertyDefinition.Type = this.BuildTypeReference() }
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) = writeAny this.PrimitiveValidation value
+    member this.Writer(value: PropertyValue) = writeAny this.PrimitiveValidation value
 
     member this.Reader(value: JsonElement) = readAny this.PrimitiveValidation value
 
@@ -601,7 +603,7 @@ type PrimitiveConversion =
           TypeSchema.PropertyDefinition.Description = this.Description
           TypeSchema.PropertyDefinition.Type = this.BuildTypeReference() }
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         writePrimitive this.Type this.Validation value
 
     member this.Reader(value: JsonElement) =
@@ -697,7 +699,7 @@ type UnionConversion =
             | None -> None)
         |> String.concat " or "
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         let raise () =
             failwithf "Invalid type expected %s got %O" this.expectedTypes value.Type
 
@@ -790,7 +792,7 @@ type EnumConversion =
           TypeSchema.EnumTypeDefinition.Enum = enum }
         |> TypeSchema.TypeDefinition.Enum
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         let value = writePrimitive this.Type PrimitiveValidation.None value
 
         let isMatch =
@@ -828,7 +830,7 @@ type ArrayConversion =
           TypeSchema.PropertyDefinition.Description = this.Description
           TypeSchema.PropertyDefinition.Type = this.BuildTypeReference packageName names }
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         this.Validation.Validate value
 
         let maybeArr =
@@ -869,7 +871,7 @@ type ArrayConversion =
                 |> okList
                 |> Result.mapError (fun errs -> String.concat ", " errs)
                 |> Result.map (fun items ->
-                    let result = items |> ImmutableArray.CreateRange |> Pulumi.Provider.PropertyValue
+                    let result = items |> ImmutableArray.CreateRange |> PropertyValue
 
                     match this.Items with
                     | Some _ -> result, { Annotations.Empty with Items = true }
@@ -900,7 +902,7 @@ and MapConversion =
           TypeSchema.PropertyDefinition.Description = this.Description
           TypeSchema.PropertyDefinition.Type = this.BuildTypeReference packageName names }
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         let maybeObj =
             value.TryUnwrap()
             |> optionOfTry
@@ -936,7 +938,7 @@ and MapConversion =
             |> Result.mapError (fun errs -> String.concat ", " errs)
             |> Result.map (fun items ->
                 let result =
-                    items |> ImmutableDictionary.CreateRange |> Pulumi.Provider.PropertyValue
+                    items |> ImmutableDictionary.CreateRange |> PropertyValue
 
                 let annotations =
                     items
@@ -976,7 +978,7 @@ and [<RequireQualifiedAccess>] TypeSpec =
         | Map c -> c.BuildPropertyDefinition packageName names
         | Union c -> c.BuildPropertyDefinition()
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         match this with
         | Any c -> c.Writer value
         | Null c -> c.Writer value
@@ -1022,7 +1024,7 @@ and DiscriminateUnionConversion =
           TypeSchema.ObjectTypeDefinition.Properties = properties }
         |> TypeSchema.TypeDefinition.Object
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         let maybeObj =
             value.TryUnwrap()
             |> optionOfTry
@@ -1054,7 +1056,7 @@ and DiscriminateUnionConversion =
             | Ok(v, a) -> Some(KeyValuePair.Create(sprintf "choice%dOf%d" (i + 1) this.Choices.Length, v), a)
             | Error e -> None)
         |> function
-            | [ (result, a) ] -> Ok(Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange [ result ]), a)
+            | [ (result, a) ] -> Ok(PropertyValue(ImmutableDictionary.CreateRange [ result ]), a)
             | results -> errorf "Expected 1 matching subschema but found %d" results.Length
 
     member this.CollectComplexTypes path refs : ImmutableDictionary<ComplexTypeSpec, Set<string list>> =
@@ -1121,7 +1123,7 @@ and ObjectConversion =
           TypeSchema.ObjectTypeDefinition.Properties = properties }
         |> TypeSchema.TypeDefinition.Object
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         let maybeObj =
             value.TryUnwrap()
             |> optionOfTry
@@ -1269,7 +1271,7 @@ and ObjectConversion =
                             | _, false -> properties, annotations
                             | additionalProperties, true ->
                                 let arr =
-                                    Pulumi.Provider.PropertyValue(ImmutableDictionary.CreateRange additionalProperties)
+                                    PropertyValue(ImmutableDictionary.CreateRange additionalProperties)
 
                                 let annotations =
                                     additionalProperties
@@ -1286,7 +1288,7 @@ and ObjectConversion =
 
                         propertiesAnnotations
                         |> Result.map (fun (properties, annotations) ->
-                            properties |> ImmutableDictionary.CreateRange |> Pulumi.Provider.PropertyValue, annotations)
+                            properties |> ImmutableDictionary.CreateRange |> PropertyValue, annotations)
         else
             failwithf "Invalid JSON document expected object got %O" value.ValueKind
 
@@ -1363,7 +1365,7 @@ and TupleConversion =
           TypeSchema.ObjectTypeDefinition.Required = required }
         |> TypeSchema.TypeDefinition.Object
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         let maybeObj =
             value.TryUnwrap()
             |> optionOfTry
@@ -1467,7 +1469,7 @@ and TupleConversion =
                             | _ -> failwith "This should be unreachable"
                         | _, rest ->
                             let arr = rest |> List.rev |> ImmutableArray.CreateRange
-                            Some(KeyValuePair.Create("rest", Pulumi.Provider.PropertyValue(arr)))
+                            Some(KeyValuePair.Create("rest", PropertyValue(arr)))
 
                     let properties =
                         properties
@@ -1478,7 +1480,7 @@ and TupleConversion =
 
                     properties
                     |> ImmutableDictionary.CreateRange
-                    |> Pulumi.Provider.PropertyValue
+                    |> PropertyValue
                     |> Ok
         else
             errorf "Invalid JSON document expected array got %O" value.ValueKind
@@ -1523,7 +1525,7 @@ and [<RequireQualifiedAccess>] ComplexTypeSpec =
         | ComplexTypeSpec.Tuple spec -> spec.BuildComplexTypeSpec packageName names
         | ComplexTypeSpec.DU spec -> spec.BuildComplexTypeSpec packageName names
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) =
+    member this.Writer(value: PropertyValue) =
         match this with
         | ComplexTypeSpec.Enum spec -> spec.Writer value
         | ComplexTypeSpec.Object spec -> spec.Writer value
@@ -1609,7 +1611,7 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
                   TypeSchema.PropertyDefinition.Const = None
                   TypeSchema.PropertyDefinition.Type = TypeSchema.TypeReference.Named ref }
 
-    member this.Writer(value: Pulumi.Provider.PropertyValue) : JsonNode option =
+    member this.Writer(value: PropertyValue) : JsonNode option =
         match this with
         | Conversion.Ref ref -> ref.Value.Value.Writer value
         | Conversion.False -> failwith "All values fail against the false schema"
@@ -1617,7 +1619,7 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
         | Conversion.Type spec -> spec.Writer value
         | Conversion.ComplexType spec -> spec.Writer value
 
-    member this.Reader(value: JsonElement) : Result<Pulumi.Provider.PropertyValue * Annotations, string> =
+    member this.Reader(value: JsonElement) : Result<PropertyValue * Annotations, string> =
         match this with
         | Conversion.Ref ref -> ref.Value.Value.Reader value
         | Conversion.False -> errorf "All values fail against the false schema"
@@ -2408,8 +2410,8 @@ and convertSubSchema
 
 type RootConversion =
     { Schema: JsonObject
-      Writer: Pulumi.Provider.PropertyValue -> JsonNode option
-      Reader: JsonElement -> Pulumi.Provider.PropertyValue }
+      Writer: Pulumi.Experimental.Provider.PropertyValue -> JsonNode option
+      Reader: JsonElement -> Pulumi.Experimental.Provider.PropertyValue }
 
 // Generate a full pulumi schema using the conversion as the function to generate
 let convertSchema (uri: Uri) (jsonSchema: JsonElement) : RootConversion =

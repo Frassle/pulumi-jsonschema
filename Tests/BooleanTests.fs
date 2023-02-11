@@ -1,6 +1,7 @@
 module BooleanTests
 
 open Xunit
+open Pulumi.Experimental.Provider
 
 [<Fact>]
 let ``Test boolean`` () =
@@ -14,11 +15,11 @@ let ``Test boolean`` () =
 
     t.ShouldEqual(Test.simpleSchema """{"type":"boolean"}""")
 
-    Pulumi.Provider.PropertyValue(true) |> t.ShouldWrite "true"
+    PropertyValue(true) |> t.ShouldWrite "true"
 
-    "false" |> t.ShouldRead(Pulumi.Provider.PropertyValue false)
+    "false" |> t.ShouldRead(PropertyValue false)
 
-    let exc = Pulumi.Provider.PropertyValue("foo") |> t.ShouldThrow<exn>
+    let exc = PropertyValue("foo") |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"string\" but should be \"boolean\""
 
     let exc = "-1" |> t.ShouldThrow<exn>
@@ -33,13 +34,13 @@ let ``Test true`` schema =
 
     t.ShouldEqual(Test.simpleSchema """{"$ref": "pulumi.json#/Any"}""")
 
-    Pulumi.Provider.PropertyValue true |> t.ShouldRoundTrip "true"
+    PropertyValue true |> t.ShouldRoundTrip "true"
 
     Test.listToProperty
-        [ Pulumi.Provider.PropertyValue "hello"
-          Pulumi.Provider.PropertyValue false
-          Pulumi.Provider.PropertyValue 45.1
-          Test.dictToProperty [ "x", Pulumi.Provider.PropertyValue 1; "y", Pulumi.Provider.PropertyValue 2 ] ]
+        [ PropertyValue "hello"
+          PropertyValue false
+          PropertyValue 45.1
+          Test.dictToProperty [ "x", PropertyValue 1; "y", PropertyValue 2 ] ]
     |> t.ShouldRoundTrip
         """[
         "hello", false, 45.1, { "x": 1, "y": 2 }
@@ -51,7 +52,7 @@ let ``Test false`` () =
 
     t.ShouldEqual(Test.simpleSchema """{"$ref": "pulumi.json#/Any"}""")
 
-    let exc = Pulumi.Provider.PropertyValue("foo") |> t.ShouldThrow<exn>
+    let exc = PropertyValue("foo") |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "All values fail against the false schema"
 
     let exc = "-1" |> t.ShouldThrow<exn>

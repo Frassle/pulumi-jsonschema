@@ -2,6 +2,8 @@ module ArrayTests
 
 open Xunit
 
+open Pulumi.Experimental.Provider
+
 [<Fact>]
 let ``Test array`` () =
     let t =
@@ -15,11 +17,11 @@ let ``Test array`` () =
 
     t.ShouldEqual(Test.simpleSchema """{"type":"array","items":{"type":"string"}}""")
 
-    Test.listToProperty [ Pulumi.Provider.PropertyValue("a"); Pulumi.Provider.PropertyValue("b") ]
+    Test.listToProperty [ PropertyValue("a"); PropertyValue("b") ]
     |> t.ShouldWrite """["a","b"]"""
 
     """["foo","bar"]"""
-    |> t.ShouldRead(Test.listToProperty [ Pulumi.Provider.PropertyValue("foo"); Pulumi.Provider.PropertyValue("bar") ])
+    |> t.ShouldRead(Test.listToProperty [ PropertyValue("foo"); PropertyValue("bar") ])
 
 [<Fact>]
 let ``Test true array`` () =
@@ -33,11 +35,11 @@ let ``Test true array`` () =
 
     t.ShouldEqual(Test.simpleSchema """{"type":"array","items":{"$ref": "pulumi.json#/Any"}}""")
 
-    Test.listToProperty [ Pulumi.Provider.PropertyValue("a"); Pulumi.Provider.PropertyValue(5) ]
+    Test.listToProperty [ PropertyValue("a"); PropertyValue(5) ]
     |> t.ShouldWrite """["a",5]"""
 
     """["foo",false]"""
-    |> t.ShouldRead(Test.listToProperty [ Pulumi.Provider.PropertyValue("foo"); Pulumi.Provider.PropertyValue(false) ])
+    |> t.ShouldRead(Test.listToProperty [ PropertyValue("foo"); PropertyValue(false) ])
 
 [<Fact>]
 let ``Test false array`` () =
@@ -60,7 +62,7 @@ let ``Test false array`` () =
     exc.Message |> Test.shouldEqual "All values fail against the false schema"
 
     let exc =
-        Test.listToProperty [ Pulumi.Provider.PropertyValue(true) ]
+        Test.listToProperty [ PropertyValue(true) ]
         |> t.ShouldThrow<exn>
 
     exc.Message |> Test.shouldEqual "All values fail against the false schema"
@@ -79,14 +81,14 @@ let ``Test array minItems`` () =
 
     t.ShouldEqual(Test.simpleSchema """{"type":"array","items":{"type":"string"}}""")
 
-    Test.listToProperty [ Pulumi.Provider.PropertyValue("a"); Pulumi.Provider.PropertyValue("b") ]
+    Test.listToProperty [ PropertyValue("a"); PropertyValue("b") ]
     |> t.ShouldWrite """["a","b"]"""
 
     """["foo","bar"]"""
-    |> t.ShouldRead(Test.listToProperty [ Pulumi.Provider.PropertyValue("foo"); Pulumi.Provider.PropertyValue("bar") ])
+    |> t.ShouldRead(Test.listToProperty [ PropertyValue("foo"); PropertyValue("bar") ])
 
     let exc =
-        Test.listToProperty [ Pulumi.Provider.PropertyValue("a") ] |> t.ShouldThrow
+        Test.listToProperty [ PropertyValue("a") ] |> t.ShouldThrow
 
     exc.Message |> Test.shouldEqual "Value has fewer than 2 items"
 
@@ -107,14 +109,14 @@ let ``Test array maxItems`` () =
 
     t.ShouldEqual(Test.simpleSchema """{"type":"array","items":{"type":"string"}}""")
 
-    Test.listToProperty [ Pulumi.Provider.PropertyValue("a") ]
+    Test.listToProperty [ PropertyValue("a") ]
     |> t.ShouldWrite """["a"]"""
 
     """["foo"]"""
-    |> t.ShouldRead(Test.listToProperty [ Pulumi.Provider.PropertyValue("foo") ])
+    |> t.ShouldRead(Test.listToProperty [ PropertyValue("foo") ])
 
     let exc =
-        Test.listToProperty [ Pulumi.Provider.PropertyValue("a"); Pulumi.Provider.PropertyValue("b") ]
+        Test.listToProperty [ PropertyValue("a"); PropertyValue("b") ]
         |> t.ShouldThrow
 
     exc.Message |> Test.shouldEqual "Value has more than 1 items"

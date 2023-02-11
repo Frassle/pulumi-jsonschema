@@ -5,6 +5,7 @@ open System.Text.Json
 open Xunit
 open System.Collections.Generic
 open System.Collections.Immutable
+open Pulumi.Experimental.Provider
 
 [<Fact>]
 let ``Test null`` () =
@@ -19,9 +20,9 @@ let ``Test null`` () =
     // Pulumi schema doesn't support null, so we say it's an anything but only allow null as a value
     t.ShouldEqual(Test.simpleSchema """{"$ref":"pulumi.json#/Any"}""")
 
-    Pulumi.Provider.PropertyValue.Null |> t.ShouldWrite "null"
+    PropertyValue.Null |> t.ShouldWrite "null"
 
-    "null" |> t.ShouldRead Pulumi.Provider.PropertyValue.Null
+    "null" |> t.ShouldRead PropertyValue.Null
 
 [<Fact>]
 let ``Test refs`` () =
@@ -44,18 +45,18 @@ let ``Test refs`` () =
         Test.complexSchema [ "schema:index:root", """{"type":"object","properties":{"foo":{"type":"number"}}}""" ]
     )
 
-    Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue(123) ]
+    Test.dictToProperty [ "foo", PropertyValue(123) ]
     |> t.ShouldWrite """{"foo":123}"""
 
     // Properties are optional by default
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":456.789}"""
-    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue(456.789) ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", PropertyValue(456.789) ])
 
     """{}"""
-    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test simple type union`` () =
@@ -76,13 +77,13 @@ let ``Test simple type union`` () =
     }"""
     )
 
-    Pulumi.Provider.PropertyValue(true) |> t.ShouldWrite "true"
+    PropertyValue(true) |> t.ShouldWrite "true"
 
-    Pulumi.Provider.PropertyValue("hello") |> t.ShouldWrite "\"hello\""
+    PropertyValue("hello") |> t.ShouldWrite "\"hello\""
 
-    "true" |> t.ShouldRead(Pulumi.Provider.PropertyValue true)
+    "true" |> t.ShouldRead(PropertyValue true)
 
-    "\"testing\"" |> t.ShouldRead(Pulumi.Provider.PropertyValue "testing")
+    "\"testing\"" |> t.ShouldRead(PropertyValue "testing")
 
 [<Fact>]
 let ``Test allOf`` () =
@@ -117,19 +118,19 @@ let ``Test allOf`` () =
     )
 
     Test.dictToProperty
-        [ "foo", Pulumi.Provider.PropertyValue("hello")
-          "bar", Pulumi.Provider.PropertyValue(-123) ]
+        [ "foo", PropertyValue("hello")
+          "bar", PropertyValue(-123) ]
     |> t.ShouldWrite """{"foo":"hello","bar":-123}"""
 
     // Properties are optional by default
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":"world"}"""
-    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("world") ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", PropertyValue("world") ])
 
     """{}"""
-    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test merged refs`` () =
@@ -170,18 +171,18 @@ let ``Test merged refs`` () =
     }""" ]
     )
 
-    Test.dictToProperty [ "extra", Pulumi.Provider.PropertyValue(123) ]
+    Test.dictToProperty [ "extra", PropertyValue(123) ]
     |> t.ShouldWrite """{"extra":123}"""
 
     // Properties are optional by default
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"basic":456.789}"""
-    |> t.ShouldRead(Test.dictToProperty [ "basic", Pulumi.Provider.PropertyValue(456.789) ])
+    |> t.ShouldRead(Test.dictToProperty [ "basic", PropertyValue(456.789) ])
 
     """{}"""
-    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test cyclic refs`` () =
@@ -242,8 +243,8 @@ let ``Test cyclic refs`` () =
             [ "foo", Test.dictToProperty [ "anotherOne", Test.dictToProperty [ "anotherOne", Test.dictToProperty [] ] ] ]
     )
 
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{}"""
-    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)

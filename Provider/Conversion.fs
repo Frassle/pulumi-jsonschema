@@ -2,7 +2,6 @@
 
 open System.Text.Json
 open System.Text.Json.Nodes
-open Pulumi.Provider
 
 // There are three cases we need to deal with
 // Root schemas, that is something like { "type": "string"}

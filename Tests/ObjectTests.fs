@@ -2,6 +2,7 @@ module ObjectTests
 
 open Xunit
 open System.Collections.Immutable
+open Pulumi.Experimental.Provider
 
 [<Fact>]
 let ``Test empty object`` () =
@@ -23,14 +24,14 @@ let ``Test empty object`` () =
     }"""
     )
 
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty) |> t.ShouldWrite "{}"
+    PropertyValue(ImmutableDictionary.Empty) |> t.ShouldWrite "{}"
 
     Test.dictToProperty
-        [ "hello", Pulumi.Provider.PropertyValue("a")
-          "test", Pulumi.Provider.PropertyValue(123) ]
+        [ "hello", PropertyValue("a")
+          "test", PropertyValue(123) ]
     |> t.ShouldWrite """{"hello": "a", "test": 123}"""
 
-    "{}" |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    "{}" |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test object with additional properties`` () =
@@ -46,15 +47,15 @@ let ``Test object with additional properties`` () =
     t.ShouldEqual(Test.simpleSchema """{"type":"object","additionalProperties":{"type":"string"}}""")
 
     Test.dictToProperty
-        [ "hello", Pulumi.Provider.PropertyValue("a")
-          "test", Pulumi.Provider.PropertyValue("b") ]
+        [ "hello", PropertyValue("a")
+          "test", PropertyValue("b") ]
     |> t.ShouldWrite """{"test":"b","hello":"a"}"""
 
     """{"a":"string","b":"number"}"""
     |> t.ShouldRead(
         Test.dictToProperty
-            [ "a", Pulumi.Provider.PropertyValue("string")
-              "b", Pulumi.Provider.PropertyValue("number") ]
+            [ "a", PropertyValue("string")
+              "b", PropertyValue("number") ]
     )
 
 [<Fact>]
@@ -75,18 +76,18 @@ let ``Test object with properties`` () =
         Test.complexSchema [ "schema:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}""" ]
     )
 
-    Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("a") ]
+    Test.dictToProperty [ "foo", PropertyValue("a") ]
     |> t.ShouldWrite """{"foo":"a"}"""
 
     // Properties are optional by default
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":"string"}"""
-    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("string") ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", PropertyValue("string") ])
 
     """{}"""
-    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test object with required properties`` () =
@@ -113,17 +114,17 @@ let ``Test object with required properties`` () =
     }""" ]
     )
 
-    Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("a") ]
+    Test.dictToProperty [ "foo", PropertyValue("a") ]
     |> t.ShouldWrite """{"foo":"a"}"""
 
 
     let exc =
-        Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty) |> t.ShouldThrow<exn>
+        PropertyValue(ImmutableDictionary.Empty) |> t.ShouldThrow<exn>
 
     exc.Message |> Test.shouldEqual "property 'foo' is required"
 
     """{"foo":"string"}"""
-    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("string") ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", PropertyValue("string") ])
 
 [<Fact>]
 let ``Test object with properties and additionalProperties`` () =
@@ -152,23 +153,23 @@ let ``Test object with properties and additionalProperties`` () =
     )
 
     Test.dictToProperty
-        [ "foo", Pulumi.Provider.PropertyValue("a")
-          "additionalProperties", Test.dictToProperty [ "bob", Pulumi.Provider.PropertyValue(123) ] ]
+        [ "foo", PropertyValue("a")
+          "additionalProperties", Test.dictToProperty [ "bob", PropertyValue(123) ] ]
     |> t.ShouldWrite """{"foo":"a","bob":123}"""
 
     // Properties are optional by default
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":"string", "other": 54}"""
     |> t.ShouldRead(
         Test.dictToProperty
-            [ "foo", Pulumi.Provider.PropertyValue("string")
-              "additionalProperties", Test.dictToProperty [ "other", Pulumi.Provider.PropertyValue(54) ] ]
+            [ "foo", PropertyValue("string")
+              "additionalProperties", Test.dictToProperty [ "other", PropertyValue(54) ] ]
     )
 
     """{}"""
-    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test complex object`` () =
@@ -197,18 +198,18 @@ let ``Test complex object`` () =
               "schema:index:foo", """{"type":"object","properties":{"bar":{"type":"number"}}}""" ]
     )
 
-    Test.dictToProperty [ "foo", Test.dictToProperty [ "bar", Pulumi.Provider.PropertyValue(4) ] ]
+    Test.dictToProperty [ "foo", Test.dictToProperty [ "bar", PropertyValue(4) ] ]
     |> t.ShouldWrite """{"foo":{"bar":4}}"""
 
     // Properties are optional by default
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":{}}"""
-    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty) ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", PropertyValue(ImmutableDictionary.Empty) ])
 
     """{}"""
-    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test properties are Pulumi-ized`` () =
@@ -255,18 +256,18 @@ let ``Test properties are Pulumi-ized`` () =
     }""" ]
     )
 
-    Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("a") ]
+    Test.dictToProperty [ "foo", PropertyValue("a") ]
     |> t.ShouldWrite """{"foo":"a"}"""
 
     // Properties are optional by default
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":"string"}"""
-    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("string") ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", PropertyValue("string") ])
 
     """{}"""
-    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)
 
 [<Fact>]
 let ``Test object with false properties`` () =
@@ -301,15 +302,15 @@ let ``Test object with false properties`` () =
     )
 
     Test.dictToProperty
-        [ "foo", Pulumi.Provider.PropertyValue("a")
-          "additionalProperties", Test.dictToProperty [ "bob", Pulumi.Provider.PropertyValue(123) ] ]
+        [ "foo", PropertyValue("a")
+          "additionalProperties", Test.dictToProperty [ "bob", PropertyValue(123) ] ]
     |> t.ShouldWrite """{"foo":"a","bob":123}"""
 
     """{"foo":"string", "other": 54}"""
     |> t.ShouldRead(
         Test.dictToProperty
-            [ "foo", Pulumi.Provider.PropertyValue("string")
-              "additionalProperties", Test.dictToProperty [ "other", Pulumi.Provider.PropertyValue(54) ] ]
+            [ "foo", PropertyValue("string")
+              "additionalProperties", Test.dictToProperty [ "other", PropertyValue(54) ] ]
     )
 
     let exc = """{"foo":"string", "bar": true}""" |> t.ShouldThrow
@@ -317,8 +318,8 @@ let ``Test object with false properties`` () =
 
     let exc =
         Test.dictToProperty
-            [ "foo", Pulumi.Provider.PropertyValue("a")
-              "additionalProperties", Test.dictToProperty [ "bar", Pulumi.Provider.PropertyValue("anything") ] ]
+            [ "foo", PropertyValue("a")
+              "additionalProperties", Test.dictToProperty [ "bar", PropertyValue("anything") ] ]
         |> t.ShouldThrow
 
     exc.Message |> Test.shouldEqual "All values fail against the false schema"

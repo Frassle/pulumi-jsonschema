@@ -2,6 +2,7 @@ module ConstTests
 
 open Xunit
 open System.Collections.Immutable
+open Pulumi.Experimental.Provider
 
 [<Fact>]
 let ``Test const string`` () =
@@ -21,14 +22,14 @@ let ``Test const string`` () =
     }"""
     )
 
-    Pulumi.Provider.PropertyValue("hello") |> t.ShouldWrite "\"hello\""
+    PropertyValue("hello") |> t.ShouldWrite "\"hello\""
 
-    "\"hello\"" |> t.ShouldRead(Pulumi.Provider.PropertyValue "hello")
+    "\"hello\"" |> t.ShouldRead(PropertyValue "hello")
 
     let exc = "\"goodbye\"" |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Expected \"hello\""
 
-    let exc = Pulumi.Provider.PropertyValue("goodbye") |> t.ShouldThrow<exn>
+    let exc = PropertyValue("goodbye") |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Expected \"hello\""
 
 [<Fact>]
@@ -58,15 +59,15 @@ let ``Test object const property`` () =
     }""" ]
     )
 
-    Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("a") ]
+    Test.dictToProperty [ "foo", PropertyValue("a") ]
     |> t.ShouldWrite """{"foo":"a"}"""
 
     // Properties are optional by default
-    Pulumi.Provider.PropertyValue(ImmutableDictionary.Empty)
+    PropertyValue(ImmutableDictionary.Empty)
     |> t.ShouldWrite """{}"""
 
     """{"foo":"string"}"""
-    |> t.ShouldRead(Test.dictToProperty [ "foo", Pulumi.Provider.PropertyValue("string") ])
+    |> t.ShouldRead(Test.dictToProperty [ "foo", PropertyValue("string") ])
 
     """{}"""
-    |> t.ShouldRead(Pulumi.Provider.PropertyValue ImmutableDictionary.Empty)
+    |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)

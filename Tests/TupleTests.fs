@@ -1,6 +1,7 @@
 module TupleTests
 
 open Xunit
+open Pulumi.Experimental.Provider
 
 [<Fact>]
 let ``Test tuple`` () =
@@ -30,15 +31,15 @@ let ``Test tuple`` () =
     )
 
     Test.dictToProperty
-        [ "item1", Pulumi.Provider.PropertyValue("a")
-          "item2", Pulumi.Provider.PropertyValue(123) ]
+        [ "item1", PropertyValue("a")
+          "item2", PropertyValue(123) ]
     |> t.ShouldWrite """["a",123]"""
 
     """["foo",-345]"""
     |> t.ShouldRead(
         Test.dictToProperty
-            [ "item1", Pulumi.Provider.PropertyValue("foo")
-              "item2", Pulumi.Provider.PropertyValue(-345) ]
+            [ "item1", PropertyValue("foo")
+              "item2", PropertyValue(-345) ]
     )
 
 [<Fact>]
@@ -79,14 +80,14 @@ let ``Test tuple additionalItems`` () =
     """["hello", 45, true, false]"""
     |> t.ShouldRead(
         Test.dictToProperty
-            [ "item1", Pulumi.Provider.PropertyValue("hello")
-              "item2", Pulumi.Provider.PropertyValue(45)
-              "rest", Test.listToProperty [ Pulumi.Provider.PropertyValue(true); Pulumi.Provider.PropertyValue(false) ] ]
+            [ "item1", PropertyValue("hello")
+              "item2", PropertyValue(45)
+              "rest", Test.listToProperty [ PropertyValue(true); PropertyValue(false) ] ]
     )
 
     Test.dictToProperty
-        [ "item1", Pulumi.Provider.PropertyValue("goodbye")
-          "item2", Pulumi.Provider.PropertyValue(47) ]
+        [ "item1", PropertyValue("goodbye")
+          "item2", PropertyValue(47) ]
     |> t.ShouldWrite """["goodbye", 47]"""
 
     let exc = """[false]""" |> t.ShouldThrow<exn>
@@ -96,15 +97,15 @@ let ``Test tuple additionalItems`` () =
     exc.Message |> Test.shouldEqual "Value is \"number\" but should be \"string\""
 
     let exc =
-        Test.dictToProperty [ "item1", Pulumi.Provider.PropertyValue(2) ]
+        Test.dictToProperty [ "item1", PropertyValue(2) ]
         |> t.ShouldThrow<exn>
 
     exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"string\""
 
     let exc =
         Test.dictToProperty
-            [ "item1", Pulumi.Provider.PropertyValue(1)
-              "item2", Pulumi.Provider.PropertyValue(2) ]
+            [ "item1", PropertyValue(1)
+              "item2", PropertyValue(2) ]
         |> t.ShouldThrow<exn>
 
     exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"string\""
@@ -138,11 +139,11 @@ let ``Test tuple required items`` () =
     }""" ]
     )
 
-    Test.dictToProperty [ "item1", Pulumi.Provider.PropertyValue("a") ]
+    Test.dictToProperty [ "item1", PropertyValue("a") ]
     |> t.ShouldWrite """["a"]"""
 
     """["foo"]"""
-    |> t.ShouldRead(Test.dictToProperty [ "item1", Pulumi.Provider.PropertyValue("foo") ])
+    |> t.ShouldRead(Test.dictToProperty [ "item1", PropertyValue("foo") ])
 
     let exc = """[]""" |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value has fewer than 1 items"

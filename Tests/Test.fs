@@ -5,6 +5,7 @@ open System.Text.Json
 open Xunit
 open System.Collections.Generic
 open System.Collections.Immutable
+open Pulumi.Experimental.Provider
 
 type JsonComparer() =
     interface IEqualityComparer<JsonElement> with
@@ -157,20 +158,20 @@ let complexSchema (types: (string * string) list) : string =
         rootType
         rootType
 
-let dictToProperty (list: (string * Pulumi.Provider.PropertyValue) list) =
+let dictToProperty (list: (string * PropertyValue) list) =
     list
     |> Seq.map (fun (k, v) -> KeyValuePair.Create(k, v))
     |> ImmutableDictionary.CreateRange
-    |> Pulumi.Provider.PropertyValue
+    |> PropertyValue
 
-let listToProperty (list: Pulumi.Provider.PropertyValue list) =
-    list |> ImmutableArray.CreateRange |> Pulumi.Provider.PropertyValue
+let listToProperty (list: PropertyValue list) =
+    list |> ImmutableArray.CreateRange |> PropertyValue
 
 type SchemaTest =
     { Schema: Json.Schema.JsonSchema
       Conversion: JsonSchema.Converter.RootConversion }
 
-    member this.ShouldWrite (expectedJson: string) (value: Pulumi.Provider.PropertyValue) : unit =
+    member this.ShouldWrite (expectedJson: string) (value: PropertyValue) : unit =
         let result = this.Conversion.Writer value
 
         result |> toJson |> shouldJsonEqual expectedJson
@@ -182,7 +183,7 @@ type SchemaTest =
         if not validation.IsValid then
             failwith validation.Message
 
-    member this.ShouldRead (expectedValue: Pulumi.Provider.PropertyValue) (json: string) : unit =
+    member this.ShouldRead (expectedValue: PropertyValue) (json: string) : unit =
         let validationOptions = Json.Schema.ValidationOptions()
         validationOptions.OutputFormat <- Json.Schema.OutputFormat.Basic
 
@@ -195,7 +196,7 @@ type SchemaTest =
 
         this.Conversion.Reader element |> shouldEqual expectedValue
 
-    member this.ShouldThrow<'T when 'T :> exn>(value: Pulumi.Provider.PropertyValue) : 'T =
+    member this.ShouldThrow<'T when 'T :> exn>(value: PropertyValue) : 'T =
         Assert.Throws<'T>(fun () -> this.Conversion.Writer value |> ignore)
 
     member this.ShouldThrow<'T when 'T :> exn>(json: string) : 'T =
@@ -211,7 +212,7 @@ type SchemaTest =
 
         Assert.Throws<'T>(fun () -> fromJson json |> this.Conversion.Reader |> ignore)
 
-    member this.ShouldRoundTrip (json: string) (value: Pulumi.Provider.PropertyValue) : unit =
+    member this.ShouldRoundTrip (json: string) (value: PropertyValue) : unit =
         value |> this.ShouldWrite json
         json |> this.ShouldRead value
 

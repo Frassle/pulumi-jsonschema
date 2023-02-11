@@ -2,17 +2,18 @@
 
 open System
 open System.Text.Json
+open Pulumi.Experimental.Provider
 
-type Provider(conversion: Converter.RootConversion, host: Pulumi.Provider.IHost) =
-    inherit Pulumi.Provider.Provider()
+type Provider(conversion: Converter.RootConversion, host: IHost) =
+    inherit Pulumi.Experimental.Provider.Provider()
 
     override this.GetSchema
         (
-            request: Pulumi.Provider.GetSchemaRequest,
+            request: GetSchemaRequest,
             cancellationToken: System.Threading.CancellationToken
         ) =
         async {
-            let resp = Pulumi.Provider.GetSchemaResponse()
+            let resp = GetSchemaResponse()
             resp.Schema <- conversion.Schema.ToJsonString()
             return resp
         }
@@ -21,11 +22,11 @@ type Provider(conversion: Converter.RootConversion, host: Pulumi.Provider.IHost)
 
     override this.Invoke
         (
-            request: Pulumi.Provider.InvokeRequest,
+            request: InvokeRequest,
             cancellationToken: System.Threading.CancellationToken
         ) =
         async {
-            let resp = Pulumi.Provider.InvokeResponse()
+            let resp = InvokeResponse()
 
             if request.Tok = "jsonschema:index:read" then
                 match request.Args.TryGetValue "json" with
@@ -46,8 +47,8 @@ type Provider(conversion: Converter.RootConversion, host: Pulumi.Provider.IHost)
                     let jsonNode = conversion.Writer valueProperty
 
                     match jsonNode with
-                    | None -> resp.Return <- dict [ "value", Pulumi.Provider.PropertyValue("null") ]
-                    | Some node -> resp.Return <- dict [ "value", Pulumi.Provider.PropertyValue(node.ToJsonString()) ]
+                    | None -> resp.Return <- dict [ "value", PropertyValue("null") ]
+                    | Some node -> resp.Return <- dict [ "value", PropertyValue(node.ToJsonString()) ]
             else
                 failwithf "Unknown invoke '%s'" request.Tok
 
@@ -78,7 +79,7 @@ module Provider =
         let conversion = Converter.convertSchema uri schema.RootElement
 
         let task =
-            Pulumi.Provider.Provider.Serve(args, (fun host -> Provider(conversion, host)), cts.Token)
+            Pulumi.Experimental.Provider.Provider.Serve(args, (fun host -> Provider(conversion, host)), cts.Token)
 
         task.Wait()
         0

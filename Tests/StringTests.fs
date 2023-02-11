@@ -1,6 +1,7 @@
 module StringTests
 
 open Xunit
+open Pulumi.Experimental.Provider
 
 [<Fact>]
 let ``Test plain string`` () =
@@ -14,11 +15,11 @@ let ``Test plain string`` () =
 
     t.ShouldEqual(Test.simpleSchema """{"type":"string"}""")
 
-    Pulumi.Provider.PropertyValue("test") |> t.ShouldWrite "\"test\""
+    PropertyValue("test") |> t.ShouldWrite "\"test\""
 
-    "\"test\"" |> t.ShouldRead(Pulumi.Provider.PropertyValue "test")
+    "\"test\"" |> t.ShouldRead(PropertyValue "test")
 
-    let exc = Pulumi.Provider.PropertyValue(45) |> t.ShouldThrow<exn>
+    let exc = PropertyValue(45) |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "Value is \"integer\" but should be \"string\""
 
     let exc = "44" |> t.ShouldThrow<exn>
@@ -35,11 +36,11 @@ let ``Test string pattern`` () =
 
     t.ShouldEqual(Test.simpleSchema """{"type":"string"}""")
 
-    Pulumi.Provider.PropertyValue("123") |> t.ShouldWrite "\"123\""
+    PropertyValue("123") |> t.ShouldWrite "\"123\""
 
-    "\"456\"" |> t.ShouldRead(Pulumi.Provider.PropertyValue "456")
+    "\"456\"" |> t.ShouldRead(PropertyValue "456")
 
-    let exc = Pulumi.Provider.PropertyValue("hello") |> t.ShouldThrow<exn>
+    let exc = PropertyValue("hello") |> t.ShouldThrow<exn>
 
     exc.Message
     |> Test.shouldEqual "The string value was not a match for the indicated regular expression"
@@ -61,11 +62,11 @@ let ``Test string minLength`` () =
 
     t.ShouldEqual(Test.simpleSchema """{"type":"string"}""")
 
-    Pulumi.Provider.PropertyValue("1234") |> t.ShouldWrite "\"1234\""
+    PropertyValue("1234") |> t.ShouldWrite "\"1234\""
 
-    "\"4567\"" |> t.ShouldRead(Pulumi.Provider.PropertyValue "4567")
+    "\"4567\"" |> t.ShouldRead(PropertyValue "4567")
 
-    let exc = Pulumi.Provider.PropertyValue("hi") |> t.ShouldThrow<exn>
+    let exc = PropertyValue("hi") |> t.ShouldThrow<exn>
 
     exc.Message
     |> Test.shouldEqual "Value is not longer than or equal to 4 characters"
@@ -87,11 +88,11 @@ let ``Test string maxLength`` () =
 
     t.ShouldEqual(Test.simpleSchema """{"type":"string"}""")
 
-    Pulumi.Provider.PropertyValue("hello") |> t.ShouldWrite "\"hello\""
+    PropertyValue("hello") |> t.ShouldWrite "\"hello\""
 
-    "\"world\"" |> t.ShouldRead(Pulumi.Provider.PropertyValue "world")
+    "\"world\"" |> t.ShouldRead(PropertyValue "world")
 
-    let exc = Pulumi.Provider.PropertyValue("goodbye") |> t.ShouldThrow<exn>
+    let exc = PropertyValue("goodbye") |> t.ShouldThrow<exn>
 
     exc.Message
     |> Test.shouldEqual "Value is not shorter than or equal to 6 characters"
