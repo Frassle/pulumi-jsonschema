@@ -38,9 +38,6 @@ namespace Pulumi.Pulumi.Inputs
         [Input("name")]
         public string? Name { get; set; }
 
-        /// <summary>
-        /// The enum value itself
-        /// </summary>
         [Input("value", required: true)]
         public object Value { get; set; } = null!;
 

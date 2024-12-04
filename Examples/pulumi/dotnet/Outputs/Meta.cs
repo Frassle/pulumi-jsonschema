@@ -19,12 +19,20 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A regex that is used by the importer to extract a module name from the module portion of a type token. Packages that use the module format "namespace1/namespace2/.../namespaceN" do not need to specify a format. The regex must define one capturing group that contains the module name, which must be formatted as "namespace1/namespace2/...namespaceN".
         /// </summary>
-        public readonly string ModuleFormat;
+        public readonly string? ModuleFormat;
+        /// <summary>
+        /// Write the package to support the pack command.
+        /// </summary>
+        public readonly bool? SupportPack;
 
         [OutputConstructor]
-        private Meta(string moduleFormat)
+        private Meta(
+            string? moduleFormat,
+
+            bool? supportPack)
         {
             ModuleFormat = moduleFormat;
+            SupportPack = supportPack;
         }
     }
 }

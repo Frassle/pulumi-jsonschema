@@ -21,7 +21,7 @@ namespace Pulumi.Pulumi.Outputs
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
         public readonly ImmutableArray<Outputs.TypeSpec> OneOf;
-        public readonly Pulumi.Pulumi.OneOf4PropertiesType? Type;
+        public readonly Pulumi.Pulumi.AdditionalPropertiesChoice5Of5Type? Type;
 
         [OutputConstructor]
         private OneOf4(
@@ -29,7 +29,7 @@ namespace Pulumi.Pulumi.Outputs
 
             ImmutableArray<Outputs.TypeSpec> oneOf,
 
-            Pulumi.Pulumi.OneOf4PropertiesType? type)
+            Pulumi.Pulumi.AdditionalPropertiesChoice5Of5Type? type)
         {
             Discriminator = discriminator;
             OneOf = oneOf;

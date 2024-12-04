@@ -24,14 +24,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("properties")]
-        private Dictionary<string, Inputs.PropertiesAdditionalProperties>? _properties;
+        private Dictionary<string, Inputs.InputsPropertiesAdditionalProperties>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public Dictionary<string, Inputs.PropertiesAdditionalProperties> Properties
+        public Dictionary<string, Inputs.InputsPropertiesAdditionalProperties> Properties
         {
-            get => _properties ?? (_properties = new Dictionary<string, Inputs.PropertiesAdditionalProperties>());
+            get => _properties ?? (_properties = new Dictionary<string, Inputs.InputsPropertiesAdditionalProperties>());
             set => _properties = value;
         }
 

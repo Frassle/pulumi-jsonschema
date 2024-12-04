@@ -13,29 +13,29 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// A reference to a union type. The "oneOf" property must be present. The union may additional specify an underlying primitive type via the "type" property and a discriminator via the "discriminator" property. No other properties may be present.
     /// </summary>
-    public sealed class ProviderPropertiesAdditionalPropertiesChoice5Of5Args : global::Pulumi.ResourceArgs
+    public sealed class InputPropertiesAdditionalPropertiesChoice5Of5 : global::Pulumi.InvokeArgs
     {
         [Input("discriminator")]
-        public Input<Inputs.DiscriminatorArgs>? Discriminator { get; set; }
+        public Inputs.Discriminator? Discriminator { get; set; }
 
         [Input("oneOf", required: true)]
-        private InputList<Inputs.ProviderPropertiesAdditionalPropertiesArgs>? _oneOf;
+        private List<Inputs.InputPropertiesAdditionalProperties>? _oneOf;
 
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
-        public InputList<Inputs.ProviderPropertiesAdditionalPropertiesArgs> OneOf
+        public List<Inputs.InputPropertiesAdditionalProperties> OneOf
         {
-            get => _oneOf ?? (_oneOf = new InputList<Inputs.ProviderPropertiesAdditionalPropertiesArgs>());
+            get => _oneOf ?? (_oneOf = new List<Inputs.InputPropertiesAdditionalProperties>());
             set => _oneOf = value;
         }
 
         [Input("type")]
-        public Input<Pulumi.Pulumi.ProviderPropertiesAdditionalPropertiesChoice5Of5Type>? Type { get; set; }
+        public Pulumi.Pulumi.PropertiesType? Type { get; set; }
 
-        public ProviderPropertiesAdditionalPropertiesChoice5Of5Args()
+        public InputPropertiesAdditionalPropertiesChoice5Of5()
         {
         }
-        public static new ProviderPropertiesAdditionalPropertiesChoice5Of5Args Empty => new ProviderPropertiesAdditionalPropertiesChoice5Of5Args();
+        public static new InputPropertiesAdditionalPropertiesChoice5Of5 Empty => new InputPropertiesAdditionalPropertiesChoice5Of5();
     }
 }

@@ -18,17 +18,11 @@ namespace Pulumi.Pulumi.Outputs
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
         public readonly Outputs.TypeSpecOneOf0? Choice1Of5;
-        public readonly Outputs.ArrayType? Choice2Of5;
-        public readonly Outputs.TypeSpecOneOf2? Choice3Of5;
+        public readonly Outputs.Choice1Of2PropertiesAdditionalPropertiesChoice2Of5? Choice2Of5;
+        public readonly Outputs.PropertiesAdditionalPropertiesChoice3Of5? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
-        public readonly Outputs.AdditionalPropertiesChoice5Of5? Choice5Of5;
-        /// <summary>
-        /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
-        /// </summary>
+        public readonly Outputs.Choice5Of5? Choice5Of5;
         public readonly object? Const;
-        /// <summary>
-        /// The default value for the property, if any. The type of the value must be assignable to the type of the property.
-        /// </summary>
         public readonly object? Default;
         public readonly Outputs.DefaultInfo? DefaultInfo;
         /// <summary>
@@ -66,13 +60,13 @@ namespace Pulumi.Pulumi.Outputs
 
             Outputs.TypeSpecOneOf0? choice1Of5,
 
-            Outputs.ArrayType? choice2Of5,
+            Outputs.Choice1Of2PropertiesAdditionalPropertiesChoice2Of5? choice2Of5,
 
-            Outputs.TypeSpecOneOf2? choice3Of5,
+            Outputs.PropertiesAdditionalPropertiesChoice3Of5? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 
-            Outputs.AdditionalPropertiesChoice5Of5? choice5Of5,
+            Outputs.Choice5Of5? choice5Of5,
 
             object? @const,
 

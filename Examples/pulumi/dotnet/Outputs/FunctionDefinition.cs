@@ -25,7 +25,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The description of the function, if any. Interpreted as Markdown.
         /// </summary>
         public readonly string? Description;
-        public readonly Outputs.Inputs? Inputs;
+        public readonly Outputs.ObjectTypeDetails? Inputs;
         /// <summary>
         /// Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author
         /// </summary>
@@ -34,7 +34,14 @@ namespace Pulumi.Pulumi.Outputs
         /// Additional language-specific data about the function.
         /// </summary>
         public readonly ImmutableDictionary<string, object>? Language;
-        public readonly Outputs.ObjectTypeDetails? Outputs;
+        /// <summary>
+        /// A list of parameter names that determines whether the input bag should be treated as a single argument or as multiple arguments. The list corresponds to the order in which the parameters should be passed to the function.
+        /// </summary>
+        public readonly ImmutableArray<string> MultiArgumentInputs;
+        /// <summary>
+        /// unhandled schema: Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword
+        /// </summary>
+        public readonly object? Outputs;
 
         [OutputConstructor]
         private FunctionDefinition(
@@ -44,13 +51,15 @@ namespace Pulumi.Pulumi.Outputs
 
             string? description,
 
-            Outputs.Inputs? inputs,
+            Outputs.ObjectTypeDetails? inputs,
 
             bool? isOverlay,
 
             ImmutableDictionary<string, object>? language,
 
-            Outputs.ObjectTypeDetails? outputs)
+            ImmutableArray<string> multiArgumentInputs,
+
+            object? outputs)
         {
             AdditionalProperties = additionalProperties;
             DeprecationMessage = deprecationMessage;
@@ -58,6 +67,7 @@ namespace Pulumi.Pulumi.Outputs
             Inputs = inputs;
             IsOverlay = isOverlay;
             Language = language;
+            MultiArgumentInputs = multiArgumentInputs;
             Outputs = outputs;
         }
     }

@@ -36,7 +36,7 @@ namespace Pulumi.Pulumi.Inputs
         public string? Description { get; set; }
 
         [Input("inputs")]
-        public Inputs.Inputs? Inputs { get; set; }
+        public Inputs.ObjectTypeDetails? Inputs { get; set; }
 
         /// <summary>
         /// Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author
@@ -56,8 +56,23 @@ namespace Pulumi.Pulumi.Inputs
             set => _language = value;
         }
 
+        [Input("multiArgumentInputs")]
+        private List<string>? _multiArgumentInputs;
+
+        /// <summary>
+        /// A list of parameter names that determines whether the input bag should be treated as a single argument or as multiple arguments. The list corresponds to the order in which the parameters should be passed to the function.
+        /// </summary>
+        public List<string> MultiArgumentInputs
+        {
+            get => _multiArgumentInputs ?? (_multiArgumentInputs = new List<string>());
+            set => _multiArgumentInputs = value;
+        }
+
+        /// <summary>
+        /// unhandled schema: Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword
+        /// </summary>
         [Input("outputs")]
-        public Inputs.ObjectTypeDetails? Outputs { get; set; }
+        public object? Outputs { get; set; }
 
         public FunctionDefinition()
         {

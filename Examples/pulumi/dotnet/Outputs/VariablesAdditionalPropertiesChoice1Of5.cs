@@ -14,12 +14,12 @@ namespace Pulumi.Pulumi.Outputs
     /// A reference to a primitive type. A primitive type must have only the "type" property set.
     /// </summary>
     [OutputType]
-    public sealed class ProviderPropertiesAdditionalPropertiesChoice1Of5
+    public sealed class VariablesAdditionalPropertiesChoice1Of5
     {
-        public readonly Pulumi.Pulumi.TypeSpecOneOf0PropertiesType Type;
+        public readonly Pulumi.Pulumi.VariablesAdditionalPropertiesChoice1Of5Type Type;
 
         [OutputConstructor]
-        private ProviderPropertiesAdditionalPropertiesChoice1Of5(Pulumi.Pulumi.TypeSpecOneOf0PropertiesType type)
+        private VariablesAdditionalPropertiesChoice1Of5(Pulumi.Pulumi.VariablesAdditionalPropertiesChoice1Of5Type type)
         {
             Type = type;
         }

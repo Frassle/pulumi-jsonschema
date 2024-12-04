@@ -14,21 +14,15 @@ namespace Pulumi.Pulumi.Outputs
     /// Describes an object or resource property
     /// </summary>
     [OutputType]
-    public sealed class Choice1Of2PropertiesAdditionalProperties
+    public sealed class InputsPropertiesAdditionalProperties
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.AdditionalPropertiesChoice1Of5? Choice1Of5;
-        public readonly Outputs.Choice1Of2PropertiesAdditionalPropertiesChoice2Of5? Choice2Of5;
-        public readonly Outputs.Choice1Of2PropertiesAdditionalPropertiesChoice3Of5? Choice3Of5;
+        public readonly Outputs.PropertiesAdditionalPropertiesChoice1Of5? Choice1Of5;
+        public readonly Outputs.PropertiesAdditionalPropertiesChoice2Of5? Choice2Of5;
+        public readonly Outputs.TypeSpecOneOf2? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
-        public readonly Outputs.PropertiesAdditionalPropertiesChoice5Of5? Choice5Of5;
-        /// <summary>
-        /// The constant value for the property, if any. The type of the value must be assignable to the type of the property.
-        /// </summary>
+        public readonly Outputs.UnionType? Choice5Of5;
         public readonly object? Const;
-        /// <summary>
-        /// The default value for the property, if any. The type of the value must be assignable to the type of the property.
-        /// </summary>
         public readonly object? Default;
         public readonly Outputs.DefaultInfo? DefaultInfo;
         /// <summary>
@@ -61,18 +55,18 @@ namespace Pulumi.Pulumi.Outputs
         public readonly bool? WillReplaceOnChanges;
 
         [OutputConstructor]
-        private Choice1Of2PropertiesAdditionalProperties(
+        private InputsPropertiesAdditionalProperties(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.AdditionalPropertiesChoice1Of5? choice1Of5,
+            Outputs.PropertiesAdditionalPropertiesChoice1Of5? choice1Of5,
 
-            Outputs.Choice1Of2PropertiesAdditionalPropertiesChoice2Of5? choice2Of5,
+            Outputs.PropertiesAdditionalPropertiesChoice2Of5? choice2Of5,
 
-            Outputs.Choice1Of2PropertiesAdditionalPropertiesChoice3Of5? choice3Of5,
+            Outputs.TypeSpecOneOf2? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 
-            Outputs.PropertiesAdditionalPropertiesChoice5Of5? choice5Of5,
+            Outputs.UnionType? choice5Of5,
 
             object? @const,
 

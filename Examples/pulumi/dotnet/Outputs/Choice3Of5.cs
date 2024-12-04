@@ -16,12 +16,12 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class Choice3Of5
     {
-        public readonly Outputs.PropertyDefinition? AdditionalProperties;
+        public readonly Outputs.TypeSpec? AdditionalProperties;
         public readonly string Type;
 
         [OutputConstructor]
         private Choice3Of5(
-            Outputs.PropertyDefinition? additionalProperties,
+            Outputs.TypeSpec? additionalProperties,
 
             string type)
         {

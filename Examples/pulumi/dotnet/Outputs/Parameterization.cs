@@ -11,17 +11,22 @@ namespace Pulumi.Pulumi.Outputs
 {
 
     /// <summary>
-    /// A reference to a primitive type. A primitive type must have only the "type" property set.
+    /// An optional object to define parameterization for the package.
     /// </summary>
     [OutputType]
-    public sealed class OutputsPropertiesAdditionalPropertiesChoice1Of5
+    public sealed class Parameterization
     {
-        public readonly Pulumi.Pulumi.PropertiesAdditionalPropertiesChoice1Of5Type Type;
+        public readonly Outputs.BaseProvider? BaseProvider;
+        public readonly string? Parameter;
 
         [OutputConstructor]
-        private OutputsPropertiesAdditionalPropertiesChoice1Of5(Pulumi.Pulumi.PropertiesAdditionalPropertiesChoice1Of5Type type)
+        private Parameterization(
+            Outputs.BaseProvider? baseProvider,
+
+            string? parameter)
         {
-            Type = type;
+            BaseProvider = baseProvider;
+            Parameter = parameter;
         }
     }
 }

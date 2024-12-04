@@ -26,9 +26,6 @@ namespace Pulumi.Pulumi.Outputs
         /// If present, overrides the name of the enum value that would usually be derived from the value.
         /// </summary>
         public readonly string? Name;
-        /// <summary>
-        /// The enum value itself
-        /// </summary>
         public readonly object Value;
 
         [OutputConstructor]

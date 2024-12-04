@@ -99,6 +99,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("name", required: true)]
         public string Name { get; set; } = null!;
 
+        [Input("parameterization")]
+        public Inputs.Parameterization? Parameterization { get; set; }
+
         /// <summary>
         /// The URL to use when downloading the provider plugin binary.
         /// </summary>
@@ -106,7 +109,7 @@ namespace Pulumi.Pulumi.Inputs
         public string? PluginDownloadURL { get; set; }
 
         [Input("provider")]
-        public Inputs.ResourceDefinition? Provider { get; set; }
+        public Inputs.ObjectTypeSpec? Provider { get; set; }
 
         /// <summary>
         /// The name of the person or organization that authored and published the package.
@@ -121,14 +124,14 @@ namespace Pulumi.Pulumi.Inputs
         public string? Repository { get; set; }
 
         [Input("resources")]
-        private Dictionary<string, Inputs.ObjectTypeSpec>? _resources;
+        private Dictionary<string, Inputs.ResourceDefinition>? _resources;
 
         /// <summary>
         /// A map from type token to resourceSpec that describes the set of resources and components defined by this package.
         /// </summary>
-        public Dictionary<string, Inputs.ObjectTypeSpec> Resources
+        public Dictionary<string, Inputs.ResourceDefinition> Resources
         {
-            get => _resources ?? (_resources = new Dictionary<string, Inputs.ObjectTypeSpec>());
+            get => _resources ?? (_resources = new Dictionary<string, Inputs.ResourceDefinition>());
             set => _resources = value;
         }
 

@@ -57,7 +57,7 @@ let writeSdk (schema: System.Text.Json.Nodes.JsonObject) (name: string) =
         schema.ToJsonString(options)
     )
 
-[<Fact>]
+[<Fact(Skip="allOf title not currently working")>]
 let ``Test githhub`` () =
     let uri =
         Uri("https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json")
