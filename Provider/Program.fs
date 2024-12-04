@@ -79,7 +79,7 @@ module Provider =
         let conversion = Converter.convertSchema uri schema.RootElement
 
         let task =
-            Pulumi.Experimental.Provider.Provider.Serve(args, (fun host -> Provider(conversion, host)), cts.Token)
+            Pulumi.Experimental.Provider.Provider.Serve(args, "1.0.0", (fun host -> Provider(conversion, host)), cts.Token)
 
         task.Wait()
         0

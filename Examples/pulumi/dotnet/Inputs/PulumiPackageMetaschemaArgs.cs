@@ -109,7 +109,7 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? PluginDownloadURL { get; set; }
 
         [Input("provider")]
-        public Input<Inputs.ObjectTypeSpecArgs>? Provider { get; set; }
+        public Input<Inputs.ResourceDefinitionArgs>? Provider { get; set; }
 
         /// <summary>
         /// The name of the person or organization that authored and published the package.
@@ -124,14 +124,14 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? Repository { get; set; }
 
         [Input("resources")]
-        private InputMap<Inputs.ResourceDefinitionArgs>? _resources;
+        private InputMap<Inputs.ObjectTypeSpecArgs>? _resources;
 
         /// <summary>
         /// A map from type token to resourceSpec that describes the set of resources and components defined by this package.
         /// </summary>
-        public InputMap<Inputs.ResourceDefinitionArgs> Resources
+        public InputMap<Inputs.ObjectTypeSpecArgs> Resources
         {
-            get => _resources ?? (_resources = new InputMap<Inputs.ResourceDefinitionArgs>());
+            get => _resources ?? (_resources = new InputMap<Inputs.ObjectTypeSpecArgs>());
             set => _resources = value;
         }
 

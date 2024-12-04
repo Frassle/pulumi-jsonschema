@@ -32,7 +32,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from property name to propertySpec that describes the resource's input properties.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.InputPropertiesAdditionalProperties>? InputProperties;
+        public readonly ImmutableDictionary<string, Outputs.AdditionalProperties>? InputProperties;
         /// <summary>
         /// Indicates whether the resource is a component.
         /// </summary>
@@ -69,7 +69,7 @@ namespace Pulumi.Pulumi.Outputs
 
             string? description,
 
-            ImmutableDictionary<string, Outputs.InputPropertiesAdditionalProperties>? inputProperties,
+            ImmutableDictionary<string, Outputs.AdditionalProperties>? inputProperties,
 
             bool? isComponent,
 

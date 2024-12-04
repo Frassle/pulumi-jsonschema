@@ -16,14 +16,14 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class ObjectTypeDefinitionArgs : global::Pulumi.ResourceArgs
     {
         [Input("properties")]
-        private InputMap<Inputs.AdditionalPropertiesArgs>? _properties;
+        private InputMap<Inputs.TypeSpecArgs>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public InputMap<Inputs.AdditionalPropertiesArgs> Properties
+        public InputMap<Inputs.TypeSpecArgs> Properties
         {
-            get => _properties ?? (_properties = new InputMap<Inputs.AdditionalPropertiesArgs>());
+            get => _properties ?? (_properties = new InputMap<Inputs.TypeSpecArgs>());
             set => _properties = value;
         }
 

@@ -7,26 +7,23 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Pulumi.Outputs
+namespace Pulumi.Pulumi.Inputs
 {
 
     /// <summary>
     /// A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
     /// </summary>
-    [OutputType]
-    public sealed class InputPropertiesAdditionalPropertiesChoice3Of5
+    public sealed class VariablesAdditionalPropertiesChoice3Of5 : global::Pulumi.InvokeArgs
     {
-        public readonly Outputs.InputPropertiesAdditionalProperties? AdditionalProperties;
-        public readonly string Type;
+        [Input("additionalProperties")]
+        public Inputs.VariablesAdditionalProperties? AdditionalProperties { get; set; }
 
-        [OutputConstructor]
-        private InputPropertiesAdditionalPropertiesChoice3Of5(
-            Outputs.InputPropertiesAdditionalProperties? additionalProperties,
+        [Input("type", required: true)]
+        public string Type { get; set; } = null!;
 
-            string type)
+        public VariablesAdditionalPropertiesChoice3Of5()
         {
-            AdditionalProperties = additionalProperties;
-            Type = type;
         }
+        public static new VariablesAdditionalPropertiesChoice3Of5 Empty => new VariablesAdditionalPropertiesChoice3Of5();
     }
 }

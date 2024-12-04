@@ -19,7 +19,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.AdditionalProperties>? Properties;
+        public readonly ImmutableDictionary<string, Outputs.TypeSpec>? Properties;
         /// <summary>
         /// A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
         /// </summary>
@@ -28,7 +28,7 @@ namespace Pulumi.Pulumi.Outputs
 
         [OutputConstructor]
         private ObjectTypeDefinition(
-            ImmutableDictionary<string, Outputs.AdditionalProperties>? properties,
+            ImmutableDictionary<string, Outputs.TypeSpec>? properties,
 
             ImmutableArray<string> required,
 

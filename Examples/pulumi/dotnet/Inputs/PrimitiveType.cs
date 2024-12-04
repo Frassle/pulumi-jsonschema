@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class PrimitiveType : global::Pulumi.InvokeArgs
     {
         [Input("type", required: true)]
-        public Pulumi.Pulumi.PropertiesAdditionalPropertiesChoice1Of5Type Type { get; set; }
+        public Pulumi.Pulumi.OneOf0PropertiesType Type { get; set; }
 
         public PrimitiveType()
         {

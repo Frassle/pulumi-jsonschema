@@ -17,11 +17,11 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class AdditionalProperties
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.TypeSpecOneOf0? Choice1Of5;
-        public readonly Outputs.Choice1Of2PropertiesAdditionalPropertiesChoice2Of5? Choice2Of5;
-        public readonly Outputs.PropertiesAdditionalPropertiesChoice3Of5? Choice3Of5;
+        public readonly Outputs.Choice1Of5? Choice1Of5;
+        public readonly Outputs.TypeSpecOneOf1? Choice2Of5;
+        public readonly Outputs.AdditionalPropertiesChoice3Of5? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
-        public readonly Outputs.Choice5Of5? Choice5Of5;
+        public readonly Outputs.AdditionalPropertiesChoice5Of5? Choice5Of5;
         public readonly object? Const;
         public readonly object? Default;
         public readonly Outputs.DefaultInfo? DefaultInfo;
@@ -58,15 +58,15 @@ namespace Pulumi.Pulumi.Outputs
         private AdditionalProperties(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.TypeSpecOneOf0? choice1Of5,
+            Outputs.Choice1Of5? choice1Of5,
 
-            Outputs.Choice1Of2PropertiesAdditionalPropertiesChoice2Of5? choice2Of5,
+            Outputs.TypeSpecOneOf1? choice2Of5,
 
-            Outputs.PropertiesAdditionalPropertiesChoice3Of5? choice3Of5,
+            Outputs.AdditionalPropertiesChoice3Of5? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 
-            Outputs.Choice5Of5? choice5Of5,
+            Outputs.AdditionalPropertiesChoice5Of5? choice5Of5,
 
             object? @const,
 

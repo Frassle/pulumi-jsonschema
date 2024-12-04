@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object or resource property
     /// </summary>
-    public sealed class InputsPropertiesAdditionalProperties : global::Pulumi.InvokeArgs
+    public sealed class AdditionalPropertiesPropertiesAdditionalProperties : global::Pulumi.InvokeArgs
     {
         [Input("additionalProperties")]
         private Dictionary<string, object>? _additionalProperties;
@@ -24,13 +24,13 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("choice1Of5")]
-        public Inputs.PropertiesAdditionalPropertiesChoice1Of5? Choice1Of5 { get; set; }
+        public Inputs.TypeSpecOneOf0? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Inputs.PropertiesAdditionalPropertiesChoice2Of5? Choice2Of5 { get; set; }
+        public Inputs.OneOf1? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
-        public Inputs.TypeSpecOneOf2? Choice3Of5 { get; set; }
+        public Inputs.MapType? Choice3Of5 { get; set; }
 
         [Input("choice4Of5")]
         public Inputs.NamedType? Choice4Of5 { get; set; }
@@ -95,9 +95,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("willReplaceOnChanges")]
         public bool? WillReplaceOnChanges { get; set; }
 
-        public InputsPropertiesAdditionalProperties()
+        public AdditionalPropertiesPropertiesAdditionalProperties()
         {
         }
-        public static new InputsPropertiesAdditionalProperties Empty => new InputsPropertiesAdditionalProperties();
+        public static new AdditionalPropertiesPropertiesAdditionalProperties Empty => new AdditionalPropertiesPropertiesAdditionalProperties();
     }
 }
