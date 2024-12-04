@@ -2449,7 +2449,7 @@ let convertSchema (uri: Uri) (jsonSchema: JsonElement) : RootConversion =
 
         let nameRegex = System.Text.RegularExpressions.Regex("^[a-z][A-Za-z0-9]+$")
 
-        let isValid name =
+        let isValid (name : string) =
             if usedNames.Contains name then None
             elif not (nameRegex.IsMatch name) then None
             else Some name
