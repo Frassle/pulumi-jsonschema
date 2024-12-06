@@ -24,13 +24,13 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("choice1Of5")]
-        public Input<Inputs.OneOf0Args>? Choice1Of5 { get; set; }
+        public Input<Inputs.PrimitiveTypeArgs>? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Input<Inputs.ArrayTypeArgs>? Choice2Of5 { get; set; }
+        public Input<Inputs.InputPropertiesAdditionalPropertiesChoice2Of5Args>? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
-        public Input<Inputs.Choice3Of5Args>? Choice3Of5 { get; set; }
+        public Input<Inputs.MapTypeArgs>? Choice3Of5 { get; set; }
 
         [Input("choice4Of5")]
         public Input<Inputs.NamedTypeArgs>? Choice4Of5 { get; set; }

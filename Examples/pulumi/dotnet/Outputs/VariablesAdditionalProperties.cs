@@ -17,9 +17,9 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class VariablesAdditionalProperties
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.VariablesAdditionalPropertiesChoice1Of5? Choice1Of5;
-        public readonly Outputs.VariablesAdditionalPropertiesChoice2Of5? Choice2Of5;
-        public readonly Outputs.VariablesAdditionalPropertiesChoice3Of5? Choice3Of5;
+        public readonly Outputs.TypeSpecOneOf0? Choice1Of5;
+        public readonly Outputs.OneOf1? Choice2Of5;
+        public readonly Outputs.TypeSpecOneOf2? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
         public readonly Outputs.VariablesAdditionalPropertiesChoice5Of5? Choice5Of5;
         public readonly object? Const;
@@ -58,11 +58,11 @@ namespace Pulumi.Pulumi.Outputs
         private VariablesAdditionalProperties(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.VariablesAdditionalPropertiesChoice1Of5? choice1Of5,
+            Outputs.TypeSpecOneOf0? choice1Of5,
 
-            Outputs.VariablesAdditionalPropertiesChoice2Of5? choice2Of5,
+            Outputs.OneOf1? choice2Of5,
 
-            Outputs.VariablesAdditionalPropertiesChoice3Of5? choice3Of5,
+            Outputs.TypeSpecOneOf2? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 

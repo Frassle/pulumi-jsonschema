@@ -16,12 +16,12 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class TypeSpecOneOf1
     {
-        public readonly Outputs.AdditionalProperties Items;
+        public readonly Outputs.TypeSpec Items;
         public readonly string Type;
 
         [OutputConstructor]
         private TypeSpecOneOf1(
-            Outputs.AdditionalProperties items,
+            Outputs.TypeSpec items,
 
             string type)
         {

@@ -14,14 +14,14 @@ namespace Pulumi.Pulumi.Outputs
     /// Describes an object or resource property
     /// </summary>
     [OutputType]
-    public sealed class AdditionalPropertiesPropertiesAdditionalProperties
+    public sealed class AdditionalPropertiesInputPropertiesAdditionalProperties
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.TypeSpecOneOf0? Choice1Of5;
-        public readonly Outputs.OneOf1? Choice2Of5;
-        public readonly Outputs.MapType? Choice3Of5;
+        public readonly Outputs.OneOf0? Choice1Of5;
+        public readonly Outputs.ArrayType? Choice2Of5;
+        public readonly Outputs.Choice3Of5? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
-        public readonly Outputs.UnionType? Choice5Of5;
+        public readonly Outputs.OneOf4? Choice5Of5;
         public readonly object? Const;
         public readonly object? Default;
         public readonly Outputs.DefaultInfo? DefaultInfo;
@@ -55,18 +55,18 @@ namespace Pulumi.Pulumi.Outputs
         public readonly bool? WillReplaceOnChanges;
 
         [OutputConstructor]
-        private AdditionalPropertiesPropertiesAdditionalProperties(
+        private AdditionalPropertiesInputPropertiesAdditionalProperties(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.TypeSpecOneOf0? choice1Of5,
+            Outputs.OneOf0? choice1Of5,
 
-            Outputs.OneOf1? choice2Of5,
+            Outputs.ArrayType? choice2Of5,
 
-            Outputs.MapType? choice3Of5,
+            Outputs.Choice3Of5? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 
-            Outputs.UnionType? choice5Of5,
+            Outputs.OneOf4? choice5Of5,
 
             object? @const,
 

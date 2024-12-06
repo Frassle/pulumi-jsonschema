@@ -5,15 +5,26 @@ open System.Text.Json
 open Xunit
 
 let writeSdk (schema: System.Text.Json.Nodes.JsonObject) (name: string) =
+    // Find the root directory
+    let mutable cwd = System.Environment.CurrentDirectory
+
+    while System.IO.Path.GetFileName cwd <> "Tests" do
+        cwd <- System.IO.Path.GetDirectoryName cwd
+    // Go up one more directory
+    cwd <- System.IO.Path.GetDirectoryName cwd
+
     // And now we can re-generate the SDK for this!
-    System.IO.File.WriteAllText(name + ".json", schema.ToJsonString())
+    let options = System.Text.Json.JsonSerializerOptions()
+    options.WriteIndented <- true
+    let schemaPath = System.IO.Path.Combine(cwd, "Examples", name, "pulumi.json")
+    System.IO.File.WriteAllText(schemaPath, schema.ToJsonString(options))
 
     let si = System.Diagnostics.ProcessStartInfo("pulumi")
 
     for arg in
         [ "package"
           "gen-sdk"
-          System.IO.Path.GetFullPath(name + ".json")
+          schemaPath
           "--language"
           "dotnet"
           "--out"
@@ -22,13 +33,6 @@ let writeSdk (schema: System.Text.Json.Nodes.JsonObject) (name: string) =
 
     si.RedirectStandardOutput <- true
     si.RedirectStandardError <- true
-    // Find the root directory
-    let mutable cwd = System.Environment.CurrentDirectory
-
-    while System.IO.Path.GetFileName cwd <> "Tests" do
-        cwd <- System.IO.Path.GetDirectoryName cwd
-    // Go up one more directory
-    cwd <- System.IO.Path.GetDirectoryName cwd
     si.WorkingDirectory <- cwd
     let proc = new System.Diagnostics.Process()
     proc.StartInfo <- si
@@ -49,13 +53,6 @@ let writeSdk (schema: System.Text.Json.Nodes.JsonObject) (name: string) =
         failwithf "gen-sdk failed\nstdout:\n%s\nstderr:\n%s" (out.ToString()) (err.ToString())
 
     System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "Examples", name, "dotnet", "version.txt"), "")
-    let options = System.Text.Json.JsonSerializerOptions()
-    options.WriteIndented <- true
-
-    System.IO.File.WriteAllText(
-        System.IO.Path.Combine(cwd, "Examples", name, "dotnet", "schema.json"),
-        schema.ToJsonString(options)
-    )
 
 [<Fact(Skip="allOf title not currently working")>]
 let ``Test githhub`` () =
