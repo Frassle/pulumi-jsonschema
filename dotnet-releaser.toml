@@ -1,10 +1,16 @@
 # configuration file for dotnet-releaser
+profile = "custom"
 [msbuild]
 project = "JsonSchema.sln"
 [github]
 user = "Frassle"
 repo = "pulumi-jsonschema"
 [[pack]]
-publish = false
-rid = ["win-arm"]
+rid = ["win-x64", "win-arm64"]
 kinds = ["zip"]
+[[pack]]
+rid = ["linux-x64", "linux-arm64"]
+kinds = ["tar"]
+[[pack]]
+rid = ["osx-x64", "osx-arm64"]
+kinds = ["tar"]
