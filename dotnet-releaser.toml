@@ -1,0 +1,6 @@
+# configuration file for dotnet-releaser
+[msbuild]
+project = "JsonSchema.sln"
+[github]
+user = "Frassle"
+repo = "pulumi-jsonschema"
