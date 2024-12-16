@@ -4,5 +4,18 @@ project = "JsonSchema.sln"
 [github]
 user = "Frassle"
 repo = "pulumi-jsonschema"
+[[pack]]
+rid = ["win-x64", "win-arm64"]
+kinds = ["zip"]
+[[pack]]
+rid = ["linux-x64", "linux-arm64"]
+kinds = ["tar"]
+[[pack]]
+rid = ["osx-x64", "osx-arm64"]
+kinds = ["tar"]
 [nuget]
-publish=false
+publish = false
+[brew]
+publish = false
+[scoop]
+publish = false
