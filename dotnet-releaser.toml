@@ -4,6 +4,10 @@ profile = "custom"
 project = "JsonSchema.sln"
 [nuget]
 publish = false
+[brew]
+publish = false
+[scoop]
+publish = false
 [github]
 user = "Frassle"
 repo = "pulumi-jsonschema"
