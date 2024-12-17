@@ -2,6 +2,8 @@
 profile = "custom"
 [msbuild]
 project = "JsonSchema.sln"
+[nuget]
+publish = false
 [github]
 user = "Frassle"
 repo = "pulumi-jsonschema"
