@@ -5,6 +5,7 @@ project = "JsonSchema.sln"
 [github]
 user = "Frassle"
 repo = "pulumi-jsonschema"
+version_prefix = "v"
 [[pack]]
 rid = ["win-x64", "win-arm64"]
 kinds = ["zip"]
