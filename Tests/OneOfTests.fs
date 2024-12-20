@@ -21,7 +21,7 @@ let ``Test oneOf primitives`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.simpleSchema
+        t.SimpleSchema
             """{"oneOf": [
             {"type": "number"},
             {"type": "string"}
@@ -52,8 +52,8 @@ let ``Test oneOf objects`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
         "type":"object",
         "properties":{
@@ -96,8 +96,8 @@ let ``Test string pattern with oneOf`` () =
     }"""
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
         "type":"object",
         "properties":{
@@ -159,8 +159,8 @@ let ``Test inline oneOf`` () =
     }"""
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
             "type": "object",
             "properties": {
@@ -172,21 +172,21 @@ let ``Test inline oneOf`` () =
                     }
                 },
                 "choice1Of2": {
-                    "$ref": "#/types/schema:index:oneOf0"
+                    "$ref": "#/types/test:index:oneOf0"
                 },
                 "choice2Of2": {
-                    "$ref": "#/types/schema:index:oneOf1"
+                    "$ref": "#/types/test:index:oneOf1"
                 }
             }
         }"""
-              "schema:index:oneOf0",
+              "test:index:oneOf0",
               """{
             "type": "object",
             "properties": {
                 "keyA": { "type": "string" }
             }
         }"""
-              "schema:index:oneOf1",
+              "test:index:oneOf1",
               """{
             "type": "object",
             "properties": {

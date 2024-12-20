@@ -2414,18 +2414,32 @@ type RootConversion =
       Reader: JsonElement -> Pulumi.Experimental.Provider.PropertyValue }
 
 // Generate a full pulumi schema using the conversion as the function to generate
-let convertSchema (uri: Uri) (jsonSchema: JsonElement) : RootConversion =
+let convertSchema (uri : Uri) (packageName: string) (jsonSchema: JsonElement) : RootConversion =
     let schema = JsonObject()
 
-    let packageName =
-        uri.Segments |> Seq.last |> System.IO.Path.GetFileNameWithoutExtension
-
     schema.Add("name", JsonValue.Create(packageName))
+    schema.Add("version", JsonValue.Create("1.0.0")) // TODO: Add a way to set this version
     schema.Add("description", JsonValue.Create("A pulumi package generated from a json schema"))
     schema.Add("keywords", JsonArray(JsonValue.Create("pulumi"), JsonValue.Create("jsonschema")))
     schema.Add("homepage", JsonValue.Create("https://github.com/Frassle/pulumi-jsonschema"))
     schema.Add("repository", JsonValue.Create("https://github.com/Frassle/pulumi-jsonschema"))
     schema.Add("license", JsonValue.Create("Apache-2.0"))
+    schema.Add("pluginDownloadURL", JsonValue.Create("github://api.github.com/Frassle"))
+    let parameterization = JsonObject()
+    let baseProvider = JsonObject()
+    let version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
+    baseProvider.Add("version", JsonValue.Create(System.String.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build)))
+    baseProvider.Add("name", JsonValue.Create("jsonschema"))
+    parameterization.Add("baseProvider", baseProvider)
+
+    let parameterValue = new System.IO.MemoryStream()
+    let parameterWriter = new System.IO.BinaryWriter(parameterValue)
+    parameterWriter.Write(uri.ToString())
+    parameterWriter.Write(jsonSchema.ToString())
+    let base64 = System.Convert.ToBase64String(parameterValue.ToArray())
+    parameterization.Add("parameter", JsonValue.Create(base64))
+    schema.Add("parameterization", parameterization)
+
     let functions = JsonObject()
     schema.Add("functions", functions)
     let readFunction = JsonObject()

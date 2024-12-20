@@ -15,7 +15,7 @@ let ``Test array`` () =
 
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"array","items":{"type":"string"}}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"array","items":{"type":"string"}}""")
 
     Test.listToProperty [ PropertyValue("a"); PropertyValue("b") ]
     |> t.ShouldWrite """["a","b"]"""
@@ -33,7 +33,7 @@ let ``Test true array`` () =
 
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"array","items":{"$ref": "pulumi.json#/Any"}}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"array","items":{"$ref": "pulumi.json#/Any"}}""")
 
     Test.listToProperty [ PropertyValue("a"); PropertyValue(5) ]
     |> t.ShouldWrite """["a",5]"""
@@ -52,7 +52,7 @@ let ``Test false array`` () =
 
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"array","items":{"$ref": "pulumi.json#/Any"}}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"array","items":{"$ref": "pulumi.json#/Any"}}""")
 
     Test.listToProperty [] |> t.ShouldWrite """[]"""
 
@@ -79,7 +79,7 @@ let ``Test array minItems`` () =
 
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"array","items":{"type":"string"}}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"array","items":{"type":"string"}}""")
 
     Test.listToProperty [ PropertyValue("a"); PropertyValue("b") ]
     |> t.ShouldWrite """["a","b"]"""
@@ -107,7 +107,7 @@ let ``Test array maxItems`` () =
 
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"array","items":{"type":"string"}}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"array","items":{"type":"string"}}""")
 
     Test.listToProperty [ PropertyValue("a") ]
     |> t.ShouldWrite """["a"]"""

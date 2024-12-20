@@ -76,88 +76,6 @@ let shouldJsonEqual (expected: string) (actual: string) : unit =
 
 let baseUri = Uri("https://github.com/Frassle/pulumi-jsonschema/schema.json")
 
-// Fills in the standard fields for the Pulumi schema
-let simpleSchema (objectType: string) : string =
-    sprintf
-        """{
-    "name":"schema",
-    "description":"A pulumi package generated from a json schema",
-    "keywords":["pulumi","jsonschema"],
-    "homepage":"https://github.com/Frassle/pulumi-jsonschema",
-    "repository":"https://github.com/Frassle/pulumi-jsonschema",
-    "license":"Apache-2.0",
-    "functions":{
-        "schema:index:read":{
-            "description":"Read the given JSON into the object model",
-            "inputs":{
-                "required": ["json"],
-                "properties": {"json": {"type": "string"}}
-            },
-            "outputs":{
-                "required": ["value"],
-                "properties": {"value": %s}
-            }
-        },
-        "schema:index:write":{
-            "description":"Read the given JSON into the object model",
-            "inputs":{
-                "required": ["value"],
-                "properties": {"value": %s}
-            },
-            "outputs":{
-                "required": ["json"],
-                "properties": {"json": {"type": "string"}}
-            }
-        }
-    }
-}"""
-        objectType
-        objectType
-
-let complexSchema (types: (string * string) list) : string =
-    let typesJson =
-        types |> Seq.map (fun (k, v) -> sprintf "\"%s\": %s" k v) |> String.concat ","
-
-    let rootType = types |> Seq.head |> fst
-
-    sprintf
-        """{
-    "name":"schema",
-    "description":"A pulumi package generated from a json schema",
-    "keywords":["pulumi","jsonschema"],
-    "homepage":"https://github.com/Frassle/pulumi-jsonschema",
-    "repository":"https://github.com/Frassle/pulumi-jsonschema",
-    "license":"Apache-2.0",
-    "types": {%s},
-    "functions":{
-        "schema:index:read":{
-            "description":"Read the given JSON into the object model",
-            "inputs":{
-                "required": ["json"],
-                "properties": {"json": {"type": "string"}}
-            },
-            "outputs":{
-                "required": ["value"],
-                "properties": {"value": {"$ref":"#/types/%s"}}
-            }
-        },
-        "schema:index:write":{
-            "description":"Read the given JSON into the object model",
-            "inputs":{
-                "required": ["value"],
-                "properties": {"value": {"$ref":"#/types/%s"}}
-            },
-            "outputs":{
-                "required": ["json"],
-                "properties": {"json": {"type": "string"}}
-            }
-        }
-    }
-}"""
-        typesJson
-        rootType
-        rootType
-
 let dictToProperty (list: (string * PropertyValue) list) =
     list
     |> Seq.map (fun (k, v) -> KeyValuePair.Create(k, v))
@@ -168,7 +86,8 @@ let listToProperty (list: PropertyValue list) =
     list |> ImmutableArray.CreateRange |> PropertyValue
 
 type SchemaTest =
-    { Schema: Json.Schema.JsonSchema
+    { 
+      Schema: Json.Schema.JsonSchema
       Conversion: JsonSchema.Converter.RootConversion }
 
     member this.ShouldWrite (expectedJson: string) (value: PropertyValue) : unit =
@@ -239,9 +158,121 @@ type SchemaTest =
         |> toJson
         |> shouldJsonEqual pulumiSchema
 
+        
+    // Fills in the standard fields for the Pulumi schema
+    member this.SimpleSchema (objectType: string) : string =
+        let parameterization = this.Conversion.Schema.Item "parameterization"
+        let parameter = parameterization.Item "parameter"
+        let base64 = parameter.GetValue<string>()
+
+        sprintf
+            """{
+        "name":"test",
+        "version": "1.0.0",
+        "description":"A pulumi package generated from a json schema",
+        "keywords":["pulumi","jsonschema"],
+        "homepage":"https://github.com/Frassle/pulumi-jsonschema",
+        "repository":"https://github.com/Frassle/pulumi-jsonschema",
+        "license":"Apache-2.0",
+        "pluginDownloadURL": "github://api.github.com/Frassle",
+        "parameterization": {
+            "baseProvider": {
+                "version": "0.1.1",
+                "name": "jsonschema"
+            },
+            "parameter": "%s"
+        },
+        "functions":{
+            "test:index:read":{
+                "description":"Read the given JSON into the object model",
+                "inputs":{
+                    "required": ["json"],
+                    "properties": {"json": {"type": "string"}}
+                },
+                "outputs":{
+                    "required": ["value"],
+                    "properties": {"value": %s}
+                }
+            },
+            "test:index:write":{
+                "description":"Read the given JSON into the object model",
+                "inputs":{
+                    "required": ["value"],
+                    "properties": {"value": %s}
+                },
+                "outputs":{
+                    "required": ["json"],
+                    "properties": {"json": {"type": "string"}}
+                }
+            }
+        }
+    }"""
+            base64
+            objectType
+            objectType
+
+    member this.ComplexSchema (types: (string * string) list) : string =
+        let parameterization = this.Conversion.Schema.Item "parameterization"
+        let parameter = parameterization.Item "parameter"
+        let base64 = parameter.GetValue<string>()
+
+        let typesJson =
+            types |> Seq.map (fun (k, v) -> sprintf "\"%s\": %s" k v) |> String.concat ","
+
+        let rootType = types |> Seq.head |> fst
+
+        sprintf
+            """{
+        "name":"test",
+        "version": "1.0.0",
+        "description":"A pulumi package generated from a json schema",
+        "keywords":["pulumi","jsonschema"],
+        "homepage":"https://github.com/Frassle/pulumi-jsonschema",
+        "repository":"https://github.com/Frassle/pulumi-jsonschema",
+        "license":"Apache-2.0",
+        "pluginDownloadURL": "github://api.github.com/Frassle",
+        "parameterization": {
+            "baseProvider": {
+                "version": "0.1.1",
+                "name": "jsonschema"
+            },
+            "parameter": "%s"
+        },
+        "types": {%s},
+        "functions":{
+            "test:index:read":{
+                "description":"Read the given JSON into the object model",
+                "inputs":{
+                    "required": ["json"],
+                    "properties": {"json": {"type": "string"}}
+                },
+                "outputs":{
+                    "required": ["value"],
+                    "properties": {"value": {"$ref":"#/types/%s"}}
+                }
+            },
+            "test:index:write":{
+                "description":"Read the given JSON into the object model",
+                "inputs":{
+                    "required": ["value"],
+                    "properties": {"value": {"$ref":"#/types/%s"}}
+                },
+                "outputs":{
+                    "required": ["json"],
+                    "properties": {"json": {"type": "string"}}
+                }
+            }
+        }
+    }"""
+            base64
+            typesJson
+            rootType
+            rootType
+
 let convertSchema (schema: string) =
     let json = System.Text.Json.JsonDocument.Parse schema
     let schema = Json.Schema.JsonSchema.FromText schema
 
-    { Schema = schema
-      Conversion = JsonSchema.Converter.convertSchema baseUri json.RootElement }
+    { 
+      Schema = schema
+      Conversion = JsonSchema.Converter.convertSchema baseUri "test" json.RootElement }
