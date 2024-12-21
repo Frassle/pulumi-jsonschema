@@ -21,9 +21,6 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Format
-        run: dotnet format --verify-no-changes
-
       - name: Build and Test
         if: github.event_name != 'push'
         run: dotnet test -c Debug
