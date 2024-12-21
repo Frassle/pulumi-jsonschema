@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	  <None Include="PulumiPlugin.yaml" />
 	  <Compile Include="Pointer.fs" />
 	  <Compile Include="OutputUnit.fs" />
 	  <Compile Include="TypeSchema.fs" />
@@ -18,8 +19,10 @@
 	  <Compile Include="Program.fs" />
   </ItemGroup>
 
+  <ItemGroup />
+
   <ItemGroup>
-    <PackageReference Include="JsonSchema.Net" Version="3.3.2" />
+    <PackageReference Include="JsonSchema.Net" Version="7.3.0" />
     <PackageReference Include="Pulumi" Version="3.71.0" />
   </ItemGroup>
 

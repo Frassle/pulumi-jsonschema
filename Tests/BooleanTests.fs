@@ -13,7 +13,7 @@ let ``Test boolean`` () =
 
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"boolean"}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"boolean"}""")
 
     PropertyValue(true) |> t.ShouldWrite "true"
 
@@ -32,7 +32,7 @@ let ``Test true`` schema =
     let t = Test.convertSchema schema
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"$ref": "pulumi.json#/Any"}""")
+    t.ShouldEqual(t.SimpleSchema """{"$ref": "pulumi.json#/Any"}""")
 
     PropertyValue true |> t.ShouldRoundTrip "true"
 
@@ -50,7 +50,7 @@ let ``Test true`` schema =
 let ``Test false`` () =
     let t = Test.convertSchema """false"""
 
-    t.ShouldEqual(Test.simpleSchema """{"$ref": "pulumi.json#/Any"}""")
+    t.ShouldEqual(t.SimpleSchema """{"$ref": "pulumi.json#/Any"}""")
 
     let exc = PropertyValue("foo") |> t.ShouldThrow<exn>
     exc.Message |> Test.shouldEqual "All values fail against the false schema"

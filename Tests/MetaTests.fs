@@ -14,7 +14,7 @@ let ``Test simple description`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.simpleSchema
+        t.SimpleSchema
             """{
         "type":"number",
         "description": "This is a number"
@@ -39,8 +39,8 @@ let ``Test property description`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
         "type":"object",
         "properties":{
@@ -68,8 +68,8 @@ let ``Test simple object title`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:theObject",
+        t.ComplexSchema
+            [ "test:index:theObject",
               """{
         "type":"object",
         "properties":{
@@ -91,8 +91,8 @@ let ``Test simple enum title`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:anEnum",
+        t.ComplexSchema
+            [ "test:index:anEnum",
               """{
         "type": "string",
         "enum": [
@@ -127,8 +127,8 @@ let ``Test ref title`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:theObject",
+        t.ComplexSchema
+            [ "test:index:theObject",
               """{
         "type": "object",
         "properties": {
@@ -171,8 +171,8 @@ let ``Test allOf title`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:theObject",
+        t.ComplexSchema
+            [ "test:index:theObject",
               """{
         "type": "object",
         "properties": {

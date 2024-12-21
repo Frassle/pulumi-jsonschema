@@ -16,7 +16,7 @@ let writeSdk (schema: System.Text.Json.Nodes.JsonObject) (name: string) =
     // And now we can re-generate the SDK for this!
     let options = System.Text.Json.JsonSerializerOptions()
     options.WriteIndented <- true
-    let schemaPath = System.IO.Path.Combine(cwd, "Examples", name, "pulumi.json")
+    let schemaPath = System.IO.Path.Combine(cwd, "Examples", "dotnet", name, "pulumi.json")
     System.IO.File.WriteAllText(schemaPath, schema.ToJsonString(options))
 
     let si = System.Diagnostics.ProcessStartInfo("pulumi")
@@ -28,7 +28,7 @@ let writeSdk (schema: System.Text.Json.Nodes.JsonObject) (name: string) =
           "--language"
           "dotnet"
           "--out"
-          "./Examples/" + name ] do
+          "./Examples/dotnet" + name ] do
         si.ArgumentList.Add arg
 
     si.RedirectStandardOutput <- true
@@ -52,8 +52,6 @@ let writeSdk (schema: System.Text.Json.Nodes.JsonObject) (name: string) =
     if proc.ExitCode <> 0 then
         failwithf "gen-sdk failed\nstdout:\n%s\nstderr:\n%s" (out.ToString()) (err.ToString())
 
-    System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "Examples", name, "dotnet", "version.txt"), "")
-
 [<Fact(Skip="allOf title not currently working")>]
 let ``Test githhub`` () =
     let uri =
@@ -64,7 +62,7 @@ let ``Test githhub`` () =
         let contents = client.GetStringAsync(uri)
         System.Text.Json.JsonDocument.Parse contents.Result
 
-    let conversion = JsonSchema.Converter.convertSchema uri schema.RootElement
+    let conversion = JsonSchema.Converter.convertSchema uri "github" schema.RootElement
 
     Assert.NotNull(conversion)
     writeSdk conversion.Schema "github"
@@ -79,7 +77,7 @@ let ``Test pulumi`` () =
         let contents = client.GetStringAsync(uri)
         System.Text.Json.JsonDocument.Parse contents.Result
 
-    let conversion = JsonSchema.Converter.convertSchema uri schema.RootElement
+    let conversion = JsonSchema.Converter.convertSchema uri "pulumi" schema.RootElement
 
     Assert.NotNull(conversion)
     writeSdk conversion.Schema "pulumi"

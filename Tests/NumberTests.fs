@@ -13,7 +13,7 @@ let ``Test number`` () =
 
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"number"}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"number"}""")
 
     PropertyValue(14.512) |> t.ShouldWrite "14.512"
 
@@ -36,7 +36,7 @@ let ``Test integer`` () =
 
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"integer"}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"integer"}""")
 
     PropertyValue(14) |> t.ShouldWrite "14"
 
@@ -63,7 +63,7 @@ let ``Test integer multipleOf`` () =
         "multipleOf": 4
     }"""
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"integer"}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"integer"}""")
 
     PropertyValue(8) |> t.ShouldWrite "8"
 
