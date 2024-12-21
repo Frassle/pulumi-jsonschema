@@ -111,7 +111,7 @@ type StringValidation =
             |> Option.map (fun kw -> kw.Value)
           Pattern =
             Schema.pickKeyword<Json.Schema.PatternKeyword> keywords
-            |> Option.map (fun kw -> kw.Value.ToString()) }
+            |> Option.map (fun kw -> kw.Pattern) }
 
     member this.Validate(value: string) =
         let minCheck =
@@ -2414,18 +2414,32 @@ type RootConversion =
       Reader: JsonElement -> Pulumi.Experimental.Provider.PropertyValue }
 
 // Generate a full pulumi schema using the conversion as the function to generate
-let convertSchema (uri: Uri) (jsonSchema: JsonElement) : RootConversion =
+let convertSchema (uri : Uri) (packageName: string) (jsonSchema: JsonElement) : RootConversion =
     let schema = JsonObject()
 
-    let packageName =
-        uri.Segments |> Seq.last |> System.IO.Path.GetFileNameWithoutExtension
-
     schema.Add("name", JsonValue.Create(packageName))
+    schema.Add("version", JsonValue.Create("1.0.0")) // TODO: Add a way to set this version
     schema.Add("description", JsonValue.Create("A pulumi package generated from a json schema"))
     schema.Add("keywords", JsonArray(JsonValue.Create("pulumi"), JsonValue.Create("jsonschema")))
     schema.Add("homepage", JsonValue.Create("https://github.com/Frassle/pulumi-jsonschema"))
     schema.Add("repository", JsonValue.Create("https://github.com/Frassle/pulumi-jsonschema"))
     schema.Add("license", JsonValue.Create("Apache-2.0"))
+    schema.Add("pluginDownloadURL", JsonValue.Create("github://api.github.com/Frassle"))
+    let parameterization = JsonObject()
+    let baseProvider = JsonObject()
+    let version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version
+    baseProvider.Add("version", JsonValue.Create(System.String.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build)))
+    baseProvider.Add("name", JsonValue.Create("jsonschema"))
+    parameterization.Add("baseProvider", baseProvider)
+
+    let parameterValue = new System.IO.MemoryStream()
+    let parameterWriter = new System.IO.BinaryWriter(parameterValue)
+    parameterWriter.Write(uri.ToString())
+    parameterWriter.Write(jsonSchema.ToString())
+    let base64 = System.Convert.ToBase64String(parameterValue.ToArray())
+    parameterization.Add("parameter", JsonValue.Create(base64))
+    schema.Add("parameterization", parameterization)
+
     let functions = JsonObject()
     schema.Add("functions", functions)
     let readFunction = JsonObject()
@@ -2434,7 +2448,8 @@ let convertSchema (uri: Uri) (jsonSchema: JsonElement) : RootConversion =
     functions.Add(packageName + ":index:write", writeFunction)
 
     let root = { BaseUri = uri; Document = jsonSchema }
-    let jsonSchema = Json.Schema.JsonSchema.FromText(jsonSchema.GetRawText())
+    // Hack to workaround invalid regex in pulumi schema, can be removed once https://github.com/pulumi/pulumi/pull/18097 is merged.
+    let jsonSchema = Json.Schema.JsonSchema.FromText(jsonSchema.GetRawText().Replace("(?P<", "(?<"))
 
     let conversion =
         convertSubSchema root ConversionContext.Default Json.Pointer.JsonPointer.Empty jsonSchema
@@ -2462,9 +2477,8 @@ let convertSchema (uri: Uri) (jsonSchema: JsonElement) : RootConversion =
 
             // Else use the schema path of the type
             |> Option.orElseWith (fun () ->
-                complexType.Path.Segments
+                complexType.Path
                 |> Seq.toList
-                |> List.map (fun seg -> seg.Source)
                 |> List.filter (fun seg -> seg <> "$defs")
                 |> List.rev
                 |> allPrefixes

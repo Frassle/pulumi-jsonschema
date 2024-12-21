@@ -15,7 +15,7 @@ let ``Test empty object`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.simpleSchema
+        t.SimpleSchema
             """{
         "type":"object",
         "additionalProperties": {
@@ -44,7 +44,7 @@ let ``Test object with additional properties`` () =
 
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"object","additionalProperties":{"type":"string"}}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"object","additionalProperties":{"type":"string"}}""")
 
     Test.dictToProperty
         [ "hello", PropertyValue("a")
@@ -73,7 +73,7 @@ let ``Test object with properties`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema [ "schema:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}""" ]
+        t.ComplexSchema [ "test:index:root", """{"type":"object","properties":{"foo":{"type":"string"}}}""" ]
     )
 
     Test.dictToProperty [ "foo", PropertyValue("a") ]
@@ -105,8 +105,8 @@ let ``Test object with required properties`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
         "type":"object",
         "properties":{"foo":{"type":"string"}},
@@ -141,8 +141,8 @@ let ``Test object with properties and additionalProperties`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
         "type":"object",
         "properties":{
@@ -193,9 +193,9 @@ let ``Test complex object`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root", """{"type":"object","properties":{"foo":{"$ref":"#/types/schema:index:foo"}}}"""
-              "schema:index:foo", """{"type":"object","properties":{"bar":{"type":"number"}}}""" ]
+        t.ComplexSchema
+            [ "test:index:root", """{"type":"object","properties":{"foo":{"$ref":"#/types/test:index:foo"}}}"""
+              "test:index:foo", """{"type":"object","properties":{"bar":{"type":"number"}}}""" ]
     )
 
     Test.dictToProperty [ "foo", Test.dictToProperty [ "bar", PropertyValue(4) ] ]
@@ -236,8 +236,8 @@ let ``Test properties are Pulumi-ized`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
         "type":"object",
         "properties":{
@@ -285,8 +285,8 @@ let ``Test object with false properties`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
         "type":"object",
         "properties":{

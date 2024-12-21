@@ -16,8 +16,8 @@ let ``Test string enum`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
             "type":"string",
             "enum":[
@@ -49,8 +49,8 @@ let ``Test integer enum`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
             "type":"integer",
             "enum":[

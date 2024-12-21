@@ -13,7 +13,7 @@ let ``Test plain string`` () =
 
     t.RoundTrip()
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"string"}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"string"}""")
 
     PropertyValue("test") |> t.ShouldWrite "\"test\""
 
@@ -34,7 +34,7 @@ let ``Test string pattern`` () =
         "pattern": "^\\d+$"
     }"""
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"string"}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"string"}""")
 
     PropertyValue("123") |> t.ShouldWrite "\"123\""
 
@@ -60,7 +60,7 @@ let ``Test string minLength`` () =
         "minLength": 4
     }"""
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"string"}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"string"}""")
 
     PropertyValue("1234") |> t.ShouldWrite "\"1234\""
 
@@ -86,7 +86,7 @@ let ``Test string maxLength`` () =
         "maxLength": 6
     }"""
 
-    t.ShouldEqual(Test.simpleSchema """{"type":"string"}""")
+    t.ShouldEqual(t.SimpleSchema """{"type":"string"}""")
 
     PropertyValue("hello") |> t.ShouldWrite "\"hello\""
 

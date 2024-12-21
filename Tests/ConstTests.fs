@@ -15,7 +15,7 @@ let ``Test const string`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.simpleSchema
+        t.SimpleSchema
             """{
         "type":"string",
         "const": "hello"
@@ -48,8 +48,8 @@ let ``Test object const property`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
         "type":"object",
         "properties":{

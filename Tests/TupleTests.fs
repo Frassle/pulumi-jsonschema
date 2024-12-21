@@ -19,8 +19,8 @@ let ``Test tuple`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
         "type":"object",
         "properties":{
@@ -56,8 +56,8 @@ let ``Test tuple additionalItems`` () =
     }"""
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
             "type": "object",
             "properties": {
@@ -127,8 +127,8 @@ let ``Test tuple required items`` () =
     t.RoundTrip()
 
     t.ShouldEqual(
-        Test.complexSchema
-            [ "schema:index:root",
+        t.ComplexSchema
+            [ "test:index:root",
               """{
         "type":"object",
         "properties":{
