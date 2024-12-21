@@ -19,8 +19,8 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Build and Test (Debug)
-        run: dotnet test -c Debug
+      - name: Format
+        run: dotnet format
 
       - name: Build, Tests, Cover, Pack and Publish
         if: github.event_name == 'push'
