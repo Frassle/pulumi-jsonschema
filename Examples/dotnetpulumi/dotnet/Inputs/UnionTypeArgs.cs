@@ -19,19 +19,19 @@ namespace Pulumi.Pulumi.Inputs
         public Input<Inputs.DiscriminatorArgs>? Discriminator { get; set; }
 
         [Input("oneOf", required: true)]
-        private InputList<Inputs.VariablesAdditionalPropertiesArgs>? _oneOf;
+        private InputList<Inputs.PropertyDefinitionArgs>? _oneOf;
 
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
-        public InputList<Inputs.VariablesAdditionalPropertiesArgs> OneOf
+        public InputList<Inputs.PropertyDefinitionArgs> OneOf
         {
-            get => _oneOf ?? (_oneOf = new InputList<Inputs.VariablesAdditionalPropertiesArgs>());
+            get => _oneOf ?? (_oneOf = new InputList<Inputs.PropertyDefinitionArgs>());
             set => _oneOf = value;
         }
 
         [Input("type")]
-        public Input<Pulumi.Pulumi.VariablesAdditionalPropertiesChoice5Of5Type>? Type { get; set; }
+        public Input<Pulumi.Pulumi.PropertiesAdditionalPropertiesChoice5Of5Type>? Type { get; set; }
 
         public UnionTypeArgs()
         {

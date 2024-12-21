@@ -50,8 +50,6 @@ let genSdk (parameter: string) (name: string) =
     if proc.ExitCode <> 0 then
         failwithf "gen-sdk failed\nstdout:\n%s\nstderr:\n%s" (out.ToString()) (err.ToString())
 
-    System.IO.File.WriteAllText(System.IO.Path.Combine(cwd, "Examples", name, "dotnet", "version.txt"), "")
-
 [<Fact(Skip="allOf title not currently working")>]
 let ``Test githhub`` () =
     genSdk "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json" "github"

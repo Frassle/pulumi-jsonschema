@@ -31,7 +31,7 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("type")]
-        public Input<Pulumi.Pulumi.Choice5Of5Type>? Type { get; set; }
+        public Input<Pulumi.Pulumi.PropertiesType>? Type { get; set; }
 
         public OneOf4Args()
         {

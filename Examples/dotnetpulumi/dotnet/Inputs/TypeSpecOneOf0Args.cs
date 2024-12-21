@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class TypeSpecOneOf0Args : global::Pulumi.ResourceArgs
     {
         [Input("type", required: true)]
-        public Input<Pulumi.Pulumi.TypeSpecOneOf0PropertiesType> Type { get; set; } = null!;
+        public Input<Pulumi.Pulumi.Type> Type { get; set; } = null!;
 
         public TypeSpecOneOf0Args()
         {

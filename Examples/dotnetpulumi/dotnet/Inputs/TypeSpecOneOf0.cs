@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class TypeSpecOneOf0 : global::Pulumi.InvokeArgs
     {
         [Input("type", required: true)]
-        public Pulumi.Pulumi.TypeSpecOneOf0PropertiesType Type { get; set; }
+        public Pulumi.Pulumi.Type Type { get; set; }
 
         public TypeSpecOneOf0()
         {

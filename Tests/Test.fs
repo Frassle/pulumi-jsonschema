@@ -95,23 +95,24 @@ type SchemaTest =
 
         result |> toJson |> shouldJsonEqual expectedJson
 
-        let validationOptions = Json.Schema.ValidationOptions()
-        validationOptions.OutputFormat <- Json.Schema.OutputFormat.Basic
-        let validation = this.Schema.Validate(Option.toObj result, validationOptions)
 
-        if not validation.IsValid then
-            failwith validation.Message
+        let evaluationOptions = Json.Schema.EvaluationOptions()
+        evaluationOptions.OutputFormat <- Json.Schema.OutputFormat.Flag
+        let evaluation = this.Schema.Evaluate(Option.toObj result, evaluationOptions)
+
+        if not evaluation.IsValid then
+            failwithf "%A" evaluation.Errors
 
     member this.ShouldRead (expectedValue: PropertyValue) (json: string) : unit =
-        let validationOptions = Json.Schema.ValidationOptions()
-        validationOptions.OutputFormat <- Json.Schema.OutputFormat.Basic
+        let evaluationOptions = Json.Schema.EvaluationOptions()
+        evaluationOptions.OutputFormat <- Json.Schema.OutputFormat.Flag
 
         let element = fromJson json
         let node = Json.More.JsonElementExtensions.AsNode(element)
-        let validation = this.Schema.Validate(node, validationOptions)
+        let evaluation = this.Schema.Evaluate(node, evaluationOptions)
 
-        if not validation.IsValid then
-            failwith validation.Message
+        if not evaluation.IsValid then
+            failwithf "%A" evaluation.Errors
 
         this.Conversion.Reader element |> shouldEqual expectedValue
 
@@ -119,15 +120,15 @@ type SchemaTest =
         Assert.Throws<'T>(fun () -> this.Conversion.Writer value |> ignore)
 
     member this.ShouldThrow<'T when 'T :> exn>(json: string) : 'T =
-        let validationOptions = Json.Schema.ValidationOptions()
-        validationOptions.OutputFormat <- Json.Schema.OutputFormat.Basic
+        let evaluationOptions = Json.Schema.EvaluationOptions()
+        evaluationOptions.OutputFormat <- Json.Schema.OutputFormat.Flag
 
         let element = fromJson json
         let node = Json.More.JsonElementExtensions.AsNode(element)
-        let validation = this.Schema.Validate(node, validationOptions)
+        let evaluation = this.Schema.Evaluate(node, evaluationOptions)
 
-        if validation.IsValid then
-            failwith validation.Message
+        if evaluation.IsValid then
+            failwithf "%A" evaluation.Errors
 
         Assert.Throws<'T>(fun () -> fromJson json |> this.Conversion.Reader |> ignore)
 

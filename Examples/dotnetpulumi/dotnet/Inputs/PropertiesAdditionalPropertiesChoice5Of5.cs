@@ -31,7 +31,7 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("type")]
-        public Pulumi.Pulumi.PropertiesType? Type { get; set; }
+        public Pulumi.Pulumi.OneOf4PropertiesType? Type { get; set; }
 
         public PropertiesAdditionalPropertiesChoice5Of5()
         {

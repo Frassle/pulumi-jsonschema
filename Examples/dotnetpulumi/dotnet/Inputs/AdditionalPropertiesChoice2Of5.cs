@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class AdditionalPropertiesChoice2Of5 : global::Pulumi.InvokeArgs
     {
         [Input("items", required: true)]
-        public Inputs.AdditionalPropertiesInputPropertiesAdditionalProperties Items { get; set; } = null!;
+        public Inputs.PropertyDefinition Items { get; set; } = null!;
 
         [Input("type", required: true)]
         public string Type { get; set; } = null!;

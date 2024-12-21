@@ -14,14 +14,14 @@ namespace Pulumi.Pulumi.Outputs
     /// Describes an object or resource property
     /// </summary>
     [OutputType]
-    public sealed class AdditionalPropertiesInputPropertiesAdditionalProperties
+    public sealed class ProviderInputPropertiesAdditionalProperties
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
-        public readonly Outputs.PrimitiveType? Choice1Of5;
-        public readonly Outputs.AdditionalPropertiesChoice2Of5? Choice2Of5;
-        public readonly Outputs.Choice3Of5? Choice3Of5;
+        public readonly Outputs.AdditionalPropertiesChoice1Of5? Choice1Of5;
+        public readonly Outputs.Choice2Of5? Choice2Of5;
+        public readonly Outputs.InputPropertiesAdditionalPropertiesChoice3Of5? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
-        public readonly Outputs.TypeSpecOneOf4? Choice5Of5;
+        public readonly Outputs.InputPropertiesAdditionalPropertiesChoice5Of5? Choice5Of5;
         public readonly object? Const;
         public readonly object? Default;
         public readonly Outputs.DefaultInfo? DefaultInfo;
@@ -55,18 +55,18 @@ namespace Pulumi.Pulumi.Outputs
         public readonly bool? WillReplaceOnChanges;
 
         [OutputConstructor]
-        private AdditionalPropertiesInputPropertiesAdditionalProperties(
+        private ProviderInputPropertiesAdditionalProperties(
             ImmutableDictionary<string, object>? additionalProperties,
 
-            Outputs.PrimitiveType? choice1Of5,
+            Outputs.AdditionalPropertiesChoice1Of5? choice1Of5,
 
-            Outputs.AdditionalPropertiesChoice2Of5? choice2Of5,
+            Outputs.Choice2Of5? choice2Of5,
 
-            Outputs.Choice3Of5? choice3Of5,
+            Outputs.InputPropertiesAdditionalPropertiesChoice3Of5? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 
-            Outputs.TypeSpecOneOf4? choice5Of5,
+            Outputs.InputPropertiesAdditionalPropertiesChoice5Of5? choice5Of5,
 
             object? @const,
 

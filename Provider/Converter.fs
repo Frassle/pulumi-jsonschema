@@ -2448,7 +2448,7 @@ let convertSchema (uri : Uri) (packageName: string) (jsonSchema: JsonElement) : 
     functions.Add(packageName + ":index:write", writeFunction)
 
     let root = { BaseUri = uri; Document = jsonSchema }
-    let jsonSchema = Json.Schema.JsonSchema.FromText(jsonSchema.GetRawText())
+    let jsonSchema = Json.Schema.JsonSchema.FromText(jsonSchema.GetRawText().Replace("(?P<", "(?<"))
 
     let conversion =
         convertSubSchema root ConversionContext.Default Json.Pointer.JsonPointer.Empty jsonSchema
@@ -2476,9 +2476,8 @@ let convertSchema (uri : Uri) (packageName: string) (jsonSchema: JsonElement) : 
 
             // Else use the schema path of the type
             |> Option.orElseWith (fun () ->
-                complexType.Path.Segments
+                complexType.Path
                 |> Seq.toList
-                |> List.map (fun seg -> seg.Source)
                 |> List.filter (fun seg -> seg <> "$defs")
                 |> List.rev
                 |> allPrefixes
