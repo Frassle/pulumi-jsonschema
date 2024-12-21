@@ -2448,6 +2448,7 @@ let convertSchema (uri : Uri) (packageName: string) (jsonSchema: JsonElement) : 
     functions.Add(packageName + ":index:write", writeFunction)
 
     let root = { BaseUri = uri; Document = jsonSchema }
+    // Hack to workaround invalid regex in pulumi schema, can be removed once https://github.com/pulumi/pulumi/pull/18097 is merged.
     let jsonSchema = Json.Schema.JsonSchema.FromText(jsonSchema.GetRawText().Replace("(?P<", "(?<"))
 
     let conversion =
