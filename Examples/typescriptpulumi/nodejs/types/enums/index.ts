@@ -62,7 +62,7 @@ export const EnumTypeSpecPropertiesType = {
  */
 export type EnumTypeSpecPropertiesType = (typeof EnumTypeSpecPropertiesType)[keyof typeof EnumTypeSpecPropertiesType];
 
-export const InputPropertiesAdditionalPropertiesChoice5Of5Type = {
+export const InputPropertiesAdditionalPropertiesChoice1Of5Type = {
     Boolean: "boolean",
     Integer: "integer",
     Number: "number",
@@ -70,9 +70,9 @@ export const InputPropertiesAdditionalPropertiesChoice5Of5Type = {
 } as const;
 
 /**
- * The underlying primitive type of the union, if any
+ * The primitive type, if any
  */
-export type InputPropertiesAdditionalPropertiesChoice5Of5Type = (typeof InputPropertiesAdditionalPropertiesChoice5Of5Type)[keyof typeof InputPropertiesAdditionalPropertiesChoice5Of5Type];
+export type InputPropertiesAdditionalPropertiesChoice1Of5Type = (typeof InputPropertiesAdditionalPropertiesChoice1Of5Type)[keyof typeof InputPropertiesAdditionalPropertiesChoice1Of5Type];
 
 export const OneOf0PropertiesType = {
     Boolean: "boolean",
@@ -98,18 +98,6 @@ export const OneOf4PropertiesType = {
  */
 export type OneOf4PropertiesType = (typeof OneOf4PropertiesType)[keyof typeof OneOf4PropertiesType];
 
-export const PropertiesAdditionalPropertiesChoice1Of5Type = {
-    Boolean: "boolean",
-    Integer: "integer",
-    Number: "number",
-    String: "string",
-} as const;
-
-/**
- * The primitive type, if any
- */
-export type PropertiesAdditionalPropertiesChoice1Of5Type = (typeof PropertiesAdditionalPropertiesChoice1Of5Type)[keyof typeof PropertiesAdditionalPropertiesChoice1Of5Type];
-
 export const PropertiesAdditionalPropertiesChoice5Of5Type = {
     Boolean: "boolean",
     Integer: "integer",
@@ -134,7 +122,7 @@ export const PropertiesType = {
  */
 export type PropertiesType = (typeof PropertiesType)[keyof typeof PropertiesType];
 
-export const Type = {
+export const ProviderInputPropertiesAdditionalPropertiesChoice1Of5Type = {
     Boolean: "boolean",
     Integer: "integer",
     Number: "number",
@@ -143,6 +131,18 @@ export const Type = {
 
 /**
  * The primitive type, if any
+ */
+export type ProviderInputPropertiesAdditionalPropertiesChoice1Of5Type = (typeof ProviderInputPropertiesAdditionalPropertiesChoice1Of5Type)[keyof typeof ProviderInputPropertiesAdditionalPropertiesChoice1Of5Type];
+
+export const Type = {
+    Boolean: "boolean",
+    Integer: "integer",
+    Number: "number",
+    String: "string",
+} as const;
+
+/**
+ * The underlying primitive type of the union, if any
  */
 export type Type = (typeof Type)[keyof typeof Type];
 

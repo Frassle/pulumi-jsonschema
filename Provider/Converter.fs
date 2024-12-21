@@ -111,7 +111,7 @@ type StringValidation =
             |> Option.map (fun kw -> kw.Value)
           Pattern =
             Schema.pickKeyword<Json.Schema.PatternKeyword> keywords
-            |> Option.map (fun kw -> kw.Value.ToString()) }
+            |> Option.map (fun kw -> kw.Pattern) }
 
     member this.Validate(value: string) =
         let minCheck =
