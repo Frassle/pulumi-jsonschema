@@ -184,7 +184,7 @@ let ``Test merged refs`` () =
     """{}"""
     |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)
 
-[<Fact(Skip="Currently failing due to GenerateData not handling the cycle")>]
+[<Fact>]
 let ``Test cyclic refs`` () =
     let t =
         Test.convertSchema
@@ -204,7 +204,8 @@ let ``Test cyclic refs`` () =
         }
     }"""
 
-    t.RoundTrip()
+    // Currently failing due to GenerateData not handling the cycle
+    // t.RoundTrip()
 
     t.ShouldEqual(
         t.ComplexSchema
@@ -248,3 +249,4 @@ let ``Test cyclic refs`` () =
 
     """{}"""
     |> t.ShouldRead(PropertyValue ImmutableDictionary.Empty)
+
