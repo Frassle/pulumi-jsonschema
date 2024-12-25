@@ -14,22 +14,22 @@ namespace Pulumi.Pulumi.Outputs
     /// A reference to a union type. The "oneOf" property must be present. The union may additional specify an underlying primitive type via the "type" property and a discriminator via the "discriminator" property. No other properties may be present.
     /// </summary>
     [OutputType]
-    public sealed class PropertiesAdditionalPropertiesChoice5Of5
+    public sealed class VariablesAdditionalPropertiesChoice5Of5
     {
         public readonly Outputs.Discriminator? Discriminator;
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
-        public readonly ImmutableArray<Outputs.TypeSpec> OneOf;
-        public readonly Pulumi.Pulumi.OneOf4PropertiesType? Type;
+        public readonly ImmutableArray<Outputs.AdditionalProperties> OneOf;
+        public readonly Pulumi.Pulumi.TypeSpecOneOf4PropertiesType? Type;
 
         [OutputConstructor]
-        private PropertiesAdditionalPropertiesChoice5Of5(
+        private VariablesAdditionalPropertiesChoice5Of5(
             Outputs.Discriminator? discriminator,
 
-            ImmutableArray<Outputs.TypeSpec> oneOf,
+            ImmutableArray<Outputs.AdditionalProperties> oneOf,
 
-            Pulumi.Pulumi.OneOf4PropertiesType? type)
+            Pulumi.Pulumi.TypeSpecOneOf4PropertiesType? type)
         {
             Discriminator = discriminator;
             OneOf = oneOf;

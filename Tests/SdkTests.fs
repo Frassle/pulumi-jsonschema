@@ -67,6 +67,21 @@ let ``Test githhub`` () =
     Assert.NotNull(conversion)
     writeSdk conversion.Schema "github"
 
+[<Fact(Skip="Needs more translation map [(Json.Schema.RefKeyword, [Json.Schema.RefKeyword; Json.Schema.RefKeyword; Json.Schema.RefKeyword; ... ]); (Json.Schema.UnrecognizedKeyword, [Json.Schema.UnrecognizedKeyword; Json.Schema.UnrecognizedKeyword])]")>]
+let ``Test tsconfig`` () =
+    let uri =
+        Uri("https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/tsconfig.json")
+
+    let schema =
+        use client = new System.Net.Http.HttpClient()
+        let contents = client.GetStringAsync(uri)
+        System.Text.Json.JsonDocument.Parse contents.Result
+
+    let conversion = JsonSchema.Converter.convertSchema uri "tsconfig" schema.RootElement
+
+    Assert.NotNull(conversion)
+    writeSdk conversion.Schema "tsconfig"
+
 [<Fact>]
 let ``Test pulumi`` () =
     let uri =

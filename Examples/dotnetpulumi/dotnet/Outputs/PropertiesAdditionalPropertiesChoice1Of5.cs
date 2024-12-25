@@ -16,10 +16,10 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class PropertiesAdditionalPropertiesChoice1Of5
     {
-        public readonly Pulumi.Pulumi.AdditionalPropertiesChoice1Of5Type Type;
+        public readonly Pulumi.Pulumi.OneOf0PropertiesType Type;
 
         [OutputConstructor]
-        private PropertiesAdditionalPropertiesChoice1Of5(Pulumi.Pulumi.AdditionalPropertiesChoice1Of5Type type)
+        private PropertiesAdditionalPropertiesChoice1Of5(Pulumi.Pulumi.OneOf0PropertiesType type)
         {
             Type = type;
         }

@@ -11,21 +11,21 @@ namespace Pulumi.Pulumi.Outputs
 {
 
     /// <summary>
-    /// A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
+    /// A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
     /// </summary>
     [OutputType]
-    public sealed class VariablesAdditionalPropertiesChoice3Of5
+    public sealed class VariablesAdditionalPropertiesChoice2Of5
     {
-        public readonly Outputs.VariablesAdditionalProperties? AdditionalProperties;
+        public readonly Outputs.AdditionalProperties Items;
         public readonly string Type;
 
         [OutputConstructor]
-        private VariablesAdditionalPropertiesChoice3Of5(
-            Outputs.VariablesAdditionalProperties? additionalProperties,
+        private VariablesAdditionalPropertiesChoice2Of5(
+            Outputs.AdditionalProperties items,
 
             string type)
         {
-            AdditionalProperties = additionalProperties;
+            Items = items;
             Type = type;
         }
     }
