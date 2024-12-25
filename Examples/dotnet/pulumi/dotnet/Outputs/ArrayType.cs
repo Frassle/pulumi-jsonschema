@@ -16,12 +16,12 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class ArrayType
     {
-        public readonly Outputs.PropertyDefinition Items;
+        public readonly Outputs.AdditionalPropertiesPropertiesAdditionalProperties Items;
         public readonly string Type;
 
         [OutputConstructor]
         private ArrayType(
-            Outputs.PropertyDefinition items,
+            Outputs.AdditionalPropertiesPropertiesAdditionalProperties items,
 
             string type)
         {

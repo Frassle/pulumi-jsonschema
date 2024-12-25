@@ -63,7 +63,7 @@ namespace Pulumi.Pulumi.Outputs
         /// The URL to use when downloading the provider plugin binary.
         /// </summary>
         public readonly string? PluginDownloadURL;
-        public readonly Outputs.ObjectTypeSpec? Provider;
+        public readonly Outputs.ResourceDefinition? Provider;
         /// <summary>
         /// The name of the person or organization that authored and published the package.
         /// </summary>
@@ -75,7 +75,7 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// A map from type token to resourceSpec that describes the set of resources and components defined by this package.
         /// </summary>
-        public readonly ImmutableDictionary<string, Outputs.ResourceDefinition>? Resources;
+        public readonly ImmutableDictionary<string, Outputs.ObjectTypeSpec>? Resources;
         /// <summary>
         /// A map from type token to complexTypeSpec that describes the set of complex types (i.e. object, enum) defined by this package.
         /// </summary>
@@ -115,13 +115,13 @@ namespace Pulumi.Pulumi.Outputs
 
             string? pluginDownloadURL,
 
-            Outputs.ObjectTypeSpec? provider,
+            Outputs.ResourceDefinition? provider,
 
             string? publisher,
 
             string? repository,
 
-            ImmutableDictionary<string, Outputs.ResourceDefinition>? resources,
+            ImmutableDictionary<string, Outputs.ObjectTypeSpec>? resources,
 
             ImmutableDictionary<string, Outputs.TypeDefinition>? types,
 

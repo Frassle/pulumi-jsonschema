@@ -14,14 +14,14 @@ namespace Pulumi.Pulumi.Outputs
     /// A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
     /// </summary>
     [OutputType]
-    public sealed class VariablesAdditionalPropertiesChoice2Of5
+    public sealed class InputsPropertiesAdditionalPropertiesChoice2Of5
     {
-        public readonly Outputs.AdditionalProperties Items;
+        public readonly Outputs.PropertiesAdditionalProperties Items;
         public readonly string Type;
 
         [OutputConstructor]
-        private VariablesAdditionalPropertiesChoice2Of5(
-            Outputs.AdditionalProperties items,
+        private InputsPropertiesAdditionalPropertiesChoice2Of5(
+            Outputs.PropertiesAdditionalProperties items,
 
             string type)
         {

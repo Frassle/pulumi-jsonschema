@@ -16,7 +16,7 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class OneOf0 : global::Pulumi.InvokeArgs
     {
         [Input("type", required: true)]
-        public Pulumi.Pulumi.InputsPropertiesAdditionalPropertiesChoice1Of5Type Type { get; set; }
+        public Pulumi.Pulumi.Choice1Of5Type Type { get; set; }
 
         public OneOf0()
         {

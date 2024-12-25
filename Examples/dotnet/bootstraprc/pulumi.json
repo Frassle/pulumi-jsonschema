@@ -1,0 +1,147 @@
+{
+  "name": "bootstraprc",
+  "version": "1.0.0",
+  "description": "A pulumi package generated from a json schema",
+  "keywords": [
+    "pulumi",
+    "jsonschema"
+  ],
+  "homepage": "https://github.com/Frassle/pulumi-jsonschema",
+  "repository": "https://github.com/Frassle/pulumi-jsonschema",
+  "license": "Apache-2.0",
+  "pluginDownloadURL": "github://api.github.com/Frassle",
+  "parameterization": {
+    "baseProvider": {
+      "version": "0.1.1",
+      "name": "jsonschema"
+    },
+    "parameter": "Ymh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9TY2hlbWFTdG9yZS9zY2hlbWFzdG9yZS9tYXN0ZXIvc3JjL3NjaGVtYXMvanNvbi9ib290c3RyYXByYy5qc29u8Rx7CiAgIiRzY2hlbWEiOiAiaHR0cDovL2pzb24tc2NoZW1hLm9yZy9kcmFmdC0wNC9zY2hlbWEjIiwKICAiYWxsT2YiOiBbCiAgICB7CiAgICAgICIkcmVmIjogIiMvZGVmaW5pdGlvbnMvY29yZVByb3BlcnRpZXMiCiAgICB9LAogICAgewogICAgICAiYW55T2YiOiBbCiAgICAgICAgewogICAgICAgICAgInByb3BlcnRpZXMiOiB7CiAgICAgICAgICAgICJlbnYiOiB7CiAgICAgICAgICAgICAgImRlc2NyaXB0aW9uIjogIlNldHMgdGhlIGV4dHJhY3RTdHlsZXMgcHJvcGVydHkgYmFzZWQgb24gdGhlIHZhbHVlIG9mIE5PREVfRU5WIiwKICAgICAgICAgICAgICAidHlwZSI6ICJvYmplY3QiLAogICAgICAgICAgICAgICJwcm9wZXJ0aWVzIjogewogICAgICAgICAgICAgICAgImRldmVsb3BtZW50IjogewogICAgICAgICAgICAgICAgICAiJHJlZiI6ICIjL2RlZmluaXRpb25zL2V4dHJhY3RTdHlsaW5nIgogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICJwcm9kdWN0aW9uIjogewogICAgICAgICAgICAgICAgICAiJHJlZiI6ICIjL2RlZmluaXRpb25zL2V4dHJhY3RTdHlsaW5nIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgICAgfSwKICAgICAgICAgICJub3QiOiB7CiAgICAgICAgICAgICJwcm9wZXJ0aWVzIjogewogICAgICAgICAgICAgICJleHRyYWN0U3R5bGVzIjoge30KICAgICAgICAgICAgfSwKICAgICAgICAgICAgInJlcXVpcmVkIjogWyJleHRyYWN0U3R5bGVzIl0KICAgICAgICAgIH0KICAgICAgICB9LAogICAgICAgIHsKICAgICAgICAgICJwcm9wZXJ0aWVzIjogewogICAgICAgICAgICAiZXh0cmFjdFN0eWxlcyI6IHsKICAgICAgICAgICAgICAiJHJlZiI6ICIjL2RlZmluaXRpb25zL2V4dHJhY3RTdHlsaW5nL3Byb3BlcnRpZXMvZXh0cmFjdFN0eWxlcyIKICAgICAgICAgICAgfQogICAgICAgICAgfSwKICAgICAgICAgICJub3QiOiB7CiAgICAgICAgICAgICJwcm9wZXJ0aWVzIjogewogICAgICAgICAgICAgICJlbnYiOiB7fQogICAgICAgICAgICB9LAogICAgICAgICAgICAicmVxdWlyZWQiOiBbImVudiJdCiAgICAgICAgICB9CiAgICAgICAgfQogICAgICBdCiAgICB9LAogICAgewogICAgICAicmVxdWlyZWQiOiBbImJvb3RzdHJhcFZlcnNpb24iLCAic3R5bGVMb2FkZXJzIl0KICAgIH0KICBdLAogICJkZWZpbml0aW9ucyI6IHsKICAgICJleHRyYWN0U3R5bGluZyI6IHsKICAgICAgInR5cGUiOiAib2JqZWN0IiwKICAgICAgInByb3BlcnRpZXMiOiB7CiAgICAgICAgImV4dHJhY3RTdHlsZXMiOiB7CiAgICAgICAgICAiZGVmYXVsdCI6IGZhbHNlLAogICAgICAgICAgImRlc2NyaXB0aW9uIjogIkVuYWJsZXMvZGlzYWJsZXMgZXh0cmFjdGlvbiBvZiBzdHlsZXMgdG8gYSBzdGFuZGFsb25lIENTUyBmaWxlIHVzaW5nIGV4dHJhY3QtdGV4dC13ZWJwYWNrLXBsdWdpbiIsCiAgICAgICAgICAidHlwZSI6ICJib29sZWFuIgogICAgICAgIH0KICAgICAgfQogICAgfSwKICAgICJjb3JlUHJvcGVydGllcyI6IHsKICAgICAgInR5cGUiOiAib2JqZWN0IiwKICAgICAgInByb3BlcnRpZXMiOiB7CiAgICAgICAgImFwcFN0eWxlcyI6IHsKICAgICAgICAgICJkZXNjcmlwdGlvbiI6ICJJbXBvcnQgeW91ciBjdXN0b20gc3R5bGVzIGhlcmUuIFVzdWFsbHkgdGhpcyBlbmRwb2ludCBmaWxlIGNvbnRhaW5zIGEgbGlzdCBvZiBAaW1wb3J0cyBvZiB5b3VyIGFwcGxpY2F0aW9uIHN0eWxlcy4iLAogICAgICAgICAgInR5cGUiOiAic3RyaW5nIgogICAgICAgIH0sCiAgICAgICAgImJvb3RzdHJhcEN1c3RvbWl6YXRpb25zIjogewogICAgICAgICAgImRlc2NyaXB0aW9uIjogIlRoZSAuc2NzcyBmaWxlIHBhdGggdG8gYmUgbG9hZGVkIGFmdGVyIEJvb3RzdHJhcCdzIF92YXJpYWJsZXMuc2NzcyBmaWxlIiwKICAgICAgICAgICJ0eXBlIjogInN0cmluZyIKICAgICAgICB9LAogICAgICAgICJib290c3RyYXBWZXJzaW9uIjogewogICAgICAgICAgImRlZmF1bHQiOiAzLAogICAgICAgICAgImRlc2NyaXB0aW9uIjogIlRoZSBtYWpvciB2ZXJzaW9uIG9mIEJvb3RzdHJhcCBiZWluZyB1c2VkIiwKICAgICAgICAgICJlbnVtIjogWzMsIDRdLAogICAgICAgICAgInR5cGUiOiAiaW50ZWdlciIKICAgICAgICB9LAogICAgICAgICJsb2dsZXZlbCI6IHsKICAgICAgICAgICJkZXNjcmlwdGlvbiI6ICJUaGUgdmVyYm9zaXR5IG9mIGxvZ2dpbmcuIEV4Y2x1ZGUgdGhpcyBwcm9wZXJ0eSB0byBkaXNhYmxlLiIsCiAgICAgICAgICAiZW51bSI6IFsiZGVidWciXSwKICAgICAgICAgICJ0eXBlIjogInN0cmluZyIKICAgICAgICB9LAogICAgICAgICJwcmVCb290c3RyYXBDdXN0b21pemF0aW9ucyI6IHsKICAgICAgICAgICJkZXNjcmlwdGlvbiI6ICJUaGUgLnNjc3MgZmlsZSBwYXRoIHRvIGJlIGxvYWRlZCBiZWZvcmUgQm9vdHN0cmFwJ3MgX3ZhcmlhYmxlcy5zY3NzIGZpbGUiLAogICAgICAgICAgInR5cGUiOiAic3RyaW5nIgogICAgICAgIH0sCiAgICAgICAgInNjcmlwdHMiOiB7CiAgICAgICAgICAiZGVzY3JpcHRpb24iOiAiRXhjbHVkZXMvaW5jbHVkZXMgQm9vdHN0cmFwJ3MgSmF2YVNjcmlwdCBtb2R1bGVzIiwKICAgICAgICAgICJ0eXBlIjogWyJib29sZWFuIiwgIm9iamVjdCJdCiAgICAgICAgfSwKICAgICAgICAic3R5bGVMb2FkZXJzIjogewogICAgICAgICAgImRlZmF1bHQiOiBbInN0eWxlIiwgImNzcyIsICJzYXNzIl0sCiAgICAgICAgICAiZGVzY3JpcHRpb24iOiAiQW4gYXJyYXkgb2YgV2VicGFjayBsb2FkZXIgbmFtZXMuIE9yZGVyIG1hdHRlcnMsIGFuZCBzYXNzLWxvYWRlciBpcyByZXF1aXJlZC4iLAogICAgICAgICAgIml0ZW1zIjogewogICAgICAgICAgICAidHlwZSI6ICJzdHJpbmciCiAgICAgICAgICB9LAogICAgICAgICAgIm1pbkl0ZW1zIjogMSwKICAgICAgICAgICJ0eXBlIjogImFycmF5IiwKICAgICAgICAgICJ1bmlxdWVJdGVtcyI6IHRydWUKICAgICAgICB9LAogICAgICAgICJzdHlsZXMiOiB7CiAgICAgICAgICAiZGVzY3JpcHRpb24iOiAiRXhjbHVkZXMvaW5jbHVkZXMgQm9vdHN0cmFwJ3MgQ1NTIG1vZHVsZXMiLAogICAgICAgICAgInR5cGUiOiBbImJvb2xlYW4iLCAib2JqZWN0Il0KICAgICAgICB9LAogICAgICAgICJ1c2VDdXN0b21JY29uRm9udFBhdGgiOiB7CiAgICAgICAgICAiZGVmYXVsdCI6IGZhbHNlLAogICAgICAgICAgImRlc2NyaXB0aW9uIjogIlNldCB0byB0cnVlIGlmIHVzaW5nIGEgY3VzdG9tIGljb24gZm9udCBhbmQgeW91IG5lZWQgdG8gc3BlY2lmeSBpdHMgcGF0aCBpbiB5b3VyIFNhc3MgZmlsZXMiLAogICAgICAgICAgInR5cGUiOiAiYm9vbGVhbiIKICAgICAgICB9LAogICAgICAgICJ1c2VGbGV4Ym94IjogewogICAgICAgICAgImRlZmF1bHQiOiB0cnVlLAogICAgICAgICAgImRlc2NyaXB0aW9uIjogIkVuYWJsZXMvZGlzYWJsZXMgdGhlIGZsZXhib3ggbW9kZWwgYXZhaWxhYmxlIGluIEJvb3RzdHJhcCA0IiwKICAgICAgICAgICJ0eXBlIjogImJvb2xlYW4iCiAgICAgICAgfQogICAgICB9CiAgICB9CiAgfSwKICAiaWQiOiAiaHR0cHM6Ly9qc29uLnNjaGVtYXN0b3JlLm9yZy9ib290c3RyYXByYy5qc29uIiwKICAidGl0bGUiOiAiSlNPTiBzY2hlbWEgZm9yIFdlYnBhY2sncyBib290c3RyYXAtbG9hZGVyIGNvbmZpZ3VyYXRpb24gZmlsZSIsCiAgInR5cGUiOiAib2JqZWN0Igp9"
+  },
+  "functions": {
+    "bootstraprc:index:read": {
+      "description": "Read the given JSON into the object model",
+      "inputs": {
+        "required": [
+          "json"
+        ],
+        "properties": {
+          "json": {
+            "type": "string"
+          }
+        }
+      },
+      "outputs": {
+        "required": [
+          "value"
+        ],
+        "properties": {
+          "value": {
+            "$ref": "#/types/bootstraprc:index:coreProperties"
+          }
+        }
+      }
+    },
+    "bootstraprc:index:write": {
+      "description": "Read the given JSON into the object model",
+      "inputs": {
+        "required": [
+          "value"
+        ],
+        "properties": {
+          "value": {
+            "$ref": "#/types/bootstraprc:index:coreProperties"
+          }
+        }
+      },
+      "outputs": {
+        "required": [
+          "json"
+        ],
+        "properties": {
+          "json": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "types": {
+    "bootstraprc:index:loglevel": {
+      "description": "The verbosity of logging. Exclude this property to disable.",
+      "type": "string",
+      "enum": [
+        {
+          "value": "debug"
+        }
+      ]
+    },
+    "bootstraprc:index:coreProperties": {
+      "type": "object",
+      "properties": {
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "pulumi.json#/Any"
+          }
+        },
+        "appStyles": {
+          "type": "string",
+          "description": "Import your custom styles here. Usually this endpoint file contains a list of @imports of your application styles."
+        },
+        "bootstrapCustomizations": {
+          "type": "string",
+          "description": "The .scss file path to be loaded after Bootstrap\u0027s _variables.scss file"
+        },
+        "bootstrapVersion": {
+          "$ref": "#/types/bootstraprc:index:bootstrapVersion"
+        },
+        "loglevel": {
+          "$ref": "#/types/bootstraprc:index:loglevel"
+        },
+        "preBootstrapCustomizations": {
+          "type": "string",
+          "description": "The .scss file path to be loaded before Bootstrap\u0027s _variables.scss file"
+        },
+        "scripts": {
+          "$ref": "pulumi.json#/Any",
+          "description": "unhandled schema: Json.Schema.DescriptionKeyword, Json.Schema.TypeKeyword"
+        },
+        "styleLoaders": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "An array of Webpack loader names. Order matters, and sass-loader is required."
+        },
+        "styles": {
+          "$ref": "pulumi.json#/Any",
+          "description": "unhandled schema: Json.Schema.DescriptionKeyword, Json.Schema.TypeKeyword"
+        },
+        "useCustomIconFontPath": {
+          "type": "boolean",
+          "description": "Set to true if using a custom icon font and you need to specify its path in your Sass files"
+        },
+        "useFlexbox": {
+          "type": "boolean",
+          "description": "Enables/disables the flexbox model available in Bootstrap 4"
+        }
+      },
+      "required": [
+        "bootstrapVersion",
+        "styleLoaders"
+      ]
+    },
+    "bootstraprc:index:bootstrapVersion": {
+      "description": "The major version of Bootstrap being used",
+      "type": "integer",
+      "enum": [
+        {
+          "value": 3
+        },
+        {
+          "value": 4
+        }
+      ]
+    }
+  }
+}

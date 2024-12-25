@@ -54,50 +54,37 @@ let writeSdk (schema: System.Text.Json.Nodes.JsonObject) (name: string) =
     if proc.ExitCode <> 0 then
         failwithf "gen-sdk failed\nstdout:\n%s\nstderr:\n%s" (out.ToString()) (err.ToString())
 
-[<Fact(Skip="allOf title not currently working")>]
-let ``Test githhub`` () =
+let doTest uri name = 
     let uri =
-        Uri("https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json")
+        Uri(uri)
 
     let schema =
         use client = new System.Net.Http.HttpClient()
         let contents = client.GetStringAsync(uri)
         System.Text.Json.JsonDocument.Parse contents.Result
 
-    let conversion = JsonSchema.Converter.convertSchema uri "github" schema.RootElement
+    let conversion = JsonSchema.Converter.convertSchema uri name schema.RootElement
 
     Assert.NotNull(conversion)
-    writeSdk conversion.Schema "github"
+    writeSdk conversion.Schema name
+    conversion
+
+
+[<Fact(Skip="allOf title not currently working")>]
+let ``Test githhub`` () =
+    doTest "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json" "github"
 
 [<Fact(Skip="Needs more translation map [(Json.Schema.RefKeyword, [Json.Schema.RefKeyword; Json.Schema.RefKeyword; Json.Schema.RefKeyword; ... ]); (Json.Schema.UnrecognizedKeyword, [Json.Schema.UnrecognizedKeyword; Json.Schema.UnrecognizedKeyword])]")>]
 let ``Test tsconfig`` () =
-    let uri =
-        Uri("https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/tsconfig.json")
+    doTest "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/tsconfig.json" "tsconfig"
 
-    let schema =
-        use client = new System.Net.Http.HttpClient()
-        let contents = client.GetStringAsync(uri)
-        System.Text.Json.JsonDocument.Parse contents.Result
-
-    let conversion = JsonSchema.Converter.convertSchema uri "tsconfig" schema.RootElement
-
-    Assert.NotNull(conversion)
-    writeSdk conversion.Schema "tsconfig"
+[<Fact>]
+let ``Test bootstraprc`` () =
+    doTest "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/bootstraprc.json" "bootstraprc"
 
 [<Fact>]
 let ``Test pulumi`` () =
-    let uri =
-        Uri("https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json")
-
-    let schema =
-        use client = new System.Net.Http.HttpClient()
-        let contents = client.GetStringAsync(uri)
-        System.Text.Json.JsonDocument.Parse contents.Result
-
-    let conversion = JsonSchema.Converter.convertSchema uri "pulumi" schema.RootElement
-
-    Assert.NotNull(conversion)
-    writeSdk conversion.Schema "pulumi"
+    let conversion = doTest "https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json" "pulumi"
 
     // What's "fun" is that this is the schema for pulumi schema,
     // and so we've generated a pulumi schema for pulumi schema,
