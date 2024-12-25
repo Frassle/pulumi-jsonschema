@@ -27,7 +27,7 @@ namespace Pulumi.Pulumi.Inputs
         public Inputs.TypeSpecOneOf0? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Inputs.VariablesAdditionalPropertiesChoice2Of5? Choice2Of5 { get; set; }
+        public Inputs.TypeSpecOneOf1? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
         public Inputs.Choice3Of5? Choice3Of5 { get; set; }
@@ -36,7 +36,7 @@ namespace Pulumi.Pulumi.Inputs
         public Inputs.NamedType? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
-        public Inputs.Choice5Of5? Choice5Of5 { get; set; }
+        public Inputs.AdditionalPropertiesChoice5Of5? Choice5Of5 { get; set; }
 
         [Input("const")]
         public object? Const { get; set; }

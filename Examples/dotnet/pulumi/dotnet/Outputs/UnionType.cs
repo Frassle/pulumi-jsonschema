@@ -20,14 +20,14 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
-        public readonly ImmutableArray<Outputs.InputsPropertiesAdditionalProperties> OneOf;
+        public readonly ImmutableArray<Outputs.PropertiesAdditionalProperties> OneOf;
         public readonly Pulumi.Pulumi.OneOf4PropertiesType? Type;
 
         [OutputConstructor]
         private UnionType(
             Outputs.Discriminator? discriminator,
 
-            ImmutableArray<Outputs.InputsPropertiesAdditionalProperties> oneOf,
+            ImmutableArray<Outputs.PropertiesAdditionalProperties> oneOf,
 
             Pulumi.Pulumi.OneOf4PropertiesType? type)
         {

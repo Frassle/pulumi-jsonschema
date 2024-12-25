@@ -16,12 +16,12 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class OneOf2
     {
-        public readonly Outputs.PropertyDefinition? AdditionalProperties;
+        public readonly Outputs.InputPropertiesAdditionalProperties? AdditionalProperties;
         public readonly string Type;
 
         [OutputConstructor]
         private OneOf2(
-            Outputs.PropertyDefinition? additionalProperties,
+            Outputs.InputPropertiesAdditionalProperties? additionalProperties,
 
             string type)
         {
