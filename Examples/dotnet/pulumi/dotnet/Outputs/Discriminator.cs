@@ -18,7 +18,7 @@ namespace Pulumi.Pulumi.Outputs
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
         /// <summary>
-        /// an optional object to hold mappings between payload values and schema names or references
+        /// An optional object to hold mappings between payload values and schema names or references
         /// </summary>
         public readonly ImmutableDictionary<string, string>? Mapping;
         /// <summary>

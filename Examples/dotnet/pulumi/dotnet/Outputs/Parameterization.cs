@@ -17,6 +17,9 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class Parameterization
     {
         public readonly Outputs.BaseProvider? BaseProvider;
+        /// <summary>
+        /// The parameter for the provider.
+        /// </summary>
         public readonly string? Parameter;
 
         [OutputConstructor]

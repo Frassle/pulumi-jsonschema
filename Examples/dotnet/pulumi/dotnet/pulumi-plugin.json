@@ -1,4 +1,6 @@
 {
   "resource": true,
-  "name": "pulumi"
+  "name": "pulumi",
+  "version": "1.0.0",
+  "server": "github://api.github.com/Frassle"
 }

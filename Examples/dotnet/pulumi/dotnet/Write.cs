@@ -15,7 +15,7 @@ namespace Pulumi.Pulumi
         /// Read the given JSON into the object model
         /// </summary>
         public static Task<WriteResult> InvokeAsync(WriteArgs args, InvokeOptions? options = null)
-            => global::Pulumi.Deployment.Instance.InvokeAsync<WriteResult>("pulumi:index:write", args ?? new WriteArgs(), options.WithDefaults());
+            => global::Pulumi.Deployment.Instance.InvokeAsync<WriteResult>("pulumi:index:write", args ?? new WriteArgs(), options.WithDefaults(), Utilities.PackageParameterization());
 
         /// <summary>
         /// Read the given JSON into the object model

@@ -27,7 +27,7 @@ namespace Pulumi.Pulumi.Inputs
         private InputMap<string>? _mapping;
 
         /// <summary>
-        /// an optional object to hold mappings between payload values and schema names or references
+        /// An optional object to hold mappings between payload values and schema names or references
         /// </summary>
         public InputMap<string> Mapping
         {

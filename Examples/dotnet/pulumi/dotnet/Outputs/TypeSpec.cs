@@ -18,8 +18,8 @@ namespace Pulumi.Pulumi.Outputs
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
         public readonly Outputs.Choice1Of5? Choice1Of5;
-        public readonly Outputs.TypeSpecOneOf1? Choice2Of5;
-        public readonly Outputs.AdditionalPropertiesPropertiesAdditionalPropertiesChoice3Of5? Choice3Of5;
+        public readonly Outputs.OneOf1? Choice2Of5;
+        public readonly Outputs.AdditionalPropertiesChoice3Of5? Choice3Of5;
         public readonly Outputs.NamedType? Choice4Of5;
         public readonly Outputs.AdditionalPropertiesChoice5Of5? Choice5Of5;
         public readonly object? Const;
@@ -60,9 +60,9 @@ namespace Pulumi.Pulumi.Outputs
 
             Outputs.Choice1Of5? choice1Of5,
 
-            Outputs.TypeSpecOneOf1? choice2Of5,
+            Outputs.OneOf1? choice2Of5,
 
-            Outputs.AdditionalPropertiesPropertiesAdditionalPropertiesChoice3Of5? choice3Of5,
+            Outputs.AdditionalPropertiesChoice3Of5? choice3Of5,
 
             Outputs.NamedType? choice4Of5,
 

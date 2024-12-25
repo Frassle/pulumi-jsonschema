@@ -20,16 +20,16 @@ namespace Pulumi.Pulumi.Outputs
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
-        public readonly ImmutableArray<Outputs.AdditionalPropertiesInputPropertiesAdditionalProperties> OneOf;
-        public readonly Pulumi.Pulumi.InputPropertiesAdditionalPropertiesChoice5Of5Type? Type;
+        public readonly ImmutableArray<Outputs.PropertyDefinition> OneOf;
+        public readonly Pulumi.Pulumi.PropertiesType? Type;
 
         [OutputConstructor]
         private OneOf4(
             Outputs.Discriminator? discriminator,
 
-            ImmutableArray<Outputs.AdditionalPropertiesInputPropertiesAdditionalProperties> oneOf,
+            ImmutableArray<Outputs.PropertyDefinition> oneOf,
 
-            Pulumi.Pulumi.InputPropertiesAdditionalPropertiesChoice5Of5Type? type)
+            Pulumi.Pulumi.PropertiesType? type)
         {
             Discriminator = discriminator;
             OneOf = oneOf;

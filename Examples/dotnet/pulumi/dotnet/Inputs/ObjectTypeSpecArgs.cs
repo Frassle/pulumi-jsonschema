@@ -48,14 +48,14 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? Description { get; set; }
 
         [Input("inputProperties")]
-        private InputMap<Inputs.InputPropertiesAdditionalPropertiesArgs>? _inputProperties;
+        private InputMap<Inputs.ProviderInputPropertiesAdditionalPropertiesArgs>? _inputProperties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the resource's input properties.
         /// </summary>
-        public InputMap<Inputs.InputPropertiesAdditionalPropertiesArgs> InputProperties
+        public InputMap<Inputs.ProviderInputPropertiesAdditionalPropertiesArgs> InputProperties
         {
-            get => _inputProperties ?? (_inputProperties = new InputMap<Inputs.InputPropertiesAdditionalPropertiesArgs>());
+            get => _inputProperties ?? (_inputProperties = new InputMap<Inputs.ProviderInputPropertiesAdditionalPropertiesArgs>());
             set => _inputProperties = value;
         }
 
@@ -84,14 +84,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("properties")]
-        private InputMap<Inputs.PropertiesAdditionalPropertiesArgs>? _properties;
+        private InputMap<Inputs.PropertyDefinitionArgs>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public InputMap<Inputs.PropertiesAdditionalPropertiesArgs> Properties
+        public InputMap<Inputs.PropertyDefinitionArgs> Properties
         {
-            get => _properties ?? (_properties = new InputMap<Inputs.PropertiesAdditionalPropertiesArgs>());
+            get => _properties ?? (_properties = new InputMap<Inputs.PropertyDefinitionArgs>());
             set => _properties = value;
         }
 

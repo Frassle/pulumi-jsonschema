@@ -48,14 +48,14 @@ namespace Pulumi.Pulumi.Inputs
         public Input<string>? Description { get; set; }
 
         [Input("inputProperties")]
-        private InputMap<Inputs.AdditionalPropertiesInputPropertiesAdditionalPropertiesArgs>? _inputProperties;
+        private InputMap<Inputs.InputPropertiesAdditionalPropertiesArgs>? _inputProperties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the resource's input properties.
         /// </summary>
-        public InputMap<Inputs.AdditionalPropertiesInputPropertiesAdditionalPropertiesArgs> InputProperties
+        public InputMap<Inputs.InputPropertiesAdditionalPropertiesArgs> InputProperties
         {
-            get => _inputProperties ?? (_inputProperties = new InputMap<Inputs.AdditionalPropertiesInputPropertiesAdditionalPropertiesArgs>());
+            get => _inputProperties ?? (_inputProperties = new InputMap<Inputs.InputPropertiesAdditionalPropertiesArgs>());
             set => _inputProperties = value;
         }
 
