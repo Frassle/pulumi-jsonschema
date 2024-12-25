@@ -28,14 +28,14 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("variables")]
-        private InputMap<Inputs.VariablesAdditionalPropertiesArgs>? _variables;
+        private InputMap<Inputs.AdditionalPropertiesArgs>? _variables;
 
         /// <summary>
         /// A map from variable name to propertySpec that describes a package's configuration variables.
         /// </summary>
-        public InputMap<Inputs.VariablesAdditionalPropertiesArgs> Variables
+        public InputMap<Inputs.AdditionalPropertiesArgs> Variables
         {
-            get => _variables ?? (_variables = new InputMap<Inputs.VariablesAdditionalPropertiesArgs>());
+            get => _variables ?? (_variables = new InputMap<Inputs.AdditionalPropertiesArgs>());
             set => _variables = value;
         }
 

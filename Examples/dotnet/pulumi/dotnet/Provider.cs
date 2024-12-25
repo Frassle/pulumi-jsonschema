@@ -20,7 +20,7 @@ namespace Pulumi.Pulumi
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
         public Provider(string name, ProviderArgs? args = null, CustomResourceOptions? options = null)
-            : base("pulumi", name, args ?? new ProviderArgs(), MakeResourceOptions(options, ""))
+            : base("pulumi", name, args ?? new ProviderArgs(), MakeResourceOptions(options, ""), Utilities.PackageParameterization())
         {
         }
 
@@ -29,6 +29,7 @@ namespace Pulumi.Pulumi
             var defaultOptions = new CustomResourceOptions
             {
                 Version = Utilities.Version,
+                PluginDownloadURL = "github://api.github.com/Frassle",
             };
             var merged = CustomResourceOptions.Merge(defaultOptions, options);
             // Override the ID if one was specified for consistency with other language SDKs.

@@ -24,7 +24,7 @@ let genSdk (parameter: string) (name: string) =
           "--language"
           "nodejs"
           "--out"
-          "./Examples/typescript" + name ] do
+          "./Examples/typescript/" + name ] do
         si.ArgumentList.Add arg
 
     si.RedirectStandardOutput <- true

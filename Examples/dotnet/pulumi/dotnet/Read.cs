@@ -15,7 +15,7 @@ namespace Pulumi.Pulumi
         /// Read the given JSON into the object model
         /// </summary>
         public static Task<ReadResult> InvokeAsync(ReadArgs args, InvokeOptions? options = null)
-            => global::Pulumi.Deployment.Instance.InvokeAsync<ReadResult>("pulumi:index:read", args ?? new ReadArgs(), options.WithDefaults());
+            => global::Pulumi.Deployment.Instance.InvokeAsync<ReadResult>("pulumi:index:read", args ?? new ReadArgs(), options.WithDefaults(), Utilities.PackageParameterization());
 
         /// <summary>
         /// Read the given JSON into the object model

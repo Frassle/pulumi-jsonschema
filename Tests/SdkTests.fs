@@ -17,6 +17,8 @@ let writeSdk (schema: System.Text.Json.Nodes.JsonObject) (name: string) =
     let options = System.Text.Json.JsonSerializerOptions()
     options.WriteIndented <- true
     let schemaPath = System.IO.Path.Combine(cwd, "Examples", "dotnet", name, "pulumi.json")
+    System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(schemaPath)) |> ignore
+
     System.IO.File.WriteAllText(schemaPath, schema.ToJsonString(options))
 
     let si = System.Diagnostics.ProcessStartInfo("pulumi")
@@ -28,7 +30,7 @@ let writeSdk (schema: System.Text.Json.Nodes.JsonObject) (name: string) =
           "--language"
           "dotnet"
           "--out"
-          "./Examples/dotnet" + name ] do
+          "./Examples/dotnet/" + name ] do
         si.ArgumentList.Add arg
 
     si.RedirectStandardOutput <- true

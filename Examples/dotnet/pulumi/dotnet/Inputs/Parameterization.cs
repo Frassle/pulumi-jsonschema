@@ -18,6 +18,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("baseProvider")]
         public Inputs.BaseProvider? BaseProvider { get; set; }
 
+        /// <summary>
+        /// The parameter for the provider.
+        /// </summary>
         [Input("parameter")]
         public string? Parameter { get; set; }
 
