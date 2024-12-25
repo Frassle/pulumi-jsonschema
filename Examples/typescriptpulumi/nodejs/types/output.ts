@@ -11,11 +11,11 @@ import * as enums from "../types/enums";
  */
 export interface AdditionalProperties {
     additionalProperties?: {[key: string]: any};
-    choice1Of5?: outputs.OneOf0;
-    choice2Of5?: outputs.ProviderInputPropertiesAdditionalPropertiesChoice2Of5;
-    choice3Of5?: outputs.InputPropertiesAdditionalPropertiesChoice3Of5;
+    choice1Of5?: outputs.Choice1Of5;
+    choice2Of5?: outputs.ArrayType;
+    choice3Of5?: outputs.AdditionalPropertiesChoice3Of5;
     choice4Of5?: outputs.NamedType;
-    choice5Of5?: outputs.TypeSpecOneOf4;
+    choice5Of5?: outputs.Choice5Of5;
     const?: boolean | number | string;
     default?: boolean | number | string;
     defaultInfo?: outputs.DefaultInfo;
@@ -60,7 +60,7 @@ export interface AdditionalPropertiesChoice1Of5 {
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface AdditionalPropertiesChoice2Of5 {
-    items: outputs.VariablesAdditionalProperties;
+    items: outputs.TypeSpec;
     type: "array";
 }
 
@@ -68,7 +68,7 @@ export interface AdditionalPropertiesChoice2Of5 {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface AdditionalPropertiesChoice3Of5 {
-    additionalProperties?: outputs.VariablesAdditionalProperties;
+    additionalProperties?: outputs.AdditionalProperties;
     type: "object";
 }
 
@@ -80,8 +80,51 @@ export interface AdditionalPropertiesChoice5Of5 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: outputs.VariablesAdditionalProperties[];
-    type?: enums.VariablesAdditionalPropertiesChoice5Of5Type;
+    oneOf: outputs.InputPropertiesAdditionalProperties[];
+    type?: enums.InputPropertiesAdditionalPropertiesChoice5Of5Type;
+}
+
+/**
+ * Describes an object or resource property
+ */
+export interface AdditionalPropertiesInputPropertiesAdditionalProperties {
+    additionalProperties?: {[key: string]: any};
+    choice1Of5?: outputs.InputPropertiesAdditionalPropertiesChoice1Of5;
+    choice2Of5?: outputs.Choice2Of5;
+    choice3Of5?: outputs.MapType;
+    choice4Of5?: outputs.NamedType;
+    choice5Of5?: outputs.OneOf4;
+    const?: boolean | number | string;
+    default?: boolean | number | string;
+    defaultInfo?: outputs.DefaultInfo;
+    /**
+     * Indicates whether the property is deprecated
+     */
+    deprecationMessage?: string;
+    /**
+     * The description of the property, if any. Interpreted as Markdown.
+     */
+    description?: string;
+    /**
+     * Additional language-specific data about the property.
+     */
+    language?: {[key: string]: any};
+    /**
+     * Indicates that when used as an input, this type does not accept eventual values.
+     */
+    plain?: boolean;
+    /**
+     * Specifies whether a change to the property causes its containing resource to be replaced instead of updated (default false).
+     */
+    replaceOnChanges?: boolean;
+    /**
+     * Specifies whether the property is secret (default false).
+     */
+    secret?: boolean;
+    /**
+     * Indicates that the provider will replace the resource when this property is changed.
+     */
+    willReplaceOnChanges?: boolean;
 }
 
 export interface AliasDefinition {
@@ -104,7 +147,7 @@ export interface AliasDefinition {
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface ArrayType {
-    items: outputs.PropertyDefinition;
+    items: outputs.AdditionalProperties;
     type: "array";
 }
 
@@ -124,6 +167,57 @@ export interface BaseProvider {
 }
 
 /**
+ * Describes an object or resource property
+ */
+export interface Choice1Of2PropertiesAdditionalProperties {
+    additionalProperties?: {[key: string]: any};
+    choice1Of5?: outputs.AdditionalPropertiesChoice1Of5;
+    choice2Of5?: outputs.Choice1Of2PropertiesAdditionalPropertiesChoice2Of5;
+    choice3Of5?: outputs.OneOf2;
+    choice4Of5?: outputs.NamedType;
+    choice5Of5?: outputs.Choice1Of2PropertiesAdditionalPropertiesChoice5Of5;
+    const?: boolean | number | string;
+    default?: boolean | number | string;
+    defaultInfo?: outputs.DefaultInfo;
+    /**
+     * Indicates whether the property is deprecated
+     */
+    deprecationMessage?: string;
+    /**
+     * The description of the property, if any. Interpreted as Markdown.
+     */
+    description?: string;
+    /**
+     * Additional language-specific data about the property.
+     */
+    language?: {[key: string]: any};
+    /**
+     * Indicates that when used as an input, this type does not accept eventual values.
+     */
+    plain?: boolean;
+    /**
+     * Specifies whether a change to the property causes its containing resource to be replaced instead of updated (default false).
+     */
+    replaceOnChanges?: boolean;
+    /**
+     * Specifies whether the property is secret (default false).
+     */
+    secret?: boolean;
+    /**
+     * Indicates that the provider will replace the resource when this property is changed.
+     */
+    willReplaceOnChanges?: boolean;
+}
+
+/**
+ * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
+ */
+export interface Choice1Of2PropertiesAdditionalPropertiesChoice2Of5 {
+    items: outputs.Choice1Of2PropertiesAdditionalProperties;
+    type: "array";
+}
+
+/**
  * A reference to a union type. The "oneOf" property must be present. The union may additional specify an underlying primitive type via the "type" property and a discriminator via the "discriminator" property. No other properties may be present.
  */
 export interface Choice1Of2PropertiesAdditionalPropertiesChoice5Of5 {
@@ -131,22 +225,22 @@ export interface Choice1Of2PropertiesAdditionalPropertiesChoice5Of5 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: outputs.PropertyDefinition[];
-    type?: enums.PropertiesAdditionalPropertiesChoice5Of5Type;
+    oneOf: outputs.Choice1Of2PropertiesAdditionalProperties[];
+    type?: enums.Choice1Of2PropertiesAdditionalPropertiesChoice5Of5Type;
 }
 
 /**
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface Choice1Of5 {
-    type: enums.TypeSpecOneOf0PropertiesType;
+    type: enums.OneOf0PropertiesType;
 }
 
 /**
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface Choice2Of5 {
-    items: outputs.ProviderPropertiesAdditionalProperties;
+    items: outputs.AdditionalPropertiesInputPropertiesAdditionalProperties;
     type: "array";
 }
 
@@ -154,7 +248,7 @@ export interface Choice2Of5 {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface Choice3Of5 {
-    additionalProperties?: outputs.PropertiesAdditionalProperties;
+    additionalProperties?: outputs.TypeSpec;
     type: "object";
 }
 
@@ -166,7 +260,7 @@ export interface Choice5Of5 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: outputs.TypeSpec[];
+    oneOf: outputs.AdditionalProperties[];
     type?: enums.AdditionalPropertiesChoice5Of5Type;
 }
 
@@ -181,7 +275,7 @@ export interface Config {
     /**
      * A map from variable name to propertySpec that describes a package's configuration variables.
      */
-    variables?: {[key: string]: outputs.VariablesAdditionalProperties};
+    variables?: {[key: string]: outputs.TypeSpec};
 }
 
 /**
@@ -275,38 +369,15 @@ export interface FunctionDefinition {
 }
 
 /**
- * A reference to a primitive type. A primitive type must have only the "type" property set.
- */
-export interface InputPropertiesAdditionalPropertiesChoice1Of5 {
-    type: enums.InputPropertiesAdditionalPropertiesChoice1Of5Type;
-}
-
-/**
- * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
- */
-export interface InputPropertiesAdditionalPropertiesChoice2Of5 {
-    items: outputs.TypeSpec;
-    type: "array";
-}
-
-/**
- * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
- */
-export interface InputPropertiesAdditionalPropertiesChoice3Of5 {
-    additionalProperties?: outputs.AdditionalProperties;
-    type: "object";
-}
-
-/**
  * Describes an object or resource property
  */
-export interface InputsPropertiesAdditionalProperties {
+export interface InputPropertiesAdditionalProperties {
     additionalProperties?: {[key: string]: any};
-    choice1Of5?: outputs.PropertiesAdditionalPropertiesChoice1Of5;
-    choice2Of5?: outputs.OneOf1;
-    choice3Of5?: outputs.PropertiesAdditionalPropertiesChoice3Of5;
+    choice1Of5?: outputs.PrimitiveType;
+    choice2Of5?: outputs.TypeSpecOneOf1;
+    choice3Of5?: outputs.InputPropertiesAdditionalPropertiesChoice3Of5;
     choice4Of5?: outputs.NamedType;
-    choice5Of5?: outputs.OneOf4;
+    choice5Of5?: outputs.AdditionalPropertiesChoice5Of5;
     const?: boolean | number | string;
     default?: boolean | number | string;
     defaultInfo?: outputs.DefaultInfo;
@@ -341,10 +412,25 @@ export interface InputsPropertiesAdditionalProperties {
 }
 
 /**
+ * A reference to a primitive type. A primitive type must have only the "type" property set.
+ */
+export interface InputPropertiesAdditionalPropertiesChoice1Of5 {
+    type: enums.Type;
+}
+
+/**
+ * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
+ */
+export interface InputPropertiesAdditionalPropertiesChoice3Of5 {
+    additionalProperties?: outputs.InputPropertiesAdditionalProperties;
+    type: "object";
+}
+
+/**
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface MapType {
-    additionalProperties?: outputs.TypeSpec;
+    additionalProperties?: outputs.AdditionalPropertiesInputPropertiesAdditionalProperties;
     type: "object";
 }
 
@@ -390,7 +476,7 @@ export interface ObjectTypeDefinition {
     /**
      * A map from property name to propertySpec that describes the object's properties.
      */
-    properties?: {[key: string]: outputs.PropertyDefinition};
+    properties?: {[key: string]: outputs.Choice1Of2PropertiesAdditionalProperties};
     /**
      * A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
      */
@@ -406,7 +492,7 @@ export interface ObjectTypeDetails {
     /**
      * A map from property name to propertySpec that describes the object's properties.
      */
-    properties?: {[key: string]: outputs.InputsPropertiesAdditionalProperties};
+    properties?: {[key: string]: outputs.PropertyDefinition};
     /**
      * A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
      */
@@ -433,7 +519,7 @@ export interface ObjectTypeSpec {
     /**
      * A map from property name to propertySpec that describes the resource's input properties.
      */
-    inputProperties?: {[key: string]: outputs.TypeSpec};
+    inputProperties?: {[key: string]: outputs.AdditionalPropertiesInputPropertiesAdditionalProperties};
     /**
      * Indicates whether the resource is a component.
      */
@@ -465,14 +551,14 @@ export interface ObjectTypeSpec {
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface OneOf0 {
-    type: enums.ProviderInputPropertiesAdditionalPropertiesChoice1Of5Type;
+    type: enums.TypeSpecOneOf0PropertiesType;
 }
 
 /**
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface OneOf1 {
-    items: outputs.InputsPropertiesAdditionalProperties;
+    items: outputs.PropertyDefinition;
     type: "array";
 }
 
@@ -480,7 +566,7 @@ export interface OneOf1 {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface OneOf2 {
-    additionalProperties?: outputs.ProviderPropertiesAdditionalProperties;
+    additionalProperties?: outputs.Choice1Of2PropertiesAdditionalProperties;
     type: "object";
 }
 
@@ -492,8 +578,8 @@ export interface OneOf4 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: outputs.InputsPropertiesAdditionalProperties[];
-    type?: enums.Type;
+    oneOf: outputs.AdditionalPropertiesInputPropertiesAdditionalProperties[];
+    type?: enums.OneOf4PropertiesType;
 }
 
 /**
@@ -511,7 +597,7 @@ export interface Parameterization {
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface PrimitiveType {
-    type: enums.OneOf0PropertiesType;
+    type: enums.AdditionalPropertiesChoice1Of5Type;
 }
 
 /**
@@ -519,9 +605,9 @@ export interface PrimitiveType {
  */
 export interface PropertiesAdditionalProperties {
     additionalProperties?: {[key: string]: any};
-    choice1Of5?: outputs.PrimitiveType;
-    choice2Of5?: outputs.TypeSpecOneOf1;
-    choice3Of5?: outputs.Choice3Of5;
+    choice1Of5?: outputs.TypeSpecOneOf0;
+    choice2Of5?: outputs.PropertiesAdditionalPropertiesChoice2Of5;
+    choice3Of5?: outputs.TypeSpecOneOf2;
     choice4Of5?: outputs.NamedType;
     choice5Of5?: outputs.UnionType;
     const?: boolean | number | string;
@@ -558,17 +644,18 @@ export interface PropertiesAdditionalProperties {
 }
 
 /**
- * A reference to a primitive type. A primitive type must have only the "type" property set.
+ * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
-export interface PropertiesAdditionalPropertiesChoice1Of5 {
-    type: enums.Choice1Of5Type;
+export interface PropertiesAdditionalPropertiesChoice2Of5 {
+    items: outputs.PropertiesAdditionalProperties;
+    type: "array";
 }
 
 /**
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface PropertiesAdditionalPropertiesChoice3Of5 {
-    additionalProperties?: outputs.InputsPropertiesAdditionalProperties;
+    additionalProperties?: outputs.PropertyDefinition;
     type: "object";
 }
 
@@ -580,7 +667,7 @@ export interface PropertiesAdditionalPropertiesChoice5Of5 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: outputs.ProviderPropertiesAdditionalProperties[];
+    oneOf: outputs.PropertyDefinition[];
     type?: enums.TypeSpecOneOf4PropertiesType;
 }
 
@@ -589,60 +676,9 @@ export interface PropertiesAdditionalPropertiesChoice5Of5 {
  */
 export interface PropertyDefinition {
     additionalProperties?: {[key: string]: any};
-    choice1Of5?: outputs.Choice1Of5;
-    choice2Of5?: outputs.ArrayType;
-    choice3Of5?: outputs.TypeSpecOneOf2;
-    choice4Of5?: outputs.NamedType;
-    choice5Of5?: outputs.Choice1Of2PropertiesAdditionalPropertiesChoice5Of5;
-    const?: boolean | number | string;
-    default?: boolean | number | string;
-    defaultInfo?: outputs.DefaultInfo;
-    /**
-     * Indicates whether the property is deprecated
-     */
-    deprecationMessage?: string;
-    /**
-     * The description of the property, if any. Interpreted as Markdown.
-     */
-    description?: string;
-    /**
-     * Additional language-specific data about the property.
-     */
-    language?: {[key: string]: any};
-    /**
-     * Indicates that when used as an input, this type does not accept eventual values.
-     */
-    plain?: boolean;
-    /**
-     * Specifies whether a change to the property causes its containing resource to be replaced instead of updated (default false).
-     */
-    replaceOnChanges?: boolean;
-    /**
-     * Specifies whether the property is secret (default false).
-     */
-    secret?: boolean;
-    /**
-     * Indicates that the provider will replace the resource when this property is changed.
-     */
-    willReplaceOnChanges?: boolean;
-}
-
-/**
- * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
- */
-export interface ProviderInputPropertiesAdditionalPropertiesChoice2Of5 {
-    items: outputs.AdditionalProperties;
-    type: "array";
-}
-
-/**
- * Describes an object or resource property
- */
-export interface ProviderPropertiesAdditionalProperties {
-    additionalProperties?: {[key: string]: any};
-    choice1Of5?: outputs.AdditionalPropertiesChoice1Of5;
-    choice2Of5?: outputs.Choice2Of5;
-    choice3Of5?: outputs.OneOf2;
+    choice1Of5?: outputs.OneOf0;
+    choice2Of5?: outputs.OneOf1;
+    choice3Of5?: outputs.PropertiesAdditionalPropertiesChoice3Of5;
     choice4Of5?: outputs.NamedType;
     choice5Of5?: outputs.PropertiesAdditionalPropertiesChoice5Of5;
     const?: boolean | number | string;
@@ -772,7 +808,7 @@ export interface ResourceDefinition {
     /**
      * A map from property name to propertySpec that describes the resource's input properties.
      */
-    inputProperties?: {[key: string]: outputs.AdditionalProperties};
+    inputProperties?: {[key: string]: outputs.InputPropertiesAdditionalProperties};
     /**
      * Indicates whether the resource is a component.
      */
@@ -788,7 +824,7 @@ export interface ResourceDefinition {
     /**
      * A map from property name to propertySpec that describes the object's properties.
      */
-    properties?: {[key: string]: outputs.ProviderPropertiesAdditionalProperties};
+    properties?: {[key: string]: outputs.AdditionalProperties};
     /**
      * A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
      */
@@ -826,11 +862,11 @@ export interface TypeDefinition {
  */
 export interface TypeSpec {
     additionalProperties?: {[key: string]: any};
-    choice1Of5?: outputs.InputPropertiesAdditionalPropertiesChoice1Of5;
-    choice2Of5?: outputs.InputPropertiesAdditionalPropertiesChoice2Of5;
-    choice3Of5?: outputs.MapType;
+    choice1Of5?: outputs.VariablesAdditionalPropertiesChoice1Of5;
+    choice2Of5?: outputs.AdditionalPropertiesChoice2Of5;
+    choice3Of5?: outputs.Choice3Of5;
     choice4Of5?: outputs.NamedType;
-    choice5Of5?: outputs.Choice5Of5;
+    choice5Of5?: outputs.TypeSpecOneOf4;
     const?: boolean | number | string;
     default?: boolean | number | string;
     defaultInfo?: outputs.DefaultInfo;
@@ -868,14 +904,14 @@ export interface TypeSpec {
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface TypeSpecOneOf0 {
-    type: enums.AdditionalPropertiesChoice1Of5Type;
+    type: enums.Choice1Of5Type;
 }
 
 /**
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface TypeSpecOneOf1 {
-    items: outputs.PropertiesAdditionalProperties;
+    items: outputs.InputPropertiesAdditionalProperties;
     type: "array";
 }
 
@@ -883,7 +919,7 @@ export interface TypeSpecOneOf1 {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface TypeSpecOneOf2 {
-    additionalProperties?: outputs.PropertyDefinition;
+    additionalProperties?: outputs.PropertiesAdditionalProperties;
     type: "object";
 }
 
@@ -895,7 +931,7 @@ export interface TypeSpecOneOf4 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: outputs.AdditionalProperties[];
+    oneOf: outputs.TypeSpec[];
     type?: enums.Choice5Of5Type;
 }
 
@@ -908,49 +944,13 @@ export interface UnionType {
      * If present, indicates that values of the type may be one of any of the listed types
      */
     oneOf: outputs.PropertiesAdditionalProperties[];
-    type?: enums.OneOf4PropertiesType;
+    type?: enums.PropertiesAdditionalPropertiesChoice5Of5Type;
 }
 
 /**
- * Describes an object or resource property
+ * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
-export interface VariablesAdditionalProperties {
-    additionalProperties?: {[key: string]: any};
-    choice1Of5?: outputs.TypeSpecOneOf0;
-    choice2Of5?: outputs.AdditionalPropertiesChoice2Of5;
-    choice3Of5?: outputs.AdditionalPropertiesChoice3Of5;
-    choice4Of5?: outputs.NamedType;
-    choice5Of5?: outputs.AdditionalPropertiesChoice5Of5;
-    const?: boolean | number | string;
-    default?: boolean | number | string;
-    defaultInfo?: outputs.DefaultInfo;
-    /**
-     * Indicates whether the property is deprecated
-     */
-    deprecationMessage?: string;
-    /**
-     * The description of the property, if any. Interpreted as Markdown.
-     */
-    description?: string;
-    /**
-     * Additional language-specific data about the property.
-     */
-    language?: {[key: string]: any};
-    /**
-     * Indicates that when used as an input, this type does not accept eventual values.
-     */
-    plain?: boolean;
-    /**
-     * Specifies whether a change to the property causes its containing resource to be replaced instead of updated (default false).
-     */
-    replaceOnChanges?: boolean;
-    /**
-     * Specifies whether the property is secret (default false).
-     */
-    secret?: boolean;
-    /**
-     * Indicates that the provider will replace the resource when this property is changed.
-     */
-    willReplaceOnChanges?: boolean;
+export interface VariablesAdditionalPropertiesChoice1Of5 {
+    type: enums.VariablesAdditionalPropertiesChoice1Of5Type;
 }
 

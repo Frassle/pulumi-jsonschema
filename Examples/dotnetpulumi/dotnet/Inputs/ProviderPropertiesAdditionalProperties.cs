@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object or resource property
     /// </summary>
-    public sealed class VariablesAdditionalProperties : global::Pulumi.InvokeArgs
+    public sealed class ProviderPropertiesAdditionalProperties : global::Pulumi.InvokeArgs
     {
         [Input("additionalProperties")]
         private Dictionary<string, object>? _additionalProperties;
@@ -27,10 +27,10 @@ namespace Pulumi.Pulumi.Inputs
         public Inputs.PrimitiveType? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
-        public Inputs.ArrayType? Choice2Of5 { get; set; }
+        public Inputs.AdditionalPropertiesChoice2Of5? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
-        public Inputs.AdditionalPropertiesChoice3Of5? Choice3Of5 { get; set; }
+        public Inputs.PropertiesAdditionalPropertiesChoice3Of5? Choice3Of5 { get; set; }
 
         [Input("choice4Of5")]
         public Inputs.NamedType? Choice4Of5 { get; set; }
@@ -95,9 +95,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("willReplaceOnChanges")]
         public bool? WillReplaceOnChanges { get; set; }
 
-        public VariablesAdditionalProperties()
+        public ProviderPropertiesAdditionalProperties()
         {
         }
-        public static new VariablesAdditionalProperties Empty => new VariablesAdditionalProperties();
+        public static new ProviderPropertiesAdditionalProperties Empty => new ProviderPropertiesAdditionalProperties();
     }
 }

@@ -1,7 +1,5 @@
 module GenSdkTests
 
-open System
-open System.Text.Json
 open Xunit
 
 let genSdk (parameter: string) (name: string) =
@@ -49,10 +47,6 @@ let genSdk (parameter: string) (name: string) =
 
     if proc.ExitCode <> 0 then
         failwithf "gen-sdk failed\nstdout:\n%s\nstderr:\n%s" (out.ToString()) (err.ToString())
-
-[<Fact(Skip="allOf title not currently working")>]
-let ``Test githhub`` () =
-    genSdk "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json" "github"
 
 [<Fact>]
 let ``Test pulumi`` () =

@@ -13,29 +13,29 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// A reference to a union type. The "oneOf" property must be present. The union may additional specify an underlying primitive type via the "type" property and a discriminator via the "discriminator" property. No other properties may be present.
     /// </summary>
-    public sealed class PropertiesAdditionalPropertiesChoice5Of5 : global::Pulumi.InvokeArgs
+    public sealed class VariablesAdditionalPropertiesChoice5Of5Args : global::Pulumi.ResourceArgs
     {
         [Input("discriminator")]
-        public Inputs.Discriminator? Discriminator { get; set; }
+        public Input<Inputs.DiscriminatorArgs>? Discriminator { get; set; }
 
         [Input("oneOf", required: true)]
-        private List<Inputs.TypeSpec>? _oneOf;
+        private InputList<Inputs.AdditionalPropertiesArgs>? _oneOf;
 
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
-        public List<Inputs.TypeSpec> OneOf
+        public InputList<Inputs.AdditionalPropertiesArgs> OneOf
         {
-            get => _oneOf ?? (_oneOf = new List<Inputs.TypeSpec>());
+            get => _oneOf ?? (_oneOf = new InputList<Inputs.AdditionalPropertiesArgs>());
             set => _oneOf = value;
         }
 
         [Input("type")]
-        public Pulumi.Pulumi.OneOf4PropertiesType? Type { get; set; }
+        public Input<Pulumi.Pulumi.TypeSpecOneOf4PropertiesType>? Type { get; set; }
 
-        public PropertiesAdditionalPropertiesChoice5Of5()
+        public VariablesAdditionalPropertiesChoice5Of5Args()
         {
         }
-        public static new PropertiesAdditionalPropertiesChoice5Of5 Empty => new PropertiesAdditionalPropertiesChoice5Of5();
+        public static new VariablesAdditionalPropertiesChoice5Of5Args Empty => new VariablesAdditionalPropertiesChoice5Of5Args();
     }
 }
