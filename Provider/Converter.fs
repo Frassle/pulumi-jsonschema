@@ -1072,6 +1072,7 @@ and ObjectConversion =
     { Path: Json.Pointer.JsonPointer
       Title: string option
       Description: string option
+      // A map from Pulumi name to JSON name and Conversion
       Properties: Map<string, string * Conversion>
       // There are three states for AdditionalProperties:
       // 1. Explictly set to a scheam
@@ -1080,6 +1081,7 @@ and ObjectConversion =
       // Mode 3 is so we can have nested objects without having additionalProperties on all of them
       AdditionalProperties: Choice<unit, Conversion option>
       Choices: Conversion list
+      // The set of pulumi properties that are required
       Required: Set<string> }
 
     member this.BuildComplexTypeSpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
@@ -1184,15 +1186,18 @@ and ObjectConversion =
                         None)
 
             let obj = value.EnumerateObject() |> Seq.map (fun p -> p.Name, p.Value) |> Map.ofSeq
-
-            // Check all the required keys are present
+            
+            // Check all the required keys are present, Required contains the Pulumi names so we need to translate them to the JSON versions
             let requiredErr =
                 this.Required
                 |> Seq.tryPick (fun key ->
-                    if obj.ContainsKey key |> not then
-                        Some(errorf "property '%s' is required" key)
-                    else
-                        None)
+                    match Map.tryFind key this.Properties with 
+                    | None -> failwithf "required property '%s' not recognized" key
+                    | Some (jsonKey, _) ->
+                        if obj.ContainsKey jsonKey |> not then
+                            Some(errorf "property '%s' is required" key)
+                        else
+                            None)
                 |> Option.defaultValue (Ok())
 
             match requiredErr with
@@ -1965,7 +1970,7 @@ let rec convertRef
                         newSchema.Add(Json.Schema.PropertiesKeyword(props)))
 
                 if allKeywords.Count <> 0 then
-                    { Description = Some(sprintf "Needs more translation %O" allKeywords)
+                    { Description = Some(sprintf "Ref needs more translation %O" allKeywords)
                       PrimitiveValidation = PrimitiveValidation.FromKeywords schema.Keywords }
                     |> TypeSpec.Any
                     |> Conversion.Type
@@ -2058,12 +2063,6 @@ and convertObjectSchema
         | true, None -> Some(Conversion.True)
         | false, _ -> None
 
-    let required =
-        match requiredKeyword with
-        | None -> Seq.empty
-        | Some required -> required.Properties
-        |> Set.ofSeq
-
     let description = getDescription jsonSchema.Keywords
     let title = getTitle jsonSchema.Keywords
 
@@ -2101,7 +2100,19 @@ and convertObjectSchema
             match context.AdditionalProperties, aps with
             | true, aps -> Choice2Of2 aps
             | false, Some aps -> Choice2Of2(Some aps)
-            | false, None -> Choice1Of2()
+            | false, None -> Choice1Of2()            
+
+        let required =
+            match requiredKeyword with
+            | None -> Seq.empty
+            | Some required -> required.Properties
+            |> Set.ofSeq
+            |> Set.map (fun key -> 
+                // Map the JSON name to the pulumi name 
+                props
+                |> Map.pick (fun pulumiName (jsonKey, _) -> 
+                    if jsonKey = key then Some pulumiName else None)
+            )
 
         { Path = path
           Description = description
@@ -2189,7 +2200,7 @@ and convertAllOf
                 newSchema.Add(Json.Schema.PropertiesKeyword(props)))
 
         if allKeywords.Count <> 0 then
-            failwithf "Needs more translation %O" allKeywords
+            failwithf "AllOf needs more translation %O" allKeywords
 
         convertSubSchema root context path (newSchema.Build())
 

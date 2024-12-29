@@ -323,3 +323,40 @@ let ``Test object with false properties`` () =
         |> t.ShouldThrow
 
     exc.Message |> Test.shouldEqual "All values fail against the false schema"
+    
+[<Fact>]
+let ``Test object with required properties with dash names`` () =
+    let t =
+        Test.convertSchema
+            """{
+        "type": "object",
+        "properties": {
+            "foo-bar": { "type": "string" }
+        },
+        "additionalProperties": false,
+        "required": ["foo-bar"]
+    }"""
+
+    t.RoundTrip()
+
+    t.ShouldEqual(
+        t.ComplexSchema
+            [ "test:index:root",
+              """{
+        "type":"object",
+        "properties":{"fooBar":{"type":"string"}},
+        "required": ["fooBar"]
+    }""" ]
+    )
+
+    Test.dictToProperty [ "fooBar", PropertyValue("a") ]
+    |> t.ShouldWrite """{"foo-bar":"a"}"""
+
+
+    let exc =
+        PropertyValue(ImmutableDictionary.Empty) |> t.ShouldThrow<exn>
+
+    exc.Message |> Test.shouldEqual "property 'fooBar' is required"
+
+    """{"foo-bar":"string"}"""
+    |> t.ShouldRead(Test.dictToProperty [ "fooBar", PropertyValue("string") ])
