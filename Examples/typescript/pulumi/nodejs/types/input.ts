@@ -11,11 +11,11 @@ import * as enums from "../types/enums";
  */
 export interface AdditionalProperties {
     additionalProperties?: {[key: string]: any};
-    choice1Of5?: inputs.Choice1Of2PropertiesAdditionalPropertiesChoice1Of5;
-    choice2Of5?: inputs.Choice2Of5;
-    choice3Of5?: inputs.MapType;
+    choice1Of5?: inputs.TypeSpecOneOf0;
+    choice2Of5?: inputs.TypeSpecOneOf1;
+    choice3Of5?: inputs.TypeSpecOneOf2;
     choice4Of5?: inputs.NamedType;
-    choice5Of5?: inputs.PropertiesAdditionalPropertiesChoice5Of5;
+    choice5Of5?: inputs.TypeSpecOneOf4;
     const?: boolean | number | string;
     default?: boolean | number | string;
     defaultInfo?: inputs.DefaultInfo;
@@ -54,11 +54,11 @@ export interface AdditionalProperties {
  */
 export interface AdditionalPropertiesArgs {
     additionalProperties?: pulumi.Input<{[key: string]: any}>;
-    choice1Of5?: pulumi.Input<inputs.Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Args>;
-    choice2Of5?: pulumi.Input<inputs.Choice2Of5Args>;
-    choice3Of5?: pulumi.Input<inputs.MapTypeArgs>;
+    choice1Of5?: pulumi.Input<inputs.TypeSpecOneOf0Args>;
+    choice2Of5?: pulumi.Input<inputs.TypeSpecOneOf1Args>;
+    choice3Of5?: pulumi.Input<inputs.TypeSpecOneOf2Args>;
     choice4Of5?: pulumi.Input<inputs.NamedTypeArgs>;
-    choice5Of5?: pulumi.Input<inputs.PropertiesAdditionalPropertiesChoice5Of5Args>;
+    choice5Of5?: pulumi.Input<inputs.TypeSpecOneOf4Args>;
     const?: pulumi.Input<boolean | number | string>;
     default?: pulumi.Input<boolean | number | string>;
     defaultInfo?: pulumi.Input<inputs.DefaultInfoArgs>;
@@ -96,21 +96,21 @@ export interface AdditionalPropertiesArgs {
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface AdditionalPropertiesChoice1Of5 {
-    type: enums.AdditionalPropertiesChoice1Of5Type;
+    type: enums.Choice1Of5Type;
 }
 
 /**
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface AdditionalPropertiesChoice1Of5Args {
-    type: pulumi.Input<enums.AdditionalPropertiesChoice1Of5Type>;
+    type: pulumi.Input<enums.Choice1Of5Type>;
 }
 
 /**
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface AdditionalPropertiesChoice2Of5 {
-    items: inputs.TypeSpec;
+    items: inputs.InputsPropertiesAdditionalProperties;
     type: "array";
 }
 
@@ -118,7 +118,7 @@ export interface AdditionalPropertiesChoice2Of5 {
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface AdditionalPropertiesChoice2Of5Args {
-    items: pulumi.Input<inputs.TypeSpecArgs>;
+    items: pulumi.Input<inputs.InputsPropertiesAdditionalPropertiesArgs>;
     type: pulumi.Input<"array">;
 }
 
@@ -126,7 +126,7 @@ export interface AdditionalPropertiesChoice2Of5Args {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface AdditionalPropertiesChoice3Of5 {
-    additionalProperties?: inputs.TypeSpec;
+    additionalProperties?: inputs.InputsPropertiesAdditionalProperties;
     type: "object";
 }
 
@@ -134,7 +134,7 @@ export interface AdditionalPropertiesChoice3Of5 {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface AdditionalPropertiesChoice3Of5Args {
-    additionalProperties?: pulumi.Input<inputs.TypeSpecArgs>;
+    additionalProperties?: pulumi.Input<inputs.InputsPropertiesAdditionalPropertiesArgs>;
     type: pulumi.Input<"object">;
 }
 
@@ -146,8 +146,8 @@ export interface AdditionalPropertiesChoice5Of5 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: inputs.TypeSpec[];
-    type?: enums.OneOf4PropertiesType;
+    oneOf: inputs.InputsPropertiesAdditionalProperties[];
+    type?: enums.PropertiesAdditionalPropertiesChoice5Of5Type;
 }
 
 /**
@@ -158,24 +158,8 @@ export interface AdditionalPropertiesChoice5Of5Args {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: pulumi.Input<pulumi.Input<inputs.TypeSpecArgs>[]>;
-    type?: pulumi.Input<enums.OneOf4PropertiesType>;
-}
-
-/**
- * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
- */
-export interface AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice3Of5 {
-    additionalProperties?: inputs.InputPropertiesAdditionalProperties;
-    type: "object";
-}
-
-/**
- * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
- */
-export interface AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice3Of5Args {
-    additionalProperties?: pulumi.Input<inputs.InputPropertiesAdditionalPropertiesArgs>;
-    type: pulumi.Input<"object">;
+    oneOf: pulumi.Input<pulumi.Input<inputs.InputsPropertiesAdditionalPropertiesArgs>[]>;
+    type?: pulumi.Input<enums.PropertiesAdditionalPropertiesChoice5Of5Type>;
 }
 
 export interface AliasDefinition {
@@ -214,7 +198,7 @@ export interface AliasDefinitionArgs {
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface ArrayType {
-    items: inputs.VariablesAdditionalProperties;
+    items: inputs.PropertyDefinition;
     type: "array";
 }
 
@@ -222,7 +206,7 @@ export interface ArrayType {
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface ArrayTypeArgs {
-    items: pulumi.Input<inputs.VariablesAdditionalPropertiesArgs>;
+    items: pulumi.Input<inputs.PropertyDefinitionArgs>;
     type: pulumi.Input<"array">;
 }
 
@@ -259,36 +243,22 @@ export interface BaseProviderArgs {
 /**
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
-export interface Choice1Of2PropertiesAdditionalPropertiesChoice1Of5 {
-    type: enums.Choice1Of5Type;
-}
-
-/**
- * A reference to a primitive type. A primitive type must have only the "type" property set.
- */
-export interface Choice1Of2PropertiesAdditionalPropertiesChoice1Of5Args {
-    type: pulumi.Input<enums.Choice1Of5Type>;
-}
-
-/**
- * A reference to a primitive type. A primitive type must have only the "type" property set.
- */
 export interface Choice1Of5 {
-    type: enums.PropertiesType;
+    type: enums.TypeSpecOneOf0PropertiesType;
 }
 
 /**
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface Choice1Of5Args {
-    type: pulumi.Input<enums.PropertiesType>;
+    type: pulumi.Input<enums.TypeSpecOneOf0PropertiesType>;
 }
 
 /**
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface Choice2Of5 {
-    items: inputs.AdditionalProperties;
+    items: inputs.PropertiesAdditionalProperties;
     type: "array";
 }
 
@@ -296,7 +266,7 @@ export interface Choice2Of5 {
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface Choice2Of5Args {
-    items: pulumi.Input<inputs.AdditionalPropertiesArgs>;
+    items: pulumi.Input<inputs.PropertiesAdditionalPropertiesArgs>;
     type: pulumi.Input<"array">;
 }
 
@@ -304,7 +274,7 @@ export interface Choice2Of5Args {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface Choice3Of5 {
-    additionalProperties?: inputs.VariablesAdditionalProperties;
+    additionalProperties?: inputs.PropertiesAdditionalProperties;
     type: "object";
 }
 
@@ -312,7 +282,7 @@ export interface Choice3Of5 {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface Choice3Of5Args {
-    additionalProperties?: pulumi.Input<inputs.VariablesAdditionalPropertiesArgs>;
+    additionalProperties?: pulumi.Input<inputs.PropertiesAdditionalPropertiesArgs>;
     type: pulumi.Input<"object">;
 }
 
@@ -324,8 +294,8 @@ export interface Choice5Of5 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: inputs.InputPropertiesAdditionalProperties[];
-    type?: enums.InputPropertiesAdditionalPropertiesChoice5Of5Type;
+    oneOf: inputs.PropertiesAdditionalProperties[];
+    type?: enums.AdditionalPropertiesChoice5Of5Type;
 }
 
 /**
@@ -336,8 +306,8 @@ export interface Choice5Of5Args {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: pulumi.Input<pulumi.Input<inputs.InputPropertiesAdditionalPropertiesArgs>[]>;
-    type?: pulumi.Input<enums.InputPropertiesAdditionalPropertiesChoice5Of5Type>;
+    oneOf: pulumi.Input<pulumi.Input<inputs.PropertiesAdditionalPropertiesArgs>[]>;
+    type?: pulumi.Input<enums.AdditionalPropertiesChoice5Of5Type>;
 }
 
 /**
@@ -551,131 +521,13 @@ export interface FunctionDefinitionArgs {
 /**
  * Describes an object or resource property
  */
-export interface InputPropertiesAdditionalProperties {
-    additionalProperties?: {[key: string]: any};
-    choice1Of5?: inputs.TypeSpecOneOf0;
-    choice2Of5?: inputs.OneOf1;
-    choice3Of5?: inputs.AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice3Of5;
-    choice4Of5?: inputs.NamedType;
-    choice5Of5?: inputs.Choice5Of5;
-    const?: boolean | number | string;
-    default?: boolean | number | string;
-    defaultInfo?: inputs.DefaultInfo;
-    /**
-     * Indicates whether the property is deprecated
-     */
-    deprecationMessage?: string;
-    /**
-     * The description of the property, if any. Interpreted as Markdown.
-     */
-    description?: string;
-    /**
-     * Additional language-specific data about the property.
-     */
-    language?: {[key: string]: any};
-    /**
-     * Indicates that when used as an input, this type does not accept eventual values.
-     */
-    plain?: boolean;
-    /**
-     * Specifies whether a change to the property causes its containing resource to be replaced instead of updated (default false).
-     */
-    replaceOnChanges?: boolean;
-    /**
-     * Specifies whether the property is secret (default false).
-     */
-    secret?: boolean;
-    /**
-     * Indicates that the provider will replace the resource when this property is changed.
-     */
-    willReplaceOnChanges?: boolean;
-}
-
-/**
- * Describes an object or resource property
- */
-export interface InputPropertiesAdditionalPropertiesArgs {
-    additionalProperties?: pulumi.Input<{[key: string]: any}>;
-    choice1Of5?: pulumi.Input<inputs.TypeSpecOneOf0Args>;
-    choice2Of5?: pulumi.Input<inputs.OneOf1Args>;
-    choice3Of5?: pulumi.Input<inputs.AdditionalPropertiesInputPropertiesAdditionalPropertiesChoice3Of5Args>;
-    choice4Of5?: pulumi.Input<inputs.NamedTypeArgs>;
-    choice5Of5?: pulumi.Input<inputs.Choice5Of5Args>;
-    const?: pulumi.Input<boolean | number | string>;
-    default?: pulumi.Input<boolean | number | string>;
-    defaultInfo?: pulumi.Input<inputs.DefaultInfoArgs>;
-    /**
-     * Indicates whether the property is deprecated
-     */
-    deprecationMessage?: pulumi.Input<string>;
-    /**
-     * The description of the property, if any. Interpreted as Markdown.
-     */
-    description?: pulumi.Input<string>;
-    /**
-     * Additional language-specific data about the property.
-     */
-    language?: pulumi.Input<{[key: string]: any}>;
-    /**
-     * Indicates that when used as an input, this type does not accept eventual values.
-     */
-    plain?: pulumi.Input<boolean>;
-    /**
-     * Specifies whether a change to the property causes its containing resource to be replaced instead of updated (default false).
-     */
-    replaceOnChanges?: pulumi.Input<boolean>;
-    /**
-     * Specifies whether the property is secret (default false).
-     */
-    secret?: pulumi.Input<boolean>;
-    /**
-     * Indicates that the provider will replace the resource when this property is changed.
-     */
-    willReplaceOnChanges?: pulumi.Input<boolean>;
-}
-
-/**
- * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
- */
-export interface InputPropertiesAdditionalPropertiesChoice2Of5 {
-    items: inputs.PropertyDefinition;
-    type: "array";
-}
-
-/**
- * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
- */
-export interface InputPropertiesAdditionalPropertiesChoice2Of5Args {
-    items: pulumi.Input<inputs.PropertyDefinitionArgs>;
-    type: pulumi.Input<"array">;
-}
-
-/**
- * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
- */
-export interface InputPropertiesAdditionalPropertiesChoice3Of5 {
-    additionalProperties?: inputs.PropertyDefinition;
-    type: "object";
-}
-
-/**
- * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
- */
-export interface InputPropertiesAdditionalPropertiesChoice3Of5Args {
-    additionalProperties?: pulumi.Input<inputs.PropertyDefinitionArgs>;
-    type: pulumi.Input<"object">;
-}
-
-/**
- * Describes an object or resource property
- */
 export interface InputsPropertiesAdditionalProperties {
     additionalProperties?: {[key: string]: any};
-    choice1Of5?: inputs.Choice1Of5;
-    choice2Of5?: inputs.TypeSpecOneOf1;
-    choice3Of5?: inputs.TypeSpecOneOf2;
+    choice1Of5?: inputs.AdditionalPropertiesChoice1Of5;
+    choice2Of5?: inputs.AdditionalPropertiesChoice2Of5;
+    choice3Of5?: inputs.AdditionalPropertiesChoice3Of5;
     choice4Of5?: inputs.NamedType;
-    choice5Of5?: inputs.TypeSpecOneOf4;
+    choice5Of5?: inputs.AdditionalPropertiesChoice5Of5;
     const?: boolean | number | string;
     default?: boolean | number | string;
     defaultInfo?: inputs.DefaultInfo;
@@ -714,11 +566,11 @@ export interface InputsPropertiesAdditionalProperties {
  */
 export interface InputsPropertiesAdditionalPropertiesArgs {
     additionalProperties?: pulumi.Input<{[key: string]: any}>;
-    choice1Of5?: pulumi.Input<inputs.Choice1Of5Args>;
-    choice2Of5?: pulumi.Input<inputs.TypeSpecOneOf1Args>;
-    choice3Of5?: pulumi.Input<inputs.TypeSpecOneOf2Args>;
+    choice1Of5?: pulumi.Input<inputs.AdditionalPropertiesChoice1Of5Args>;
+    choice2Of5?: pulumi.Input<inputs.AdditionalPropertiesChoice2Of5Args>;
+    choice3Of5?: pulumi.Input<inputs.AdditionalPropertiesChoice3Of5Args>;
     choice4Of5?: pulumi.Input<inputs.NamedTypeArgs>;
-    choice5Of5?: pulumi.Input<inputs.TypeSpecOneOf4Args>;
+    choice5Of5?: pulumi.Input<inputs.AdditionalPropertiesChoice5Of5Args>;
     const?: pulumi.Input<boolean | number | string>;
     default?: pulumi.Input<boolean | number | string>;
     defaultInfo?: pulumi.Input<inputs.DefaultInfoArgs>;
@@ -756,7 +608,7 @@ export interface InputsPropertiesAdditionalPropertiesArgs {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface MapType {
-    additionalProperties?: inputs.AdditionalProperties;
+    additionalProperties?: inputs.PropertyDefinition;
     type: "object";
 }
 
@@ -764,7 +616,7 @@ export interface MapType {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface MapTypeArgs {
-    additionalProperties?: pulumi.Input<inputs.AdditionalPropertiesArgs>;
+    additionalProperties?: pulumi.Input<inputs.PropertyDefinitionArgs>;
     type: pulumi.Input<"object">;
 }
 
@@ -845,7 +697,7 @@ export interface ObjectTypeDefinition {
     /**
      * A map from property name to propertySpec that describes the object's properties.
      */
-    properties?: {[key: string]: inputs.AdditionalProperties};
+    properties?: {[key: string]: inputs.PropertiesAdditionalProperties};
     /**
      * A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
      */
@@ -860,7 +712,7 @@ export interface ObjectTypeDefinitionArgs {
     /**
      * A map from property name to propertySpec that describes the object's properties.
      */
-    properties?: pulumi.Input<{[key: string]: pulumi.Input<inputs.AdditionalPropertiesArgs>}>;
+    properties?: pulumi.Input<{[key: string]: pulumi.Input<inputs.PropertiesAdditionalPropertiesArgs>}>;
     /**
      * A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
      */
@@ -918,7 +770,7 @@ export interface ObjectTypeSpec {
     /**
      * A map from property name to propertySpec that describes the resource's input properties.
      */
-    inputProperties?: {[key: string]: inputs.PropertyDefinition};
+    inputProperties?: {[key: string]: inputs.TypeSpec};
     /**
      * Indicates whether the resource is a component.
      */
@@ -934,7 +786,7 @@ export interface ObjectTypeSpec {
     /**
      * A map from property name to propertySpec that describes the object's properties.
      */
-    properties?: {[key: string]: inputs.PropertiesAdditionalProperties};
+    properties?: {[key: string]: inputs.ProviderPropertiesAdditionalProperties};
     /**
      * A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
      */
@@ -966,7 +818,7 @@ export interface ObjectTypeSpecArgs {
     /**
      * A map from property name to propertySpec that describes the resource's input properties.
      */
-    inputProperties?: pulumi.Input<{[key: string]: pulumi.Input<inputs.PropertyDefinitionArgs>}>;
+    inputProperties?: pulumi.Input<{[key: string]: pulumi.Input<inputs.TypeSpecArgs>}>;
     /**
      * Indicates whether the resource is a component.
      */
@@ -982,7 +834,7 @@ export interface ObjectTypeSpecArgs {
     /**
      * A map from property name to propertySpec that describes the object's properties.
      */
-    properties?: pulumi.Input<{[key: string]: pulumi.Input<inputs.PropertiesAdditionalPropertiesArgs>}>;
+    properties?: pulumi.Input<{[key: string]: pulumi.Input<inputs.ProviderPropertiesAdditionalPropertiesArgs>}>;
     /**
      * A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
      */
@@ -998,21 +850,21 @@ export interface ObjectTypeSpecArgs {
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface OneOf0 {
-    type: enums.Type;
+    type: enums.PropertiesType;
 }
 
 /**
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface OneOf0Args {
-    type: pulumi.Input<enums.Type>;
+    type: pulumi.Input<enums.PropertiesType>;
 }
 
 /**
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface OneOf1 {
-    items: inputs.InputPropertiesAdditionalProperties;
+    items: inputs.TypeSpec;
     type: "array";
 }
 
@@ -1020,7 +872,7 @@ export interface OneOf1 {
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface OneOf1Args {
-    items: pulumi.Input<inputs.InputPropertiesAdditionalPropertiesArgs>;
+    items: pulumi.Input<inputs.TypeSpecArgs>;
     type: pulumi.Input<"array">;
 }
 
@@ -1028,7 +880,7 @@ export interface OneOf1Args {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface OneOf2 {
-    additionalProperties?: inputs.PropertiesAdditionalProperties;
+    additionalProperties?: inputs.TypeSpec;
     type: "object";
 }
 
@@ -1036,7 +888,7 @@ export interface OneOf2 {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface OneOf2Args {
-    additionalProperties?: pulumi.Input<inputs.PropertiesAdditionalPropertiesArgs>;
+    additionalProperties?: pulumi.Input<inputs.TypeSpecArgs>;
     type: pulumi.Input<"object">;
 }
 
@@ -1048,8 +900,8 @@ export interface OneOf4 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: inputs.VariablesAdditionalProperties[];
-    type?: enums.VariablesAdditionalPropertiesChoice5Of5Type;
+    oneOf: inputs.TypeSpec[];
+    type?: enums.TypeSpecOneOf4PropertiesType;
 }
 
 /**
@@ -1060,8 +912,8 @@ export interface OneOf4Args {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: pulumi.Input<pulumi.Input<inputs.VariablesAdditionalPropertiesArgs>[]>;
-    type?: pulumi.Input<enums.VariablesAdditionalPropertiesChoice5Of5Type>;
+    oneOf: pulumi.Input<pulumi.Input<inputs.TypeSpecArgs>[]>;
+    type?: pulumi.Input<enums.TypeSpecOneOf4PropertiesType>;
 }
 
 /**
@@ -1090,14 +942,14 @@ export interface ParameterizationArgs {
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface PrimitiveType {
-    type: enums.OneOf0PropertiesType;
+    type: enums.Type;
 }
 
 /**
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface PrimitiveTypeArgs {
-    type: pulumi.Input<enums.OneOf0PropertiesType>;
+    type: pulumi.Input<enums.Type>;
 }
 
 /**
@@ -1105,11 +957,11 @@ export interface PrimitiveTypeArgs {
  */
 export interface PropertiesAdditionalProperties {
     additionalProperties?: {[key: string]: any};
-    choice1Of5?: inputs.PropertiesAdditionalPropertiesChoice1Of5;
-    choice2Of5?: inputs.PropertiesAdditionalPropertiesChoice2Of5;
-    choice3Of5?: inputs.OneOf2;
+    choice1Of5?: inputs.Choice1Of5;
+    choice2Of5?: inputs.Choice2Of5;
+    choice3Of5?: inputs.Choice3Of5;
     choice4Of5?: inputs.NamedType;
-    choice5Of5?: inputs.ProviderPropertiesAdditionalPropertiesChoice5Of5;
+    choice5Of5?: inputs.Choice5Of5;
     const?: boolean | number | string;
     default?: boolean | number | string;
     defaultInfo?: inputs.DefaultInfo;
@@ -1148,11 +1000,11 @@ export interface PropertiesAdditionalProperties {
  */
 export interface PropertiesAdditionalPropertiesArgs {
     additionalProperties?: pulumi.Input<{[key: string]: any}>;
-    choice1Of5?: pulumi.Input<inputs.PropertiesAdditionalPropertiesChoice1Of5Args>;
-    choice2Of5?: pulumi.Input<inputs.PropertiesAdditionalPropertiesChoice2Of5Args>;
-    choice3Of5?: pulumi.Input<inputs.OneOf2Args>;
+    choice1Of5?: pulumi.Input<inputs.Choice1Of5Args>;
+    choice2Of5?: pulumi.Input<inputs.Choice2Of5Args>;
+    choice3Of5?: pulumi.Input<inputs.Choice3Of5Args>;
     choice4Of5?: pulumi.Input<inputs.NamedTypeArgs>;
-    choice5Of5?: pulumi.Input<inputs.ProviderPropertiesAdditionalPropertiesChoice5Of5Args>;
+    choice5Of5?: pulumi.Input<inputs.Choice5Of5Args>;
     const?: pulumi.Input<boolean | number | string>;
     default?: pulumi.Input<boolean | number | string>;
     defaultInfo?: pulumi.Input<inputs.DefaultInfoArgs>;
@@ -1190,21 +1042,21 @@ export interface PropertiesAdditionalPropertiesArgs {
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface PropertiesAdditionalPropertiesChoice1Of5 {
-    type: enums.PropertiesAdditionalPropertiesChoice1Of5Type;
+    type: enums.AdditionalPropertiesChoice1Of5Type;
 }
 
 /**
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface PropertiesAdditionalPropertiesChoice1Of5Args {
-    type: pulumi.Input<enums.PropertiesAdditionalPropertiesChoice1Of5Type>;
+    type: pulumi.Input<enums.AdditionalPropertiesChoice1Of5Type>;
 }
 
 /**
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface PropertiesAdditionalPropertiesChoice2Of5 {
-    items: inputs.PropertiesAdditionalProperties;
+    items: inputs.ProviderPropertiesAdditionalProperties;
     type: "array";
 }
 
@@ -1212,8 +1064,24 @@ export interface PropertiesAdditionalPropertiesChoice2Of5 {
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface PropertiesAdditionalPropertiesChoice2Of5Args {
-    items: pulumi.Input<inputs.PropertiesAdditionalPropertiesArgs>;
+    items: pulumi.Input<inputs.ProviderPropertiesAdditionalPropertiesArgs>;
     type: pulumi.Input<"array">;
+}
+
+/**
+ * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
+ */
+export interface PropertiesAdditionalPropertiesChoice3Of5 {
+    additionalProperties?: inputs.ProviderPropertiesAdditionalProperties;
+    type: "object";
+}
+
+/**
+ * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
+ */
+export interface PropertiesAdditionalPropertiesChoice3Of5Args {
+    additionalProperties?: pulumi.Input<inputs.ProviderPropertiesAdditionalPropertiesArgs>;
+    type: pulumi.Input<"object">;
 }
 
 /**
@@ -1224,8 +1092,8 @@ export interface PropertiesAdditionalPropertiesChoice5Of5 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: inputs.AdditionalProperties[];
-    type?: enums.AdditionalPropertiesChoice5Of5Type;
+    oneOf: inputs.ProviderPropertiesAdditionalProperties[];
+    type?: enums.ProviderPropertiesAdditionalPropertiesChoice5Of5Type;
 }
 
 /**
@@ -1236,8 +1104,8 @@ export interface PropertiesAdditionalPropertiesChoice5Of5Args {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: pulumi.Input<pulumi.Input<inputs.AdditionalPropertiesArgs>[]>;
-    type?: pulumi.Input<enums.AdditionalPropertiesChoice5Of5Type>;
+    oneOf: pulumi.Input<pulumi.Input<inputs.ProviderPropertiesAdditionalPropertiesArgs>[]>;
+    type?: pulumi.Input<enums.ProviderPropertiesAdditionalPropertiesChoice5Of5Type>;
 }
 
 /**
@@ -1245,9 +1113,9 @@ export interface PropertiesAdditionalPropertiesChoice5Of5Args {
  */
 export interface PropertyDefinition {
     additionalProperties?: {[key: string]: any};
-    choice1Of5?: inputs.AdditionalPropertiesChoice1Of5;
-    choice2Of5?: inputs.InputPropertiesAdditionalPropertiesChoice2Of5;
-    choice3Of5?: inputs.InputPropertiesAdditionalPropertiesChoice3Of5;
+    choice1Of5?: inputs.PrimitiveType;
+    choice2Of5?: inputs.ArrayType;
+    choice3Of5?: inputs.MapType;
     choice4Of5?: inputs.NamedType;
     choice5Of5?: inputs.UnionType;
     const?: boolean | number | string;
@@ -1288,9 +1156,9 @@ export interface PropertyDefinition {
  */
 export interface PropertyDefinitionArgs {
     additionalProperties?: pulumi.Input<{[key: string]: any}>;
-    choice1Of5?: pulumi.Input<inputs.AdditionalPropertiesChoice1Of5Args>;
-    choice2Of5?: pulumi.Input<inputs.InputPropertiesAdditionalPropertiesChoice2Of5Args>;
-    choice3Of5?: pulumi.Input<inputs.InputPropertiesAdditionalPropertiesChoice3Of5Args>;
+    choice1Of5?: pulumi.Input<inputs.PrimitiveTypeArgs>;
+    choice2Of5?: pulumi.Input<inputs.ArrayTypeArgs>;
+    choice3Of5?: pulumi.Input<inputs.MapTypeArgs>;
     choice4Of5?: pulumi.Input<inputs.NamedTypeArgs>;
     choice5Of5?: pulumi.Input<inputs.UnionTypeArgs>;
     const?: pulumi.Input<boolean | number | string>;
@@ -1327,27 +1195,89 @@ export interface PropertyDefinitionArgs {
 }
 
 /**
- * A reference to a union type. The "oneOf" property must be present. The union may additional specify an underlying primitive type via the "type" property and a discriminator via the "discriminator" property. No other properties may be present.
+ * Describes an object or resource property
  */
-export interface ProviderPropertiesAdditionalPropertiesChoice5Of5 {
-    discriminator?: inputs.Discriminator;
+export interface ProviderPropertiesAdditionalProperties {
+    additionalProperties?: {[key: string]: any};
+    choice1Of5?: inputs.PropertiesAdditionalPropertiesChoice1Of5;
+    choice2Of5?: inputs.PropertiesAdditionalPropertiesChoice2Of5;
+    choice3Of5?: inputs.PropertiesAdditionalPropertiesChoice3Of5;
+    choice4Of5?: inputs.NamedType;
+    choice5Of5?: inputs.PropertiesAdditionalPropertiesChoice5Of5;
+    const?: boolean | number | string;
+    default?: boolean | number | string;
+    defaultInfo?: inputs.DefaultInfo;
     /**
-     * If present, indicates that values of the type may be one of any of the listed types
+     * Indicates whether the property is deprecated
      */
-    oneOf: inputs.PropertiesAdditionalProperties[];
-    type?: enums.TypeSpecOneOf4PropertiesType;
+    deprecationMessage?: string;
+    /**
+     * The description of the property, if any. Interpreted as Markdown.
+     */
+    description?: string;
+    /**
+     * Additional language-specific data about the property.
+     */
+    language?: {[key: string]: any};
+    /**
+     * Indicates that when used as an input, this type does not accept eventual values.
+     */
+    plain?: boolean;
+    /**
+     * Specifies whether a change to the property causes its containing resource to be replaced instead of updated (default false).
+     */
+    replaceOnChanges?: boolean;
+    /**
+     * Specifies whether the property is secret (default false).
+     */
+    secret?: boolean;
+    /**
+     * Indicates that the provider will replace the resource when this property is changed.
+     */
+    willReplaceOnChanges?: boolean;
 }
 
 /**
- * A reference to a union type. The "oneOf" property must be present. The union may additional specify an underlying primitive type via the "type" property and a discriminator via the "discriminator" property. No other properties may be present.
+ * Describes an object or resource property
  */
-export interface ProviderPropertiesAdditionalPropertiesChoice5Of5Args {
-    discriminator?: pulumi.Input<inputs.DiscriminatorArgs>;
+export interface ProviderPropertiesAdditionalPropertiesArgs {
+    additionalProperties?: pulumi.Input<{[key: string]: any}>;
+    choice1Of5?: pulumi.Input<inputs.PropertiesAdditionalPropertiesChoice1Of5Args>;
+    choice2Of5?: pulumi.Input<inputs.PropertiesAdditionalPropertiesChoice2Of5Args>;
+    choice3Of5?: pulumi.Input<inputs.PropertiesAdditionalPropertiesChoice3Of5Args>;
+    choice4Of5?: pulumi.Input<inputs.NamedTypeArgs>;
+    choice5Of5?: pulumi.Input<inputs.PropertiesAdditionalPropertiesChoice5Of5Args>;
+    const?: pulumi.Input<boolean | number | string>;
+    default?: pulumi.Input<boolean | number | string>;
+    defaultInfo?: pulumi.Input<inputs.DefaultInfoArgs>;
     /**
-     * If present, indicates that values of the type may be one of any of the listed types
+     * Indicates whether the property is deprecated
      */
-    oneOf: pulumi.Input<pulumi.Input<inputs.PropertiesAdditionalPropertiesArgs>[]>;
-    type?: pulumi.Input<enums.TypeSpecOneOf4PropertiesType>;
+    deprecationMessage?: pulumi.Input<string>;
+    /**
+     * The description of the property, if any. Interpreted as Markdown.
+     */
+    description?: pulumi.Input<string>;
+    /**
+     * Additional language-specific data about the property.
+     */
+    language?: pulumi.Input<{[key: string]: any}>;
+    /**
+     * Indicates that when used as an input, this type does not accept eventual values.
+     */
+    plain?: pulumi.Input<boolean>;
+    /**
+     * Specifies whether a change to the property causes its containing resource to be replaced instead of updated (default false).
+     */
+    replaceOnChanges?: pulumi.Input<boolean>;
+    /**
+     * Specifies whether the property is secret (default false).
+     */
+    secret?: pulumi.Input<boolean>;
+    /**
+     * Indicates that the provider will replace the resource when this property is changed.
+     */
+    willReplaceOnChanges?: pulumi.Input<boolean>;
 }
 
 /**
@@ -1518,7 +1448,7 @@ export interface ResourceDefinition {
     /**
      * A map from property name to propertySpec that describes the resource's input properties.
      */
-    inputProperties?: {[key: string]: inputs.InputPropertiesAdditionalProperties};
+    inputProperties?: {[key: string]: inputs.PropertyDefinition};
     /**
      * Indicates whether the resource is a component.
      */
@@ -1534,7 +1464,7 @@ export interface ResourceDefinition {
     /**
      * A map from property name to propertySpec that describes the object's properties.
      */
-    properties?: {[key: string]: inputs.TypeSpec};
+    properties?: {[key: string]: inputs.AdditionalProperties};
     /**
      * A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
      */
@@ -1566,7 +1496,7 @@ export interface ResourceDefinitionArgs {
     /**
      * A map from property name to propertySpec that describes the resource's input properties.
      */
-    inputProperties?: pulumi.Input<{[key: string]: pulumi.Input<inputs.InputPropertiesAdditionalPropertiesArgs>}>;
+    inputProperties?: pulumi.Input<{[key: string]: pulumi.Input<inputs.PropertyDefinitionArgs>}>;
     /**
      * Indicates whether the resource is a component.
      */
@@ -1582,7 +1512,7 @@ export interface ResourceDefinitionArgs {
     /**
      * A map from property name to propertySpec that describes the object's properties.
      */
-    properties?: pulumi.Input<{[key: string]: pulumi.Input<inputs.TypeSpecArgs>}>;
+    properties?: pulumi.Input<{[key: string]: pulumi.Input<inputs.AdditionalPropertiesArgs>}>;
     /**
      * A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
      */
@@ -1642,10 +1572,10 @@ export interface TypeDefinitionArgs {
 export interface TypeSpec {
     additionalProperties?: {[key: string]: any};
     choice1Of5?: inputs.OneOf0;
-    choice2Of5?: inputs.AdditionalPropertiesChoice2Of5;
-    choice3Of5?: inputs.AdditionalPropertiesChoice3Of5;
+    choice2Of5?: inputs.OneOf1;
+    choice3Of5?: inputs.OneOf2;
     choice4Of5?: inputs.NamedType;
-    choice5Of5?: inputs.AdditionalPropertiesChoice5Of5;
+    choice5Of5?: inputs.OneOf4;
     const?: boolean | number | string;
     default?: boolean | number | string;
     defaultInfo?: inputs.DefaultInfo;
@@ -1685,10 +1615,10 @@ export interface TypeSpec {
 export interface TypeSpecArgs {
     additionalProperties?: pulumi.Input<{[key: string]: any}>;
     choice1Of5?: pulumi.Input<inputs.OneOf0Args>;
-    choice2Of5?: pulumi.Input<inputs.AdditionalPropertiesChoice2Of5Args>;
-    choice3Of5?: pulumi.Input<inputs.AdditionalPropertiesChoice3Of5Args>;
+    choice2Of5?: pulumi.Input<inputs.OneOf1Args>;
+    choice3Of5?: pulumi.Input<inputs.OneOf2Args>;
     choice4Of5?: pulumi.Input<inputs.NamedTypeArgs>;
-    choice5Of5?: pulumi.Input<inputs.AdditionalPropertiesChoice5Of5Args>;
+    choice5Of5?: pulumi.Input<inputs.OneOf4Args>;
     const?: pulumi.Input<boolean | number | string>;
     default?: pulumi.Input<boolean | number | string>;
     defaultInfo?: pulumi.Input<inputs.DefaultInfoArgs>;
@@ -1726,21 +1656,21 @@ export interface TypeSpecArgs {
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface TypeSpecOneOf0 {
-    type: enums.TypeSpecOneOf0PropertiesType;
+    type: enums.OneOf0PropertiesType;
 }
 
 /**
  * A reference to a primitive type. A primitive type must have only the "type" property set.
  */
 export interface TypeSpecOneOf0Args {
-    type: pulumi.Input<enums.TypeSpecOneOf0PropertiesType>;
+    type: pulumi.Input<enums.OneOf0PropertiesType>;
 }
 
 /**
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface TypeSpecOneOf1 {
-    items: inputs.InputsPropertiesAdditionalProperties;
+    items: inputs.AdditionalProperties;
     type: "array";
 }
 
@@ -1748,7 +1678,7 @@ export interface TypeSpecOneOf1 {
  * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
  */
 export interface TypeSpecOneOf1Args {
-    items: pulumi.Input<inputs.InputsPropertiesAdditionalPropertiesArgs>;
+    items: pulumi.Input<inputs.AdditionalPropertiesArgs>;
     type: pulumi.Input<"array">;
 }
 
@@ -1756,7 +1686,7 @@ export interface TypeSpecOneOf1Args {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface TypeSpecOneOf2 {
-    additionalProperties?: inputs.InputsPropertiesAdditionalProperties;
+    additionalProperties?: inputs.AdditionalProperties;
     type: "object";
 }
 
@@ -1764,7 +1694,7 @@ export interface TypeSpecOneOf2 {
  * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
  */
 export interface TypeSpecOneOf2Args {
-    additionalProperties?: pulumi.Input<inputs.InputsPropertiesAdditionalPropertiesArgs>;
+    additionalProperties?: pulumi.Input<inputs.AdditionalPropertiesArgs>;
     type: pulumi.Input<"object">;
 }
 
@@ -1776,8 +1706,8 @@ export interface TypeSpecOneOf4 {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: inputs.InputsPropertiesAdditionalProperties[];
-    type?: enums.PropertiesAdditionalPropertiesChoice5Of5Type;
+    oneOf: inputs.AdditionalProperties[];
+    type?: enums.Choice5Of5Type;
 }
 
 /**
@@ -1788,8 +1718,8 @@ export interface TypeSpecOneOf4Args {
     /**
      * If present, indicates that values of the type may be one of any of the listed types
      */
-    oneOf: pulumi.Input<pulumi.Input<inputs.InputsPropertiesAdditionalPropertiesArgs>[]>;
-    type?: pulumi.Input<enums.PropertiesAdditionalPropertiesChoice5Of5Type>;
+    oneOf: pulumi.Input<pulumi.Input<inputs.AdditionalPropertiesArgs>[]>;
+    type?: pulumi.Input<enums.Choice5Of5Type>;
 }
 
 /**
@@ -1801,7 +1731,7 @@ export interface UnionType {
      * If present, indicates that values of the type may be one of any of the listed types
      */
     oneOf: inputs.PropertyDefinition[];
-    type?: enums.Choice5Of5Type;
+    type?: enums.OneOf4PropertiesType;
 }
 
 /**
@@ -1813,7 +1743,7 @@ export interface UnionTypeArgs {
      * If present, indicates that values of the type may be one of any of the listed types
      */
     oneOf: pulumi.Input<pulumi.Input<inputs.PropertyDefinitionArgs>[]>;
-    type?: pulumi.Input<enums.Choice5Of5Type>;
+    type?: pulumi.Input<enums.OneOf4PropertiesType>;
 }
 
 /**
@@ -1821,11 +1751,11 @@ export interface UnionTypeArgs {
  */
 export interface VariablesAdditionalProperties {
     additionalProperties?: {[key: string]: any};
-    choice1Of5?: inputs.PrimitiveType;
-    choice2Of5?: inputs.ArrayType;
-    choice3Of5?: inputs.Choice3Of5;
+    choice1Of5?: inputs.VariablesAdditionalPropertiesChoice1Of5;
+    choice2Of5?: inputs.VariablesAdditionalPropertiesChoice2Of5;
+    choice3Of5?: inputs.VariablesAdditionalPropertiesChoice3Of5;
     choice4Of5?: inputs.NamedType;
-    choice5Of5?: inputs.OneOf4;
+    choice5Of5?: inputs.VariablesAdditionalPropertiesChoice5Of5;
     const?: boolean | number | string;
     default?: boolean | number | string;
     defaultInfo?: inputs.DefaultInfo;
@@ -1864,11 +1794,11 @@ export interface VariablesAdditionalProperties {
  */
 export interface VariablesAdditionalPropertiesArgs {
     additionalProperties?: pulumi.Input<{[key: string]: any}>;
-    choice1Of5?: pulumi.Input<inputs.PrimitiveTypeArgs>;
-    choice2Of5?: pulumi.Input<inputs.ArrayTypeArgs>;
-    choice3Of5?: pulumi.Input<inputs.Choice3Of5Args>;
+    choice1Of5?: pulumi.Input<inputs.VariablesAdditionalPropertiesChoice1Of5Args>;
+    choice2Of5?: pulumi.Input<inputs.VariablesAdditionalPropertiesChoice2Of5Args>;
+    choice3Of5?: pulumi.Input<inputs.VariablesAdditionalPropertiesChoice3Of5Args>;
     choice4Of5?: pulumi.Input<inputs.NamedTypeArgs>;
-    choice5Of5?: pulumi.Input<inputs.OneOf4Args>;
+    choice5Of5?: pulumi.Input<inputs.VariablesAdditionalPropertiesChoice5Of5Args>;
     const?: pulumi.Input<boolean | number | string>;
     default?: pulumi.Input<boolean | number | string>;
     defaultInfo?: pulumi.Input<inputs.DefaultInfoArgs>;
@@ -1900,4 +1830,74 @@ export interface VariablesAdditionalPropertiesArgs {
      * Indicates that the provider will replace the resource when this property is changed.
      */
     willReplaceOnChanges?: pulumi.Input<boolean>;
+}
+
+/**
+ * A reference to a primitive type. A primitive type must have only the "type" property set.
+ */
+export interface VariablesAdditionalPropertiesChoice1Of5 {
+    type: enums.VariablesAdditionalPropertiesChoice1Of5Type;
+}
+
+/**
+ * A reference to a primitive type. A primitive type must have only the "type" property set.
+ */
+export interface VariablesAdditionalPropertiesChoice1Of5Args {
+    type: pulumi.Input<enums.VariablesAdditionalPropertiesChoice1Of5Type>;
+}
+
+/**
+ * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
+ */
+export interface VariablesAdditionalPropertiesChoice2Of5 {
+    items: inputs.VariablesAdditionalProperties;
+    type: "array";
+}
+
+/**
+ * A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
+ */
+export interface VariablesAdditionalPropertiesChoice2Of5Args {
+    items: pulumi.Input<inputs.VariablesAdditionalPropertiesArgs>;
+    type: pulumi.Input<"array">;
+}
+
+/**
+ * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
+ */
+export interface VariablesAdditionalPropertiesChoice3Of5 {
+    additionalProperties?: inputs.VariablesAdditionalProperties;
+    type: "object";
+}
+
+/**
+ * A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
+ */
+export interface VariablesAdditionalPropertiesChoice3Of5Args {
+    additionalProperties?: pulumi.Input<inputs.VariablesAdditionalPropertiesArgs>;
+    type: pulumi.Input<"object">;
+}
+
+/**
+ * A reference to a union type. The "oneOf" property must be present. The union may additional specify an underlying primitive type via the "type" property and a discriminator via the "discriminator" property. No other properties may be present.
+ */
+export interface VariablesAdditionalPropertiesChoice5Of5 {
+    discriminator?: inputs.Discriminator;
+    /**
+     * If present, indicates that values of the type may be one of any of the listed types
+     */
+    oneOf: inputs.VariablesAdditionalProperties[];
+    type?: enums.VariablesAdditionalPropertiesChoice5Of5Type;
+}
+
+/**
+ * A reference to a union type. The "oneOf" property must be present. The union may additional specify an underlying primitive type via the "type" property and a discriminator via the "discriminator" property. No other properties may be present.
+ */
+export interface VariablesAdditionalPropertiesChoice5Of5Args {
+    discriminator?: pulumi.Input<inputs.DiscriminatorArgs>;
+    /**
+     * If present, indicates that values of the type may be one of any of the listed types
+     */
+    oneOf: pulumi.Input<pulumi.Input<inputs.VariablesAdditionalPropertiesArgs>[]>;
+    type?: pulumi.Input<enums.VariablesAdditionalPropertiesChoice5Of5Type>;
 }

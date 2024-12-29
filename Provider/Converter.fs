@@ -2459,8 +2459,14 @@ let convertSchema (uri : Uri) (packageName: string) (jsonSchema: JsonElement) : 
     let usedNames = System.Collections.Generic.HashSet()
     let names = System.Collections.Generic.Dictionary()
 
-    for kv in complexTypes do
-        let complexType, paths = kv.Key, kv.Value
+    // We need to sort the complex types by some order to get stable name generation, all complex types have paths so lets use that.
+    let paths = 
+        complexTypes
+        |> Seq.map (fun kv -> kv.Value, kv.Key)
+        |> Map.ofSeq
+
+    for kv in paths do
+        let complexType, paths = kv.Value, kv.Key
 
         let nameRegex = System.Text.RegularExpressions.Regex("^[a-z][A-Za-z0-9]+$")
 
@@ -2485,9 +2491,10 @@ let convertSchema (uri : Uri) (packageName: string) (jsonSchema: JsonElement) : 
                 |> Seq.map (fun prefix -> prefix |> List.rev |> String.concat "_" |> cleanTextForName)
                 |> Seq.tryPick isValid)
 
-            // Else try the attribute paths
+            // Else try the attribute paths, again make sure this is ordered so we get stable names
             |> Option.orElseWith (fun () ->
                 paths
+                |> Seq.sort
                 |> Seq.tryPick (fun path ->
                     path
                     |> allPrefixes
@@ -2517,9 +2524,17 @@ let convertSchema (uri : Uri) (packageName: string) (jsonSchema: JsonElement) : 
         let types = JsonObject()
         schema.Add("types", types)
 
+        // Sort the types by name so we always build the schema in the same order
+        let reverseNames = Dictionary()
         for kv in names do
-            let complexTypeSpec = kv.Key.BuildComplexTypeSpec packageName names
-            types.Add(packageName + ":index:" + kv.Value, complexTypeSpec.AsSchema())
+            reverseNames.Add(kv.Value, kv.Key)
+
+        let sortedNames = reverseNames.Keys |> Seq.sort
+        
+        for key in sortedNames do
+            let value = reverseNames[key]
+            let complexTypeSpec = value.BuildComplexTypeSpec packageName names
+            types.Add(packageName + ":index:" + key, complexTypeSpec.AsSchema())
 
     // if the schema is a valid complex type then embed it into types and return that, else we'll embed it directly
     let names = ImmutableDictionary.CreateRange(names)

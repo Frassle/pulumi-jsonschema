@@ -62,18 +62,6 @@ export const EnumTypeSpecPropertiesType = {
  */
 export type EnumTypeSpecPropertiesType = (typeof EnumTypeSpecPropertiesType)[keyof typeof EnumTypeSpecPropertiesType];
 
-export const InputPropertiesAdditionalPropertiesChoice5Of5Type = {
-    Boolean: "boolean",
-    Integer: "integer",
-    Number: "number",
-    String: "string",
-} as const;
-
-/**
- * The underlying primitive type of the union, if any
- */
-export type InputPropertiesAdditionalPropertiesChoice5Of5Type = (typeof InputPropertiesAdditionalPropertiesChoice5Of5Type)[keyof typeof InputPropertiesAdditionalPropertiesChoice5Of5Type];
-
 export const OneOf0PropertiesType = {
     Boolean: "boolean",
     Integer: "integer",
@@ -98,18 +86,6 @@ export const OneOf4PropertiesType = {
  */
 export type OneOf4PropertiesType = (typeof OneOf4PropertiesType)[keyof typeof OneOf4PropertiesType];
 
-export const PropertiesAdditionalPropertiesChoice1Of5Type = {
-    Boolean: "boolean",
-    Integer: "integer",
-    Number: "number",
-    String: "string",
-} as const;
-
-/**
- * The primitive type, if any
- */
-export type PropertiesAdditionalPropertiesChoice1Of5Type = (typeof PropertiesAdditionalPropertiesChoice1Of5Type)[keyof typeof PropertiesAdditionalPropertiesChoice1Of5Type];
-
 export const PropertiesAdditionalPropertiesChoice5Of5Type = {
     Boolean: "boolean",
     Integer: "integer",
@@ -133,6 +109,18 @@ export const PropertiesType = {
  * The primitive type, if any
  */
 export type PropertiesType = (typeof PropertiesType)[keyof typeof PropertiesType];
+
+export const ProviderPropertiesAdditionalPropertiesChoice5Of5Type = {
+    Boolean: "boolean",
+    Integer: "integer",
+    Number: "number",
+    String: "string",
+} as const;
+
+/**
+ * The underlying primitive type of the union, if any
+ */
+export type ProviderPropertiesAdditionalPropertiesChoice5Of5Type = (typeof ProviderPropertiesAdditionalPropertiesChoice5Of5Type)[keyof typeof ProviderPropertiesAdditionalPropertiesChoice5Of5Type];
 
 export const Type = {
     Boolean: "boolean",
@@ -169,6 +157,18 @@ export const TypeSpecOneOf4PropertiesType = {
  * The underlying primitive type of the union, if any
  */
 export type TypeSpecOneOf4PropertiesType = (typeof TypeSpecOneOf4PropertiesType)[keyof typeof TypeSpecOneOf4PropertiesType];
+
+export const VariablesAdditionalPropertiesChoice1Of5Type = {
+    Boolean: "boolean",
+    Integer: "integer",
+    Number: "number",
+    String: "string",
+} as const;
+
+/**
+ * The primitive type, if any
+ */
+export type VariablesAdditionalPropertiesChoice1Of5Type = (typeof VariablesAdditionalPropertiesChoice1Of5Type)[keyof typeof VariablesAdditionalPropertiesChoice1Of5Type];
 
 export const VariablesAdditionalPropertiesChoice5Of5Type = {
     Boolean: "boolean",

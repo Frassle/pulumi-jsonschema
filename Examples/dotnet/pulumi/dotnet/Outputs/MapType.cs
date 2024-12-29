@@ -16,12 +16,12 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class MapType
     {
-        public readonly Outputs.TypeSpec? AdditionalProperties;
+        public readonly Outputs.PropertyDefinition? AdditionalProperties;
         public readonly string Type;
 
         [OutputConstructor]
         private MapType(
-            Outputs.TypeSpec? additionalProperties,
+            Outputs.PropertyDefinition? additionalProperties,
 
             string type)
         {

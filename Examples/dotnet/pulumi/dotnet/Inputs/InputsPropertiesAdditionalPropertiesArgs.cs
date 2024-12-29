@@ -13,7 +13,7 @@ namespace Pulumi.Pulumi.Inputs
     /// <summary>
     /// Describes an object or resource property
     /// </summary>
-    public sealed class InputPropertiesAdditionalPropertiesArgs : global::Pulumi.ResourceArgs
+    public sealed class InputsPropertiesAdditionalPropertiesArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
         private InputMap<object>? _additionalProperties;
@@ -24,19 +24,19 @@ namespace Pulumi.Pulumi.Inputs
         }
 
         [Input("choice1Of5")]
-        public Input<Inputs.OneOf0Args>? Choice1Of5 { get; set; }
+        public Input<Inputs.AdditionalPropertiesChoice1Of5Args>? Choice1Of5 { get; set; }
 
         [Input("choice2Of5")]
         public Input<Inputs.AdditionalPropertiesChoice2Of5Args>? Choice2Of5 { get; set; }
 
         [Input("choice3Of5")]
-        public Input<Inputs.OneOf2Args>? Choice3Of5 { get; set; }
+        public Input<Inputs.AdditionalPropertiesChoice3Of5Args>? Choice3Of5 { get; set; }
 
         [Input("choice4Of5")]
         public Input<Inputs.NamedTypeArgs>? Choice4Of5 { get; set; }
 
         [Input("choice5Of5")]
-        public Input<Inputs.OneOf4Args>? Choice5Of5 { get; set; }
+        public Input<Inputs.AdditionalPropertiesChoice5Of5Args>? Choice5Of5 { get; set; }
 
         [Input("const")]
         public object? Const { get; set; }
@@ -95,9 +95,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("willReplaceOnChanges")]
         public Input<bool>? WillReplaceOnChanges { get; set; }
 
-        public InputPropertiesAdditionalPropertiesArgs()
+        public InputsPropertiesAdditionalPropertiesArgs()
         {
         }
-        public static new InputPropertiesAdditionalPropertiesArgs Empty => new InputPropertiesAdditionalPropertiesArgs();
+        public static new InputsPropertiesAdditionalPropertiesArgs Empty => new InputsPropertiesAdditionalPropertiesArgs();
     }
 }
