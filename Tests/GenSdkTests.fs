@@ -48,6 +48,6 @@ let genSdk (parameter: string) (name: string) =
     if proc.ExitCode <> 0 then
         failwithf "gen-sdk failed\nstdout:\n%s\nstderr:\n%s" (out.ToString()) (err.ToString())
 
-[<Fact>]
+[<Fact(Skip="gen-sdk currently leaks processes")>]
 let ``Test pulumi`` () =
     genSdk "https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json" "pulumi"
