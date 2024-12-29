@@ -66,12 +66,15 @@
     }
   },
   "types": {
-    "bootstraprc:index:loglevel": {
-      "description": "The verbosity of logging. Exclude this property to disable.",
-      "type": "string",
+    "bootstraprc:index:bootstrapVersion": {
+      "description": "The major version of Bootstrap being used",
+      "type": "integer",
       "enum": [
         {
-          "value": "debug"
+          "value": 3
+        },
+        {
+          "value": 4
         }
       ]
     },
@@ -131,15 +134,12 @@
         "styleLoaders"
       ]
     },
-    "bootstraprc:index:bootstrapVersion": {
-      "description": "The major version of Bootstrap being used",
-      "type": "integer",
+    "bootstraprc:index:loglevel": {
+      "description": "The verbosity of logging. Exclude this property to disable.",
+      "type": "string",
       "enum": [
         {
-          "value": 3
-        },
-        {
-          "value": 4
+          "value": "debug"
         }
       ]
     }

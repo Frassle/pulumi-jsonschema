@@ -7,26 +7,23 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Pulumi.Outputs
+namespace Pulumi.Pulumi.Inputs
 {
 
     /// <summary>
     /// A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
     /// </summary>
-    [OutputType]
-    public sealed class InputsPropertiesAdditionalPropertiesChoice2Of5
+    public sealed class VariablesAdditionalPropertiesChoice2Of5 : global::Pulumi.InvokeArgs
     {
-        public readonly Outputs.PropertiesAdditionalProperties Items;
-        public readonly string Type;
+        [Input("items", required: true)]
+        public Inputs.VariablesAdditionalProperties Items { get; set; } = null!;
 
-        [OutputConstructor]
-        private InputsPropertiesAdditionalPropertiesChoice2Of5(
-            Outputs.PropertiesAdditionalProperties items,
+        [Input("type", required: true)]
+        public string Type { get; set; } = null!;
 
-            string type)
+        public VariablesAdditionalPropertiesChoice2Of5()
         {
-            Items = items;
-            Type = type;
         }
+        public static new VariablesAdditionalPropertiesChoice2Of5 Empty => new VariablesAdditionalPropertiesChoice2Of5();
     }
 }
