@@ -79,6 +79,10 @@ let ``Test tsconfig`` () =
     doTest "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/tsconfig.json" "tsconfig"
 
 [<Fact>]
+let ``Test cargo`` () =
+    doTest "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/cargo.json" "cargo"
+
+[<Fact>]
 let ``Test bootstraprc`` () =
     doTest "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/bootstraprc.json" "bootstraprc"
 

@@ -1,0 +1,6 @@
+{
+  "resource": true,
+  "name": "cargo",
+  "version": "1.0.0",
+  "server": "github://api.github.com/Frassle"
+}
