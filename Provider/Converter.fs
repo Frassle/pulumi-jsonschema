@@ -1965,7 +1965,7 @@ let rec convertRef
                         newSchema.Add(Json.Schema.PropertiesKeyword(props)))
 
                 if allKeywords.Count <> 0 then
-                    { Description = Some(sprintf "Needs more translation %O" allKeywords)
+                    { Description = Some(sprintf "Ref needs more translation %O" allKeywords)
                       PrimitiveValidation = PrimitiveValidation.FromKeywords schema.Keywords }
                     |> TypeSpec.Any
                     |> Conversion.Type
@@ -2189,7 +2189,7 @@ and convertAllOf
                 newSchema.Add(Json.Schema.PropertiesKeyword(props)))
 
         if allKeywords.Count <> 0 then
-            failwithf "Needs more translation %O" allKeywords
+            failwithf "AllOf needs more translation %O" allKeywords
 
         convertSubSchema root context path (newSchema.Build())
 
