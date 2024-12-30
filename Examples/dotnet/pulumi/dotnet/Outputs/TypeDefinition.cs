@@ -17,7 +17,13 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class TypeDefinition
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
+        /// <summary>
+        /// Describes an object type
+        /// </summary>
         public readonly Outputs.ObjectTypeDefinition? Choice1Of2;
+        /// <summary>
+        /// Describes an enum type
+        /// </summary>
         public readonly Outputs.EnumTypeDefinition? Choice2Of2;
         /// <summary>
         /// The description of the type, if any. Interpreted as Markdown.

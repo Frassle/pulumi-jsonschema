@@ -38,6 +38,9 @@ namespace Pulumi.Cargo.Inputs
             set => _additionalProperties = value;
         }
 
+        /// <summary>
+        /// Metadata and build configuration.
+        /// </summary>
         [Input("playdate")]
         public Inputs.PlaydatePackageMetadata? Playdate { get; set; }
 

@@ -22,7 +22,13 @@ namespace Pulumi.Bootstraprc.Outputs
         /// The .scss file path to be loaded after Bootstrap's _variables.scss file
         /// </summary>
         public readonly string? BootstrapCustomizations;
+        /// <summary>
+        /// The major version of Bootstrap being used
+        /// </summary>
         public readonly Pulumi.Bootstraprc.BootstrapVersion BootstrapVersion;
+        /// <summary>
+        /// The verbosity of logging. Exclude this property to disable.
+        /// </summary>
         public readonly Pulumi.Bootstraprc.Loglevel? Loglevel;
         /// <summary>
         /// The .scss file path to be loaded before Bootstrap's _variables.scss file

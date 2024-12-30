@@ -16,6 +16,9 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class PrimitiveType
     {
+        /// <summary>
+        /// The primitive type, if any
+        /// </summary>
         public readonly Pulumi.Pulumi.Type Type;
 
         [OutputConstructor]

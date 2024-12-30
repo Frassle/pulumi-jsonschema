@@ -85,6 +85,9 @@ namespace Pulumi.Cargo.Inputs
         [Input("name")]
         public Input<string>? Name { get; set; }
 
+        /// <summary>
+        /// Package build options.
+        /// </summary>
         [Input("options")]
         public Input<Inputs.ConfigurationArgs>? Options { get; set; }
 

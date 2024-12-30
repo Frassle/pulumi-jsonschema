@@ -25,6 +25,9 @@ namespace Pulumi.Pulumi.Outputs
         /// The description of the function, if any. Interpreted as Markdown.
         /// </summary>
         public readonly string? Description;
+        /// <summary>
+        /// Describes an object type
+        /// </summary>
         public readonly Outputs.ObjectTypeDetails? Inputs;
         /// <summary>
         /// Indicates that the implementation of the function should not be generated from the schema, and is instead provided out-of-band by the package author

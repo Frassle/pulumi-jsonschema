@@ -17,13 +17,31 @@ namespace Pulumi.Pulumi.Outputs
     public sealed class PropertyDefinition
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
+        /// <summary>
+        /// A reference to a primitive type. A primitive type must have only the "type" property set.
+        /// </summary>
         public readonly Outputs.PrimitiveType? Choice1Of5;
+        /// <summary>
+        /// A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
+        /// </summary>
         public readonly Outputs.ArrayType? Choice2Of5;
+        /// <summary>
+        /// A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
+        /// </summary>
         public readonly Outputs.MapType? Choice3Of5;
+        /// <summary>
+        /// A reference to a type in this or another document. The "$ref" property must be present. The "type" property is ignored if it is present. No other properties may be present.
+        /// </summary>
         public readonly Outputs.NamedType? Choice4Of5;
+        /// <summary>
+        /// A reference to a union type. The "oneOf" property must be present. The union may additional specify an underlying primitive type via the "type" property and a discriminator via the "discriminator" property. No other properties may be present.
+        /// </summary>
         public readonly Outputs.UnionType? Choice5Of5;
         public readonly object? Const;
         public readonly object? Default;
+        /// <summary>
+        /// Additional information about the property's default value, if any.
+        /// </summary>
         public readonly Outputs.DefaultInfo? DefaultInfo;
         /// <summary>
         /// Indicates whether the property is deprecated

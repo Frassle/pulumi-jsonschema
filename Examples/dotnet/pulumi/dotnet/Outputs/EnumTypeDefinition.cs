@@ -20,6 +20,9 @@ namespace Pulumi.Pulumi.Outputs
         /// The list of possible values for the enum
         /// </summary>
         public readonly ImmutableArray<Outputs.EnumValueDefinition> Enum;
+        /// <summary>
+        /// The underlying primitive type of the enum
+        /// </summary>
         public readonly Pulumi.Pulumi.EnumTypeSpecPropertiesType Type;
 
         [OutputConstructor]

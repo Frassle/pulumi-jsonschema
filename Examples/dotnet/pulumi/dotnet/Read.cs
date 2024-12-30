@@ -51,6 +51,9 @@ namespace Pulumi.Pulumi
     [OutputType]
     public sealed class ReadResult
     {
+        /// <summary>
+        /// A description of the schema for a Pulumi Package
+        /// </summary>
         public readonly Outputs.PulumiPackageMetaschema Value;
 
         [OutputConstructor]

@@ -82,6 +82,21 @@ namespace Pulumi.Cargo.Outputs
         /// target individual versions of a package with syntax such as `[profile.dev.package."foo:2.1.0"]`.
         /// </summary>
         public readonly ImmutableDictionary<string, Outputs.Release>? Package;
+        /// <summary>
+        /// The `panic` setting controls the [`-C panic` flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#panic) which controls which panic
+        /// strategy to use.
+        /// 
+        /// When set to `"unwind"`, the actual value depends on the default of the target
+        /// platform. For example, the NVPTX platform does not support unwinding, so it
+        /// always uses `"abort"`.
+        /// 
+        /// Tests, benchmarks, build scripts, and proc macros ignore the `panic` setting.
+        /// The `rustc` test harness currently requires `unwind` behavior. See the
+        /// [`panic-abort-tests`](https://doc.rust-lang.org/cargo/reference/unstable.html#panic-abort-tests) unstable flag which enables `abort` behavior.
+        /// 
+        /// Additionally, when using the `abort` strategy and building a test, all of the
+        /// dependencies will also be forced to built with the `unwind` strategy.
+        /// </summary>
         public readonly Pulumi.Cargo.ReleasePanic? Panic;
         /// <summary>
         /// The `rpath` setting controls the [`-C rpath` flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#rpath) which controls

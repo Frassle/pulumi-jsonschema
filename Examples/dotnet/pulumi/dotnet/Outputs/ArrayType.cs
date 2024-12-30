@@ -16,6 +16,9 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class ArrayType
     {
+        /// <summary>
+        /// Describes an object or resource property
+        /// </summary>
         public readonly Outputs.PropertyDefinition Items;
         public readonly string Type;
 

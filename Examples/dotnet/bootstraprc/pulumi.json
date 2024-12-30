@@ -96,10 +96,12 @@
           "description": "The .scss file path to be loaded after Bootstrap\u0027s _variables.scss file"
         },
         "bootstrapVersion": {
-          "$ref": "#/types/bootstraprc:index:bootstrapVersion"
+          "$ref": "#/types/bootstraprc:index:bootstrapVersion",
+          "description": "The major version of Bootstrap being used"
         },
         "loglevel": {
-          "$ref": "#/types/bootstraprc:index:loglevel"
+          "$ref": "#/types/bootstraprc:index:loglevel",
+          "description": "The verbosity of logging. Exclude this property to disable."
         },
         "preBootstrapCustomizations": {
           "type": "string",

@@ -15,6 +15,9 @@ namespace Pulumi.Pulumi.Inputs
     /// </summary>
     public sealed class Choice1Of5Args : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// The primitive type, if any
+        /// </summary>
         [Input("type", required: true)]
         public Input<Pulumi.Pulumi.TypeSpecOneOf0PropertiesType> Type { get; set; } = null!;
 

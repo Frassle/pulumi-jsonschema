@@ -15,6 +15,9 @@ namespace Pulumi.Pulumi.Inputs
     /// </summary>
     public sealed class VariablesAdditionalPropertiesChoice1Of5 : global::Pulumi.InvokeArgs
     {
+        /// <summary>
+        /// The primitive type, if any
+        /// </summary>
         [Input("type", required: true)]
         public Pulumi.Pulumi.VariablesAdditionalPropertiesChoice1Of5Type Type { get; set; }
 

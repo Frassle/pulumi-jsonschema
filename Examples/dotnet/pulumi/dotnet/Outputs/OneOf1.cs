@@ -16,6 +16,9 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class OneOf1
     {
+        /// <summary>
+        /// Describes an object or resource property
+        /// </summary>
         public readonly Outputs.TypeSpec Items;
         public readonly string Type;
 

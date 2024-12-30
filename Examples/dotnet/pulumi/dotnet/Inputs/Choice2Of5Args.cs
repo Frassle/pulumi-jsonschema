@@ -15,6 +15,9 @@ namespace Pulumi.Pulumi.Inputs
     /// </summary>
     public sealed class Choice2Of5Args : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// Describes an object or resource property
+        /// </summary>
         [Input("items", required: true)]
         public Input<Inputs.PropertiesAdditionalPropertiesArgs> Items { get; set; } = null!;
 

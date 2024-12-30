@@ -221,6 +221,24 @@ namespace Pulumi.Cargo.Inputs
             set => _metabuild = value;
         }
 
+        /// <summary>
+        /// Cargo by default will warn about unused keys in `Cargo.toml` to assist in
+        /// detecting typos and such. The `package.metadata` table, however, is completely
+        /// ignored by Cargo and will not be warned about. This section can be used for
+        /// tools which would like to store package configuration in `Cargo.toml`. For
+        /// example:
+        /// 
+        /// ```toml
+        /// [package]
+        /// name = "..."
+        /// # ...
+        /// 
+        /// # Metadata used when generating an Android APK, for example.
+        /// [package.metadata.android]
+        /// package-name = "my-awesome-android-app"
+        /// assets = "path/to/static"
+        /// ```
+        /// </summary>
         [Input("metadata")]
         public Input<Inputs.MetadataArgs>? Metadata { get; set; }
 
@@ -263,6 +281,24 @@ namespace Pulumi.Cargo.Inputs
         [Input("repository")]
         public Input<object>? Repository { get; set; }
 
+        /// <summary>
+        /// A different feature resolver algorithm can be used by specifying the resolver version in Cargo.toml like this:
+        /// 
+        /// [package]
+        /// name = "my-package"
+        /// version = "1.0.0"
+        /// resolver = "2"
+        /// 
+        /// The version "1" resolver is the original resolver that shipped with Cargo up to version 1.50. The default is "2" if the root package specifies edition = "2021" or a newer edition. Otherwise the default is "1".
+        /// 
+        /// The version "2" resolver introduces changes in feature unification. See the features chapter for more details.
+        /// 
+        /// The resolver is a global option that affects the entire workspace. The resolver version in dependencies is ignored, only the value in the top-level package will be used. If using a virtual workspace, the version should be specified in the [workspace] table, for example:
+        /// 
+        /// [workspace]
+        /// members = ["member1", "member2"]
+        /// resolver = "2"
+        /// </summary>
         [Input("resolver")]
         public Input<Pulumi.Cargo.Resolver>? Resolver { get; set; }
 

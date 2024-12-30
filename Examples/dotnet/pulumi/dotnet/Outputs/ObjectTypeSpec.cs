@@ -57,6 +57,9 @@ namespace Pulumi.Pulumi.Outputs
         /// A list of the names of the resource's required input properties.
         /// </summary>
         public readonly ImmutableArray<string> RequiredInputs;
+        /// <summary>
+        /// Describes a resource or component.
+        /// </summary>
         public readonly Outputs.ObjectTypeSpec? StateInputs;
 
         [OutputConstructor]

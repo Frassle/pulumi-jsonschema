@@ -180,9 +180,71 @@ namespace Pulumi.Cargo.Inputs
             set => _metadata = value;
         }
 
+        /// <summary>
+        /// The `workspace.package` table is where you define keys that can be
+        /// inherited by members of a workspace. These keys can be inherited by
+        /// defining them in the member package with `{key}.workspace = true`.
+        /// 
+        /// Keys that are supported:
+        /// 
+        /// |                |                 |
+        /// |----------------|-----------------|
+        /// | `authors`      | `categories`    |
+        /// | `description`  | `documentation` |
+        /// | `edition`      | `exclude`       |
+        /// | `homepage`     | `include`       |
+        /// | `keywords`     | `license`       |
+        /// | `license-file` | `publish`       |
+        /// | `readme`       | `repository`    |
+        /// | `rust-version` | `version`       |
+        /// 
+        /// - `license-file` and `readme` are relative to the workspace root
+        /// - `include` and `exclude` are relative to your package root
+        /// 
+        /// Example:
+        /// ```toml
+        /// # [PROJECT_DIR]/Cargo.toml
+        /// [workspace]
+        /// members = ["bar"]
+        /// 
+        /// [workspace.package]
+        /// version = "1.2.3"
+        /// authors = ["Nice Folks"]
+        /// description = "A short description of my package"
+        /// documentation = "https://example.com/bar"
+        /// ```
+        /// 
+        /// ```toml
+        /// # [PROJECT_DIR]/bar/Cargo.toml
+        /// [package]
+        /// name = "bar"
+        /// version.workspace = true
+        /// authors.workspace = true
+        /// description.workspace = true
+        /// documentation.workspace = true
+        /// ```
+        /// </summary>
         [Input("package")]
         public Inputs.PropertiesPackage? Package { get; set; }
 
+        /// <summary>
+        /// A different feature resolver algorithm can be used by specifying the resolver version in Cargo.toml like this:
+        /// 
+        /// [package]
+        /// name = "my-package"
+        /// version = "1.0.0"
+        /// resolver = "2"
+        /// 
+        /// The version "1" resolver is the original resolver that shipped with Cargo up to version 1.50. The default is "2" if the root package specifies edition = "2021" or a newer edition. Otherwise the default is "1".
+        /// 
+        /// The version "2" resolver introduces changes in feature unification. See the features chapter for more details.
+        /// 
+        /// The resolver is a global option that affects the entire workspace. The resolver version in dependencies is ignored, only the value in the top-level package will be used. If using a virtual workspace, the version should be specified in the [workspace] table, for example:
+        /// 
+        /// [workspace]
+        /// members = ["member1", "member2"]
+        /// resolver = "2"
+        /// </summary>
         [Input("resolver")]
         public Pulumi.Cargo.DefinitionsResolver? Resolver { get; set; }
 

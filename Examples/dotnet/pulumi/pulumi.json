@@ -36,7 +36,8 @@
         ],
         "properties": {
           "value": {
-            "$ref": "#/types/pulumi:index:pulumiPackageMetaschema"
+            "$ref": "#/types/pulumi:index:pulumiPackageMetaschema",
+            "description": "A description of the schema for a Pulumi Package"
           }
         }
       }
@@ -49,7 +50,8 @@
         ],
         "properties": {
           "value": {
-            "$ref": "#/types/pulumi:index:pulumiPackageMetaschema"
+            "$ref": "#/types/pulumi:index:pulumiPackageMetaschema",
+            "description": "A description of the schema for a Pulumi Package"
           }
         }
       },
@@ -77,19 +79,24 @@
           }
         },
         "choice1Of5": {
-          "$ref": "#/types/pulumi:index:typeSpecOneOf0"
+          "$ref": "#/types/pulumi:index:typeSpecOneOf0",
+          "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set."
         },
         "choice2Of5": {
-          "$ref": "#/types/pulumi:index:typeSpecOneOf1"
+          "$ref": "#/types/pulumi:index:typeSpecOneOf1",
+          "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present."
         },
         "choice3Of5": {
-          "$ref": "#/types/pulumi:index:typeSpecOneOf2"
+          "$ref": "#/types/pulumi:index:typeSpecOneOf2",
+          "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present."
         },
         "choice4Of5": {
-          "$ref": "#/types/pulumi:index:namedType"
+          "$ref": "#/types/pulumi:index:namedType",
+          "description": "A reference to a type in this or another document. The \u0022$ref\u0022 property must be present. The \u0022type\u0022 property is ignored if it is present. No other properties may be present."
         },
         "choice5Of5": {
-          "$ref": "#/types/pulumi:index:typeSpecOneOf4"
+          "$ref": "#/types/pulumi:index:typeSpecOneOf4",
+          "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present."
         },
         "const": {
           "oneOf": [
@@ -118,7 +125,8 @@
           ]
         },
         "defaultInfo": {
-          "$ref": "#/types/pulumi:index:defaultInfo"
+          "$ref": "#/types/pulumi:index:defaultInfo",
+          "description": "Additional information about the property\u0027s default value, if any."
         },
         "deprecationMessage": {
           "type": "string",
@@ -158,7 +166,8 @@
       "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set.",
       "properties": {
         "type": {
-          "$ref": "#/types/pulumi:index:choice1Of5Type"
+          "$ref": "#/types/pulumi:index:choice1Of5Type",
+          "description": "The primitive type, if any"
         }
       },
       "required": [
@@ -188,7 +197,8 @@
       "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present.",
       "properties": {
         "items": {
-          "$ref": "#/types/pulumi:index:inputsPropertiesAdditionalProperties"
+          "$ref": "#/types/pulumi:index:inputsPropertiesAdditionalProperties",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -205,7 +215,8 @@
       "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present.",
       "properties": {
         "additionalProperties": {
-          "$ref": "#/types/pulumi:index:inputsPropertiesAdditionalProperties"
+          "$ref": "#/types/pulumi:index:inputsPropertiesAdditionalProperties",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -221,7 +232,8 @@
       "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present.",
       "properties": {
         "discriminator": {
-          "$ref": "#/types/pulumi:index:discriminator"
+          "$ref": "#/types/pulumi:index:discriminator",
+          "description": "Informs the consumer of an alternative schema based on the value associated with it"
         },
         "oneOf": {
           "type": "array",
@@ -231,7 +243,8 @@
           "description": "If present, indicates that values of the type may be one of any of the listed types"
         },
         "type": {
-          "$ref": "#/types/pulumi:index:propertiesAdditionalPropertiesChoice5Of5Type"
+          "$ref": "#/types/pulumi:index:propertiesAdditionalPropertiesChoice5Of5Type",
+          "description": "The underlying primitive type of the union, if any"
         }
       },
       "required": [
@@ -284,7 +297,8 @@
       "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present.",
       "properties": {
         "items": {
-          "$ref": "#/types/pulumi:index:propertyDefinition"
+          "$ref": "#/types/pulumi:index:propertyDefinition",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -322,7 +336,8 @@
       "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set.",
       "properties": {
         "type": {
-          "$ref": "#/types/pulumi:index:typeSpecOneOf0PropertiesType"
+          "$ref": "#/types/pulumi:index:typeSpecOneOf0PropertiesType",
+          "description": "The primitive type, if any"
         }
       },
       "required": [
@@ -352,7 +367,8 @@
       "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present.",
       "properties": {
         "items": {
-          "$ref": "#/types/pulumi:index:propertiesAdditionalProperties"
+          "$ref": "#/types/pulumi:index:propertiesAdditionalProperties",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -369,7 +385,8 @@
       "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present.",
       "properties": {
         "additionalProperties": {
-          "$ref": "#/types/pulumi:index:propertiesAdditionalProperties"
+          "$ref": "#/types/pulumi:index:propertiesAdditionalProperties",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -385,7 +402,8 @@
       "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present.",
       "properties": {
         "discriminator": {
-          "$ref": "#/types/pulumi:index:discriminator"
+          "$ref": "#/types/pulumi:index:discriminator",
+          "description": "Informs the consumer of an alternative schema based on the value associated with it"
         },
         "oneOf": {
           "type": "array",
@@ -395,7 +413,8 @@
           "description": "If present, indicates that values of the type may be one of any of the listed types"
         },
         "type": {
-          "$ref": "#/types/pulumi:index:additionalPropertiesChoice5Of5Type"
+          "$ref": "#/types/pulumi:index:additionalPropertiesChoice5Of5Type",
+          "description": "The underlying primitive type of the union, if any"
         }
       },
       "required": [
@@ -507,7 +526,8 @@
           "description": "The list of possible values for the enum"
         },
         "type": {
-          "$ref": "#/types/pulumi:index:enumTypeSpecPropertiesType"
+          "$ref": "#/types/pulumi:index:enumTypeSpecPropertiesType",
+          "description": "The underlying primitive type of the enum"
         }
       },
       "required": [
@@ -594,7 +614,8 @@
           "description": "The description of the function, if any. Interpreted as Markdown."
         },
         "inputs": {
-          "$ref": "#/types/pulumi:index:objectTypeDetails"
+          "$ref": "#/types/pulumi:index:objectTypeDetails",
+          "description": "Describes an object type"
         },
         "isOverlay": {
           "type": "boolean",
@@ -631,19 +652,24 @@
           }
         },
         "choice1Of5": {
-          "$ref": "#/types/pulumi:index:additionalPropertiesChoice1Of5"
+          "$ref": "#/types/pulumi:index:additionalPropertiesChoice1Of5",
+          "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set."
         },
         "choice2Of5": {
-          "$ref": "#/types/pulumi:index:additionalPropertiesChoice2Of5"
+          "$ref": "#/types/pulumi:index:additionalPropertiesChoice2Of5",
+          "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present."
         },
         "choice3Of5": {
-          "$ref": "#/types/pulumi:index:additionalPropertiesChoice3Of5"
+          "$ref": "#/types/pulumi:index:additionalPropertiesChoice3Of5",
+          "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present."
         },
         "choice4Of5": {
-          "$ref": "#/types/pulumi:index:namedType"
+          "$ref": "#/types/pulumi:index:namedType",
+          "description": "A reference to a type in this or another document. The \u0022$ref\u0022 property must be present. The \u0022type\u0022 property is ignored if it is present. No other properties may be present."
         },
         "choice5Of5": {
-          "$ref": "#/types/pulumi:index:additionalPropertiesChoice5Of5"
+          "$ref": "#/types/pulumi:index:additionalPropertiesChoice5Of5",
+          "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present."
         },
         "const": {
           "oneOf": [
@@ -672,7 +698,8 @@
           ]
         },
         "defaultInfo": {
-          "$ref": "#/types/pulumi:index:defaultInfo"
+          "$ref": "#/types/pulumi:index:defaultInfo",
+          "description": "Additional information about the property\u0027s default value, if any."
         },
         "deprecationMessage": {
           "type": "string",
@@ -712,7 +739,8 @@
       "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present.",
       "properties": {
         "additionalProperties": {
-          "$ref": "#/types/pulumi:index:propertyDefinition"
+          "$ref": "#/types/pulumi:index:propertyDefinition",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -873,7 +901,8 @@
           "description": "A list of the names of the resource\u0027s required input properties."
         },
         "stateInputs": {
-          "$ref": "#/types/pulumi:index:objectTypeSpec"
+          "$ref": "#/types/pulumi:index:objectTypeSpec",
+          "description": "Describes a resource or component."
         }
       }
     },
@@ -882,7 +911,8 @@
       "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set.",
       "properties": {
         "type": {
-          "$ref": "#/types/pulumi:index:propertiesType"
+          "$ref": "#/types/pulumi:index:propertiesType",
+          "description": "The primitive type, if any"
         }
       },
       "required": [
@@ -912,7 +942,8 @@
       "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present.",
       "properties": {
         "items": {
-          "$ref": "#/types/pulumi:index:typeSpec"
+          "$ref": "#/types/pulumi:index:typeSpec",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -929,7 +960,8 @@
       "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present.",
       "properties": {
         "additionalProperties": {
-          "$ref": "#/types/pulumi:index:typeSpec"
+          "$ref": "#/types/pulumi:index:typeSpec",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -945,7 +977,8 @@
       "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present.",
       "properties": {
         "discriminator": {
-          "$ref": "#/types/pulumi:index:discriminator"
+          "$ref": "#/types/pulumi:index:discriminator",
+          "description": "Informs the consumer of an alternative schema based on the value associated with it"
         },
         "oneOf": {
           "type": "array",
@@ -955,7 +988,8 @@
           "description": "If present, indicates that values of the type may be one of any of the listed types"
         },
         "type": {
-          "$ref": "#/types/pulumi:index:typeSpecOneOf4PropertiesType"
+          "$ref": "#/types/pulumi:index:typeSpecOneOf4PropertiesType",
+          "description": "The underlying primitive type of the union, if any"
         }
       },
       "required": [
@@ -998,7 +1032,8 @@
       "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set.",
       "properties": {
         "type": {
-          "$ref": "#/types/pulumi:index:type"
+          "$ref": "#/types/pulumi:index:type",
+          "description": "The primitive type, if any"
         }
       },
       "required": [
@@ -1016,19 +1051,24 @@
           }
         },
         "choice1Of5": {
-          "$ref": "#/types/pulumi:index:choice1Of5"
+          "$ref": "#/types/pulumi:index:choice1Of5",
+          "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set."
         },
         "choice2Of5": {
-          "$ref": "#/types/pulumi:index:choice2Of5"
+          "$ref": "#/types/pulumi:index:choice2Of5",
+          "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present."
         },
         "choice3Of5": {
-          "$ref": "#/types/pulumi:index:choice3Of5"
+          "$ref": "#/types/pulumi:index:choice3Of5",
+          "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present."
         },
         "choice4Of5": {
-          "$ref": "#/types/pulumi:index:namedType"
+          "$ref": "#/types/pulumi:index:namedType",
+          "description": "A reference to a type in this or another document. The \u0022$ref\u0022 property must be present. The \u0022type\u0022 property is ignored if it is present. No other properties may be present."
         },
         "choice5Of5": {
-          "$ref": "#/types/pulumi:index:choice5Of5"
+          "$ref": "#/types/pulumi:index:choice5Of5",
+          "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present."
         },
         "const": {
           "oneOf": [
@@ -1057,7 +1097,8 @@
           ]
         },
         "defaultInfo": {
-          "$ref": "#/types/pulumi:index:defaultInfo"
+          "$ref": "#/types/pulumi:index:defaultInfo",
+          "description": "Additional information about the property\u0027s default value, if any."
         },
         "deprecationMessage": {
           "type": "string",
@@ -1097,7 +1138,8 @@
       "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set.",
       "properties": {
         "type": {
-          "$ref": "#/types/pulumi:index:additionalPropertiesChoice1Of5Type"
+          "$ref": "#/types/pulumi:index:additionalPropertiesChoice1Of5Type",
+          "description": "The primitive type, if any"
         }
       },
       "required": [
@@ -1109,7 +1151,8 @@
       "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present.",
       "properties": {
         "items": {
-          "$ref": "#/types/pulumi:index:providerPropertiesAdditionalProperties"
+          "$ref": "#/types/pulumi:index:providerPropertiesAdditionalProperties",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -1126,7 +1169,8 @@
       "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present.",
       "properties": {
         "additionalProperties": {
-          "$ref": "#/types/pulumi:index:providerPropertiesAdditionalProperties"
+          "$ref": "#/types/pulumi:index:providerPropertiesAdditionalProperties",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -1142,7 +1186,8 @@
       "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present.",
       "properties": {
         "discriminator": {
-          "$ref": "#/types/pulumi:index:discriminator"
+          "$ref": "#/types/pulumi:index:discriminator",
+          "description": "Informs the consumer of an alternative schema based on the value associated with it"
         },
         "oneOf": {
           "type": "array",
@@ -1152,7 +1197,8 @@
           "description": "If present, indicates that values of the type may be one of any of the listed types"
         },
         "type": {
-          "$ref": "#/types/pulumi:index:providerPropertiesAdditionalPropertiesChoice5Of5Type"
+          "$ref": "#/types/pulumi:index:providerPropertiesAdditionalPropertiesChoice5Of5Type",
+          "description": "The underlying primitive type of the union, if any"
         }
       },
       "required": [
@@ -1206,19 +1252,24 @@
           }
         },
         "choice1Of5": {
-          "$ref": "#/types/pulumi:index:primitiveType"
+          "$ref": "#/types/pulumi:index:primitiveType",
+          "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set."
         },
         "choice2Of5": {
-          "$ref": "#/types/pulumi:index:arrayType"
+          "$ref": "#/types/pulumi:index:arrayType",
+          "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present."
         },
         "choice3Of5": {
-          "$ref": "#/types/pulumi:index:mapType"
+          "$ref": "#/types/pulumi:index:mapType",
+          "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present."
         },
         "choice4Of5": {
-          "$ref": "#/types/pulumi:index:namedType"
+          "$ref": "#/types/pulumi:index:namedType",
+          "description": "A reference to a type in this or another document. The \u0022$ref\u0022 property must be present. The \u0022type\u0022 property is ignored if it is present. No other properties may be present."
         },
         "choice5Of5": {
-          "$ref": "#/types/pulumi:index:unionType"
+          "$ref": "#/types/pulumi:index:unionType",
+          "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present."
         },
         "const": {
           "oneOf": [
@@ -1247,7 +1298,8 @@
           ]
         },
         "defaultInfo": {
-          "$ref": "#/types/pulumi:index:defaultInfo"
+          "$ref": "#/types/pulumi:index:defaultInfo",
+          "description": "Additional information about the property\u0027s default value, if any."
         },
         "deprecationMessage": {
           "type": "string",
@@ -1293,19 +1345,24 @@
           }
         },
         "choice1Of5": {
-          "$ref": "#/types/pulumi:index:propertiesAdditionalPropertiesChoice1Of5"
+          "$ref": "#/types/pulumi:index:propertiesAdditionalPropertiesChoice1Of5",
+          "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set."
         },
         "choice2Of5": {
-          "$ref": "#/types/pulumi:index:propertiesAdditionalPropertiesChoice2Of5"
+          "$ref": "#/types/pulumi:index:propertiesAdditionalPropertiesChoice2Of5",
+          "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present."
         },
         "choice3Of5": {
-          "$ref": "#/types/pulumi:index:propertiesAdditionalPropertiesChoice3Of5"
+          "$ref": "#/types/pulumi:index:propertiesAdditionalPropertiesChoice3Of5",
+          "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present."
         },
         "choice4Of5": {
-          "$ref": "#/types/pulumi:index:namedType"
+          "$ref": "#/types/pulumi:index:namedType",
+          "description": "A reference to a type in this or another document. The \u0022$ref\u0022 property must be present. The \u0022type\u0022 property is ignored if it is present. No other properties may be present."
         },
         "choice5Of5": {
-          "$ref": "#/types/pulumi:index:propertiesAdditionalPropertiesChoice5Of5"
+          "$ref": "#/types/pulumi:index:propertiesAdditionalPropertiesChoice5Of5",
+          "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present."
         },
         "const": {
           "oneOf": [
@@ -1334,7 +1391,8 @@
           ]
         },
         "defaultInfo": {
-          "$ref": "#/types/pulumi:index:defaultInfo"
+          "$ref": "#/types/pulumi:index:defaultInfo",
+          "description": "Additional information about the property\u0027s default value, if any."
         },
         "deprecationMessage": {
           "type": "string",
@@ -1396,7 +1454,8 @@
           "description": "Freeform text attribution of derived work, if required."
         },
         "config": {
-          "$ref": "#/types/pulumi:index:config"
+          "$ref": "#/types/pulumi:index:config",
+          "description": "The package\u0027s configuration variables."
         },
         "description": {
           "type": "string",
@@ -1440,21 +1499,24 @@
           "description": "The URL of the package\u0027s logo, if any."
         },
         "meta": {
-          "$ref": "#/types/pulumi:index:meta"
+          "$ref": "#/types/pulumi:index:meta",
+          "description": "Format metadata about this package."
         },
         "name": {
           "type": "string",
           "description": "The unqualified name of the package (e.g. \u0022aws\u0022, \u0022azure\u0022, \u0022gcp\u0022, \u0022kubernetes\u0022, \u0022random\u0022)"
         },
         "parameterization": {
-          "$ref": "#/types/pulumi:index:parameterization"
+          "$ref": "#/types/pulumi:index:parameterization",
+          "description": "An optional object to define parameterization for the package."
         },
         "pluginDownloadURL": {
           "type": "string",
           "description": "The URL to use when downloading the provider plugin binary."
         },
         "provider": {
-          "$ref": "#/types/pulumi:index:objectTypeSpec"
+          "$ref": "#/types/pulumi:index:objectTypeSpec",
+          "description": "Describes a resource or component."
         },
         "publisher": {
           "type": "string",
@@ -1556,7 +1618,8 @@
           "description": "A list of the names of the resource\u0027s required input properties."
         },
         "stateInputs": {
-          "$ref": "#/types/pulumi:index:resourceDefinition"
+          "$ref": "#/types/pulumi:index:resourceDefinition",
+          "description": "Describes a resource or component."
         }
       }
     },
@@ -1589,10 +1652,12 @@
           }
         },
         "choice1Of2": {
-          "$ref": "#/types/pulumi:index:objectTypeDefinition"
+          "$ref": "#/types/pulumi:index:objectTypeDefinition",
+          "description": "Describes an object type"
         },
         "choice2Of2": {
-          "$ref": "#/types/pulumi:index:enumTypeDefinition"
+          "$ref": "#/types/pulumi:index:enumTypeDefinition",
+          "description": "Describes an enum type"
         },
         "description": {
           "type": "string",
@@ -1622,19 +1687,24 @@
           }
         },
         "choice1Of5": {
-          "$ref": "#/types/pulumi:index:oneOf0"
+          "$ref": "#/types/pulumi:index:oneOf0",
+          "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set."
         },
         "choice2Of5": {
-          "$ref": "#/types/pulumi:index:oneOf1"
+          "$ref": "#/types/pulumi:index:oneOf1",
+          "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present."
         },
         "choice3Of5": {
-          "$ref": "#/types/pulumi:index:oneOf2"
+          "$ref": "#/types/pulumi:index:oneOf2",
+          "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present."
         },
         "choice4Of5": {
-          "$ref": "#/types/pulumi:index:namedType"
+          "$ref": "#/types/pulumi:index:namedType",
+          "description": "A reference to a type in this or another document. The \u0022$ref\u0022 property must be present. The \u0022type\u0022 property is ignored if it is present. No other properties may be present."
         },
         "choice5Of5": {
-          "$ref": "#/types/pulumi:index:oneOf4"
+          "$ref": "#/types/pulumi:index:oneOf4",
+          "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present."
         },
         "const": {
           "oneOf": [
@@ -1663,7 +1733,8 @@
           ]
         },
         "defaultInfo": {
-          "$ref": "#/types/pulumi:index:defaultInfo"
+          "$ref": "#/types/pulumi:index:defaultInfo",
+          "description": "Additional information about the property\u0027s default value, if any."
         },
         "deprecationMessage": {
           "type": "string",
@@ -1703,7 +1774,8 @@
       "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set.",
       "properties": {
         "type": {
-          "$ref": "#/types/pulumi:index:oneOf0PropertiesType"
+          "$ref": "#/types/pulumi:index:oneOf0PropertiesType",
+          "description": "The primitive type, if any"
         }
       },
       "required": [
@@ -1733,7 +1805,8 @@
       "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present.",
       "properties": {
         "items": {
-          "$ref": "#/types/pulumi:index:additionalProperties"
+          "$ref": "#/types/pulumi:index:additionalProperties",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -1750,7 +1823,8 @@
       "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present.",
       "properties": {
         "additionalProperties": {
-          "$ref": "#/types/pulumi:index:additionalProperties"
+          "$ref": "#/types/pulumi:index:additionalProperties",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -1766,7 +1840,8 @@
       "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present.",
       "properties": {
         "discriminator": {
-          "$ref": "#/types/pulumi:index:discriminator"
+          "$ref": "#/types/pulumi:index:discriminator",
+          "description": "Informs the consumer of an alternative schema based on the value associated with it"
         },
         "oneOf": {
           "type": "array",
@@ -1776,7 +1851,8 @@
           "description": "If present, indicates that values of the type may be one of any of the listed types"
         },
         "type": {
-          "$ref": "#/types/pulumi:index:choice5Of5Type"
+          "$ref": "#/types/pulumi:index:choice5Of5Type",
+          "description": "The underlying primitive type of the union, if any"
         }
       },
       "required": [
@@ -1806,7 +1882,8 @@
       "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present.",
       "properties": {
         "discriminator": {
-          "$ref": "#/types/pulumi:index:discriminator"
+          "$ref": "#/types/pulumi:index:discriminator",
+          "description": "Informs the consumer of an alternative schema based on the value associated with it"
         },
         "oneOf": {
           "type": "array",
@@ -1816,7 +1893,8 @@
           "description": "If present, indicates that values of the type may be one of any of the listed types"
         },
         "type": {
-          "$ref": "#/types/pulumi:index:oneOf4PropertiesType"
+          "$ref": "#/types/pulumi:index:oneOf4PropertiesType",
+          "description": "The underlying primitive type of the union, if any"
         }
       },
       "required": [
@@ -1834,19 +1912,24 @@
           }
         },
         "choice1Of5": {
-          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice1Of5"
+          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice1Of5",
+          "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set."
         },
         "choice2Of5": {
-          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice2Of5"
+          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice2Of5",
+          "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present."
         },
         "choice3Of5": {
-          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice3Of5"
+          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice3Of5",
+          "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present."
         },
         "choice4Of5": {
-          "$ref": "#/types/pulumi:index:namedType"
+          "$ref": "#/types/pulumi:index:namedType",
+          "description": "A reference to a type in this or another document. The \u0022$ref\u0022 property must be present. The \u0022type\u0022 property is ignored if it is present. No other properties may be present."
         },
         "choice5Of5": {
-          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice5Of5"
+          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice5Of5",
+          "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present."
         },
         "const": {
           "oneOf": [
@@ -1875,7 +1958,8 @@
           ]
         },
         "defaultInfo": {
-          "$ref": "#/types/pulumi:index:defaultInfo"
+          "$ref": "#/types/pulumi:index:defaultInfo",
+          "description": "Additional information about the property\u0027s default value, if any."
         },
         "deprecationMessage": {
           "type": "string",
@@ -1915,7 +1999,8 @@
       "description": "A reference to a primitive type. A primitive type must have only the \u0022type\u0022 property set.",
       "properties": {
         "type": {
-          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice1Of5Type"
+          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice1Of5Type",
+          "description": "The primitive type, if any"
         }
       },
       "required": [
@@ -1945,7 +2030,8 @@
       "description": "A reference to an array type. The \u0022type\u0022 property must be set to \u0022array\u0022 and the \u0022items\u0022 property must be present. No other properties may be present.",
       "properties": {
         "items": {
-          "$ref": "#/types/pulumi:index:variablesAdditionalProperties"
+          "$ref": "#/types/pulumi:index:variablesAdditionalProperties",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -1962,7 +2048,8 @@
       "description": "A reference to a map type. The \u0022type\u0022 property must be set to \u0022object\u0022 and the \u0022additionalProperties\u0022 property may be present. No other properties may be present.",
       "properties": {
         "additionalProperties": {
-          "$ref": "#/types/pulumi:index:variablesAdditionalProperties"
+          "$ref": "#/types/pulumi:index:variablesAdditionalProperties",
+          "description": "Describes an object or resource property"
         },
         "type": {
           "type": "string",
@@ -1978,7 +2065,8 @@
       "description": "A reference to a union type. The \u0022oneOf\u0022 property must be present. The union may additional specify an underlying primitive type via the \u0022type\u0022 property and a discriminator via the \u0022discriminator\u0022 property. No other properties may be present.",
       "properties": {
         "discriminator": {
-          "$ref": "#/types/pulumi:index:discriminator"
+          "$ref": "#/types/pulumi:index:discriminator",
+          "description": "Informs the consumer of an alternative schema based on the value associated with it"
         },
         "oneOf": {
           "type": "array",
@@ -1988,7 +2076,8 @@
           "description": "If present, indicates that values of the type may be one of any of the listed types"
         },
         "type": {
-          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice5Of5Type"
+          "$ref": "#/types/pulumi:index:variablesAdditionalPropertiesChoice5Of5Type",
+          "description": "The underlying primitive type of the union, if any"
         }
       },
       "required": [

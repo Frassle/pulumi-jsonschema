@@ -1523,6 +1523,13 @@ and [<RequireQualifiedAccess>] ComplexTypeSpec =
         | ComplexTypeSpec.Tuple spec -> spec.Title
         | ComplexTypeSpec.DU spec -> spec.Title
 
+    member this.Description =
+        match this with
+        | ComplexTypeSpec.Enum spec -> spec.Description
+        | ComplexTypeSpec.Object spec -> spec.Description
+        | ComplexTypeSpec.Tuple spec -> spec.Description
+        | ComplexTypeSpec.DU spec -> spec.Description
+
     member this.BuildComplexTypeSpec packageName (names: ImmutableDictionary<ComplexTypeSpec, string>) =
         match this with
         | ComplexTypeSpec.Enum spec -> spec.BuildComplexTypeSpec()
@@ -1612,7 +1619,7 @@ and [<RequireQualifiedAccess; CustomEquality; NoComparison>] Conversion =
             | true, name ->
                 let ref = "#/types/" + packageName + ":index:" + name
 
-                { TypeSchema.PropertyDefinition.Description = None
+                { TypeSchema.PropertyDefinition.Description = spec.Description
                   TypeSchema.PropertyDefinition.Const = None
                   TypeSchema.PropertyDefinition.Type = TypeSchema.TypeReference.Named ref }
 

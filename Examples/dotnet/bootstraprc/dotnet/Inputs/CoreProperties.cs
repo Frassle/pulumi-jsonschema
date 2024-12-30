@@ -32,9 +32,15 @@ namespace Pulumi.Bootstraprc.Inputs
         [Input("bootstrapCustomizations")]
         public string? BootstrapCustomizations { get; set; }
 
+        /// <summary>
+        /// The major version of Bootstrap being used
+        /// </summary>
         [Input("bootstrapVersion", required: true)]
         public Pulumi.Bootstraprc.BootstrapVersion BootstrapVersion { get; set; }
 
+        /// <summary>
+        /// The verbosity of logging. Exclude this property to disable.
+        /// </summary>
         [Input("loglevel")]
         public Pulumi.Bootstraprc.Loglevel? Loglevel { get; set; }
 

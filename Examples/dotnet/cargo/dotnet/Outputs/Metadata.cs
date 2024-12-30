@@ -32,6 +32,9 @@ namespace Pulumi.Cargo.Outputs
     public sealed class Metadata
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
+        /// <summary>
+        /// Metadata and build configuration.
+        /// </summary>
         public readonly Outputs.PlaydatePackageMetadata? Playdate;
 
         [OutputConstructor]

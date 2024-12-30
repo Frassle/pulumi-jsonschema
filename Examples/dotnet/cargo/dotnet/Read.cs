@@ -51,6 +51,9 @@ namespace Pulumi.Cargo
     [OutputType]
     public sealed class ReadResult
     {
+        /// <summary>
+        /// A schema for Cargo.toml.
+        /// </summary>
         public readonly Outputs.Root Value;
 
         [OutputConstructor]

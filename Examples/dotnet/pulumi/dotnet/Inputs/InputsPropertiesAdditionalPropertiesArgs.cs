@@ -23,18 +23,33 @@ namespace Pulumi.Pulumi.Inputs
             set => _additionalProperties = value;
         }
 
+        /// <summary>
+        /// A reference to a primitive type. A primitive type must have only the "type" property set.
+        /// </summary>
         [Input("choice1Of5")]
         public Input<Inputs.AdditionalPropertiesChoice1Of5Args>? Choice1Of5 { get; set; }
 
+        /// <summary>
+        /// A reference to an array type. The "type" property must be set to "array" and the "items" property must be present. No other properties may be present.
+        /// </summary>
         [Input("choice2Of5")]
         public Input<Inputs.AdditionalPropertiesChoice2Of5Args>? Choice2Of5 { get; set; }
 
+        /// <summary>
+        /// A reference to a map type. The "type" property must be set to "object" and the "additionalProperties" property may be present. No other properties may be present.
+        /// </summary>
         [Input("choice3Of5")]
         public Input<Inputs.AdditionalPropertiesChoice3Of5Args>? Choice3Of5 { get; set; }
 
+        /// <summary>
+        /// A reference to a type in this or another document. The "$ref" property must be present. The "type" property is ignored if it is present. No other properties may be present.
+        /// </summary>
         [Input("choice4Of5")]
         public Input<Inputs.NamedTypeArgs>? Choice4Of5 { get; set; }
 
+        /// <summary>
+        /// A reference to a union type. The "oneOf" property must be present. The union may additional specify an underlying primitive type via the "type" property and a discriminator via the "discriminator" property. No other properties may be present.
+        /// </summary>
         [Input("choice5Of5")]
         public Input<Inputs.AdditionalPropertiesChoice5Of5Args>? Choice5Of5 { get; set; }
 
@@ -44,6 +59,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("default")]
         public object? Default { get; set; }
 
+        /// <summary>
+        /// Additional information about the property's default value, if any.
+        /// </summary>
         [Input("defaultInfo")]
         public Input<Inputs.DefaultInfoArgs>? DefaultInfo { get; set; }
 

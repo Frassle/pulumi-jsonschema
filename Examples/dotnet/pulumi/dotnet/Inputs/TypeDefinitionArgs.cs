@@ -23,9 +23,15 @@ namespace Pulumi.Pulumi.Inputs
             set => _additionalProperties = value;
         }
 
+        /// <summary>
+        /// Describes an object type
+        /// </summary>
         [Input("choice1Of2")]
         public Input<Inputs.ObjectTypeDefinitionArgs>? Choice1Of2 { get; set; }
 
+        /// <summary>
+        /// Describes an enum type
+        /// </summary>
         [Input("choice2Of2")]
         public Input<Inputs.EnumTypeDefinitionArgs>? Choice2Of2 { get; set; }
 

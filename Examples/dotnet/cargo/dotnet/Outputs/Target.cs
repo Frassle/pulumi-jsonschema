@@ -69,6 +69,13 @@ namespace Pulumi.Cargo.Outputs
         /// has no effect on other sections. The default is `true` for the library.
         /// </summary>
         public readonly bool? Doctest;
+        /// <summary>
+        /// The `edition` key affects which edition your package is compiled with. Cargo
+        /// will always generate packages via [`cargo new`](https://doc.rust-lang.org/cargo/commands/cargo-new.html) with the `edition` key set to the
+        /// latest edition. Setting the `edition` key in `[package]` will affect all
+        /// targets/crates in the package, including test suites, benchmarks, binaries,
+        /// examples, etc.
+        /// </summary>
         public readonly Pulumi.Cargo.Edition? Edition;
         /// <summary>
         /// The `harness` field indicates that the [`--test` flag](https://doc.rust-lang.org/rustc/command-line-arguments.html#option-test) will be passed to
