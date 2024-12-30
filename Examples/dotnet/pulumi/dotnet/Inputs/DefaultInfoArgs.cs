@@ -16,34 +16,34 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class DefaultInfoArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("environment", required: true)]
-        private InputList<string>? _environment;
+        private List<string>? _environment;
 
         /// <summary>
         /// A set of environment variables to probe for a default value.
         /// </summary>
-        public InputList<string> Environment
+        public List<string> Environment
         {
-            get => _environment ?? (_environment = new InputList<string>());
+            get => _environment ?? (_environment = new List<string>());
             set => _environment = value;
         }
 
         [Input("language")]
-        private InputMap<object>? _language;
+        private Dictionary<string, object>? _language;
 
         /// <summary>
         /// Additional language-specific data about the default value.
         /// </summary>
-        public InputMap<object> Language
+        public Dictionary<string, object> Language
         {
-            get => _language ?? (_language = new InputMap<object>());
+            get => _language ?? (_language = new Dictionary<string, object>());
             set => _language = value;
         }
 

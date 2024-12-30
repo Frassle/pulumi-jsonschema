@@ -13,10 +13,10 @@ namespace Pulumi.Cargo.Inputs
     public sealed class SupportArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 

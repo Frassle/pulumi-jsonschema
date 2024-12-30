@@ -16,10 +16,10 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class VariablesAdditionalPropertiesChoice2Of5Args : global::Pulumi.ResourceArgs
     {
         [Input("items", required: true)]
-        public Input<Inputs.VariablesAdditionalPropertiesArgs> Items { get; set; } = null!;
+        public Inputs.VariablesAdditionalPropertiesArgs Items { get; set; } = null!;
 
         [Input("type", required: true)]
-        public Input<string> Type { get; set; } = null!;
+        public string Type { get; set; } = null!;
 
         public VariablesAdditionalPropertiesChoice2Of5Args()
         {

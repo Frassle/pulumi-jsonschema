@@ -36,6 +36,7 @@
         ],
         "properties": {
           "value": {
+            "plain": true,
             "$ref": "#/types/cargo:index:root"
           }
         }
@@ -49,6 +50,7 @@
         ],
         "properties": {
           "value": {
+            "plain": true,
             "$ref": "#/types/cargo:index:root"
           }
         }
@@ -71,16 +73,20 @@
       "description": "Options for assets paths resolution and how to build assets collection",
       "properties": {
         "dependencies": {
+          "plain": true,
           "type": "boolean",
           "description": "Allow build assets for dependencies."
         },
         "followSymlinks": {
+          "plain": true,
           "type": "boolean"
         },
         "method": {
+          "plain": true,
           "$ref": "#/types/cargo:index:method"
         },
         "overwrite": {
+          "plain": true,
           "type": "boolean",
           "description": "Allow overwriting existing files."
         }
@@ -91,12 +97,15 @@
       "description": "Package build options.",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "assets": {
+          "plain": true,
           "$ref": "#/types/cargo:index:assetsConfiguration"
         }
       }
@@ -135,59 +144,75 @@
       "type": "object",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "buildOverride": {
+          "plain": true,
           "$ref": "#/types/cargo:index:definitionsProfile"
         },
         "codegenUnits": {
+          "plain": true,
           "type": "integer",
           "description": "The \u0060codegen-units\u0060 setting controls the [\u0060-C codegen-units\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#codegen-units) which\ncontrols how many \u0022code generation units\u0022 a crate will be split into. More\ncode generation units allows more of a crate to be processed in parallel\npossibly reducing compile time, but may produce slower code.\n\nThis option takes an integer greater than 0.\n\nThe default is 256 for [incremental](https://doc.rust-lang.org/cargo/reference/profiles.html#incremental) builds, and 16 for\nnon-incremental builds."
         },
         "debug": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "debugAssertions": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060debug-assertions\u0060 setting controls the [\u0060-C debug-assertions\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#debug-assertions) which\nturns \u0060cfg(debug_assertions)\u0060 [conditional compilation](https://doc.rust-lang.org/reference/conditional-compilation.html#debug_assertions) on or off. Debug\nassertions are intended to include runtime validation which is only available\nin debug/development builds. These may be things that are too expensive or\notherwise undesirable in a release build. Debug assertions enables the\n[\u0060debug_assert!\u0060 macro](https://doc.rust-lang.org/std/macro.debug_assert.html) in the standard library."
         },
         "dirName": {
+          "plain": true,
           "type": "string"
         },
         "incremental": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060incremental\u0060 setting controls the [\u0060-C incremental\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#incremental) which controls\nwhether or not incremental compilation is enabled. Incremental compilation\ncauses \u0060rustc\u0060 to to save additional information to disk which will be reused\nwhen recompiling the crate, improving re-compile times. The additional\ninformation is stored in the \u0060target\u0060 directory.\n\nThe valid options are:\n\n* \u0060true\u0060: enabled\n* \u0060false\u0060: disabled\n\nIncremental compilation is only used for workspace members and \u0022path\u0022\ndependencies.\n\nThe incremental value can be overridden globally with the \u0060CARGO_INCREMENTAL\u0060\n[environment variable](https://doc.rust-lang.org/cargo/reference/environment-variables.html) or the [\u0060build.incremental\u0060](https://doc.rust-lang.org/cargo/reference/config.html#buildincremental) config variable."
         },
         "inherits": {
+          "plain": true,
           "type": "string"
         },
         "lto": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "optLevel": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "overflowChecks": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060overflow-checks\u0060 setting controls the [\u0060-C overflow-checks\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#overflow-checks) which\ncontrols the behavior of [runtime integer overflow](https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow). When overflow-checks are\nenabled, a panic will occur on overflow."
         },
         "package": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "#/types/cargo:index:definitionsProfile"
           },
           "description": "Package-specific overrides.\n\nThe package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can\ntarget individual versions of a package with syntax such as \u0060[profile.dev.package.\u0022foo:2.1.0\u0022]\u0060."
         },
         "panic": {
+          "plain": true,
           "$ref": "#/types/cargo:index:definitionsPanic"
         },
         "rpath": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060rpath\u0060 setting controls the [\u0060-C rpath\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#rpath) which controls\nwhether or not [\u0060rpath\u0060](https://en.wikipedia.org/wiki/Rpath) is enabled."
         }
@@ -213,69 +238,88 @@
       "description": "Binary targets are executable programs that can be run after being compiled.\nThe default binary filename is \u0060src/main.rs\u0060, which defaults to the name of\nthe package. Additional binaries are stored in the [\u0060src/bin/\u0060\ndirectory](https://doc.rust-lang.org/cargo/guide/project-layout.html). The settings for each binary can be [customized](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#configuring-a-target) in the \u0060[[bin]]\u0060 tables in \u0060Cargo.toml\u0060.\n\nBinaries can use the public API of the package\u0027s library. They are also linked\nwith the [\u0060[dependencies]\u0060](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) defined in \u0060Cargo.toml\u0060.\n\nYou can run individual binaries with the [\u0060cargo run\u0060](https://doc.rust-lang.org/cargo/commands/cargo-run.html) command with the \u0060--bin\n\u003Cbin-name\u003E\u0060 option. [\u0060cargo install\u0060](https://doc.rust-lang.org/cargo/commands/cargo-install.html) can be used to copy the executable to a\ncommon location.\n\n\u0060\u0060\u0060toml\n# Example of customizing binaries in Cargo.toml.\n[[bin]]\nname = \u0022cool-tool\u0022\ntest = false\nbench = false\n\n[[bin]]\nname = \u0022frobnicator\u0022\nrequired-features = [\u0022frobnicate\u0022]\n\u0060\u0060\u0060",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "bench": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060bench\u0060 field indicates whether or not the target is benchmarked by\ndefault by [\u0060cargo bench\u0060](https://doc.rust-lang.org/cargo/commands/cargo-bench.html). The default is \u0060true\u0060 for lib, bins, and\nbenchmarks."
         },
         "crateType": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060crate-type\u0060 field defines the [crate types](https://doc.rust-lang.org/reference/linkage.html) that will be generated by the\ntarget. It is an array of strings, allowing you to specify multiple crate\ntypes for a single target. This can only be specified for libraries and\nexamples. Binaries, tests, and benchmarks are always the \u0022bin\u0022 crate type.\n\nThe available options are \u0060bin\u0060, \u0060lib\u0060, \u0060rlib\u0060, \u0060dylib\u0060, \u0060cdylib\u0060,\n\u0060staticlib\u0060, and \u0060proc-macro\u0060. You can read more about the different crate\ntypes in the [Rust Reference Manual](https://doc.rust-lang.org/reference/linkage.html)."
         },
         "crateType0": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           }
         },
         "doc": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060doc\u0060 field indicates whether or not the target is included in the\ndocumentation generated by [\u0060cargo doc\u0060](https://doc.rust-lang.org/cargo/commands/cargo-doc.html) by default. The default is \u0060true\u0060 for\nlibraries and binaries.\n\n\u003E **Note**: The binary will be skipped if its name is the same as the lib\n\u003E target."
         },
         "doctest": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060doctest\u0060 field indicates whether or not [documentation examples](https://doc.rust-lang.org/rustdoc/documentation-tests.html) are\ntested by default by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). This is only relevant for libraries, it\nhas no effect on other sections. The default is \u0060true\u0060 for the library.\n"
         },
         "edition": {
+          "plain": true,
           "$ref": "#/types/cargo:index:definitionsEdition"
         },
         "harness": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060harness\u0060 field indicates that the [\u0060--test\u0060 flag](https://doc.rust-lang.org/rustc/command-line-arguments.html#option-test) will be passed to\n\u0060rustc\u0060 which will automatically include the libtest library which is the\ndriver for collecting and running tests marked with the [\u0060#[test]\u0060 attribute](https://doc.rust-lang.org/reference/attributes/testing.html#the-test-attribute) or benchmarks with the \u0060#[bench]\u0060 attribute. The\ndefault is \u0060true\u0060 for all targets.\n\nIf set to \u0060false\u0060, then you are responsible for defining a \u0060main()\u0060 function\nto run tests and benchmarks.\n\nTests have the [\u0060cfg(test)\u0060 conditional expression](https://doc.rust-lang.org/reference/conditional-compilation.html#test) enabled whether\nor not the harness is enabled."
         },
         "name": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060name\u0060 field specifies the name of the target, which corresponds to the\nfilename of the artifact that will be generated. For a library, this is the\ncrate name that dependencies will use to reference it.\n\nFor the \u0060[lib]\u0060 and the default binary (\u0060src/main.rs\u0060), this defaults to the\nname of the package, with any dashes replaced with underscores. For other\n[auto discovered](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#target-auto-discovery) targets, it defaults to the\ndirectory or file name.\n\nThis is required for all targets except \u0060[lib]\u0060."
         },
         "path": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060path\u0060 field specifies where the source for the crate is located, relative\nto the \u0060Cargo.toml\u0060 file.\n\nIf not specified, the [inferred path](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#target-auto-discovery) is used based on\nthe target name."
         },
         "plugin": {
+          "plain": true,
           "type": "boolean"
         },
         "procMacro": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060proc-macro\u0060 field indicates that the library is a [procedural macro](https://doc.rust-lang.org/book/ch19-06-macros.html)\n([reference](https://doc.rust-lang.org/reference/procedural-macros.html)). This is only valid for the \u0060[lib]\u0060\ntarget."
         },
         "procMacro0": {
+          "plain": true,
           "type": "boolean"
         },
         "requiredFeatures": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060required-features\u0060 field specifies which [features](https://doc.rust-lang.org/cargo/reference/features.html) the target needs in\norder to be built. If any of the required features are not enabled, the\ntarget will be skipped. This is only relevant for the \u0060[[bin]]\u0060, \u0060[[bench]]\u0060,\n\u0060[[test]]\u0060, and \u0060[[example]]\u0060 sections, it has no effect on \u0060[lib]\u0060.\n\n\u0060\u0060\u0060toml\n[features]\n# ...\npostgres = []\nsqlite = []\ntools = []\n\n[[bin]]\nname = \u0022my-pg-tool\u0022\nrequired-features = [\u0022postgres\u0022, \u0022tools\u0022]\n\u0060\u0060\u0060\n"
         },
         "test": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060test\u0060 field indicates whether or not the target is tested by default by\n[\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). The default is \u0060true\u0060 for lib, bins, and tests.\n\n\u003E **Note**: Examples are built by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) by default to ensure they\n\u003E continue to compile, but they are not *tested* by default. Setting \u0060test =\n\u003E true\u0060 for an example will also build it as a test and run any\n\u003E [\u0060#[test]\u0060](https://doc.rust-lang.org/reference/attributes/testing.html#the-test-attribute) functions defined in the example."
         }
@@ -285,59 +329,75 @@
       "type": "object",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "buildOverride": {
+          "plain": true,
           "$ref": "#/types/cargo:index:dev"
         },
         "codegenUnits": {
+          "plain": true,
           "type": "integer",
           "description": "The \u0060codegen-units\u0060 setting controls the [\u0060-C codegen-units\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#codegen-units) which\ncontrols how many \u0022code generation units\u0022 a crate will be split into. More\ncode generation units allows more of a crate to be processed in parallel\npossibly reducing compile time, but may produce slower code.\n\nThis option takes an integer greater than 0.\n\nThe default is 256 for [incremental](https://doc.rust-lang.org/cargo/reference/profiles.html#incremental) builds, and 16 for\nnon-incremental builds."
         },
         "debug": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "debugAssertions": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060debug-assertions\u0060 setting controls the [\u0060-C debug-assertions\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#debug-assertions) which\nturns \u0060cfg(debug_assertions)\u0060 [conditional compilation](https://doc.rust-lang.org/reference/conditional-compilation.html#debug_assertions) on or off. Debug\nassertions are intended to include runtime validation which is only available\nin debug/development builds. These may be things that are too expensive or\notherwise undesirable in a release build. Debug assertions enables the\n[\u0060debug_assert!\u0060 macro](https://doc.rust-lang.org/std/macro.debug_assert.html) in the standard library."
         },
         "dirName": {
+          "plain": true,
           "type": "string"
         },
         "incremental": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060incremental\u0060 setting controls the [\u0060-C incremental\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#incremental) which controls\nwhether or not incremental compilation is enabled. Incremental compilation\ncauses \u0060rustc\u0060 to to save additional information to disk which will be reused\nwhen recompiling the crate, improving re-compile times. The additional\ninformation is stored in the \u0060target\u0060 directory.\n\nThe valid options are:\n\n* \u0060true\u0060: enabled\n* \u0060false\u0060: disabled\n\nIncremental compilation is only used for workspace members and \u0022path\u0022\ndependencies.\n\nThe incremental value can be overridden globally with the \u0060CARGO_INCREMENTAL\u0060\n[environment variable](https://doc.rust-lang.org/cargo/reference/environment-variables.html) or the [\u0060build.incremental\u0060](https://doc.rust-lang.org/cargo/reference/config.html#buildincremental) config variable."
         },
         "inherits": {
+          "plain": true,
           "type": "string"
         },
         "lto": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "optLevel": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "overflowChecks": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060overflow-checks\u0060 setting controls the [\u0060-C overflow-checks\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#overflow-checks) which\ncontrols the behavior of [runtime integer overflow](https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow). When overflow-checks are\nenabled, a panic will occur on overflow."
         },
         "package": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "#/types/cargo:index:dev"
           },
           "description": "Package-specific overrides.\n\nThe package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can\ntarget individual versions of a package with syntax such as \u0060[profile.dev.package.\u0022foo:2.1.0\u0022]\u0060."
         },
         "panic": {
+          "plain": true,
           "$ref": "#/types/cargo:index:devPanic"
         },
         "rpath": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060rpath\u0060 setting controls the [\u0060-C rpath\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#rpath) which controls\nwhether or not [\u0060rpath\u0060](https://en.wikipedia.org/wiki/Rpath) is enabled."
         }
@@ -378,69 +438,88 @@
       "description": "Files located under the [examples directory](https://doc.rust-lang.org/cargo/guide/project-layout.html) are example uses of the functionality provided by the library. When compiled, they are placed in the[ target/debug/examples directory](https://doc.rust-lang.org/cargo/guide/build-cache.html).\n\nExamples can use the public API of the package\u0027s library. They are also linked with the [dependencies](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) and [dev-dependencies](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#development-dependencies) defined in Cargo.toml.\n\nBy default, examples are executable binaries (with a \u0060main()\u0060 function). You\ncan specify the [\u0060crate-type\u0060 field](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#the-crate-type-field) to make an example\nbe compiled as a library:\n\n\u0060\u0060\u0060toml\n[[example]]\nname = \u0022foo\u0022\ncrate-type = [\u0022staticlib\u0022]\n\u0060\u0060\u0060\n\nYou can run individual executable examples with the [\u0060cargo run\u0060](https://doc.rust-lang.org/cargo/commands/cargo-run.html) command with\nthe \u0060--example \u003Cexample-name\u003E\u0060 option. Library examples can be built with\n[\u0060cargo build\u0060](https://doc.rust-lang.org/cargo/commands/cargo-build.html) with the \u0060--example \u003Cexample-name\u003E\u0060 option. [\u0060cargo install\u0060](https://doc.rust-lang.org/cargo/commands/cargo-install.html)\nwith the \u0060--example \u003Cexample-name\u003E\u0060 option can be used to copy executable\nbinaries to a common location. Examples are compiled by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) by\ndefault to protect them from bit-rotting. Set [the \u0060test\u0060\nfield](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#the-test-field) to \u0060true\u0060 if you have \u0060#[test]\u0060 functions in the\nexample that you want to run with [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html).\n",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "bench": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060bench\u0060 field indicates whether or not the target is benchmarked by\ndefault by [\u0060cargo bench\u0060](https://doc.rust-lang.org/cargo/commands/cargo-bench.html). The default is \u0060true\u0060 for lib, bins, and\nbenchmarks."
         },
         "crateType": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060crate-type\u0060 field defines the [crate types](https://doc.rust-lang.org/reference/linkage.html) that will be generated by the\ntarget. It is an array of strings, allowing you to specify multiple crate\ntypes for a single target. This can only be specified for libraries and\nexamples. Binaries, tests, and benchmarks are always the \u0022bin\u0022 crate type.\n\nThe available options are \u0060bin\u0060, \u0060lib\u0060, \u0060rlib\u0060, \u0060dylib\u0060, \u0060cdylib\u0060,\n\u0060staticlib\u0060, and \u0060proc-macro\u0060. You can read more about the different crate\ntypes in the [Rust Reference Manual](https://doc.rust-lang.org/reference/linkage.html)."
         },
         "crateType0": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           }
         },
         "doc": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060doc\u0060 field indicates whether or not the target is included in the\ndocumentation generated by [\u0060cargo doc\u0060](https://doc.rust-lang.org/cargo/commands/cargo-doc.html) by default. The default is \u0060true\u0060 for\nlibraries and binaries.\n\n\u003E **Note**: The binary will be skipped if its name is the same as the lib\n\u003E target."
         },
         "doctest": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060doctest\u0060 field indicates whether or not [documentation examples](https://doc.rust-lang.org/rustdoc/documentation-tests.html) are\ntested by default by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). This is only relevant for libraries, it\nhas no effect on other sections. The default is \u0060true\u0060 for the library.\n"
         },
         "edition": {
+          "plain": true,
           "$ref": "#/types/cargo:index:itemsEdition"
         },
         "harness": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060harness\u0060 field indicates that the [\u0060--test\u0060 flag](https://doc.rust-lang.org/rustc/command-line-arguments.html#option-test) will be passed to\n\u0060rustc\u0060 which will automatically include the libtest library which is the\ndriver for collecting and running tests marked with the [\u0060#[test]\u0060 attribute](https://doc.rust-lang.org/reference/attributes/testing.html#the-test-attribute) or benchmarks with the \u0060#[bench]\u0060 attribute. The\ndefault is \u0060true\u0060 for all targets.\n\nIf set to \u0060false\u0060, then you are responsible for defining a \u0060main()\u0060 function\nto run tests and benchmarks.\n\nTests have the [\u0060cfg(test)\u0060 conditional expression](https://doc.rust-lang.org/reference/conditional-compilation.html#test) enabled whether\nor not the harness is enabled."
         },
         "name": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060name\u0060 field specifies the name of the target, which corresponds to the\nfilename of the artifact that will be generated. For a library, this is the\ncrate name that dependencies will use to reference it.\n\nFor the \u0060[lib]\u0060 and the default binary (\u0060src/main.rs\u0060), this defaults to the\nname of the package, with any dashes replaced with underscores. For other\n[auto discovered](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#target-auto-discovery) targets, it defaults to the\ndirectory or file name.\n\nThis is required for all targets except \u0060[lib]\u0060."
         },
         "path": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060path\u0060 field specifies where the source for the crate is located, relative\nto the \u0060Cargo.toml\u0060 file.\n\nIf not specified, the [inferred path](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#target-auto-discovery) is used based on\nthe target name."
         },
         "plugin": {
+          "plain": true,
           "type": "boolean"
         },
         "procMacro": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060proc-macro\u0060 field indicates that the library is a [procedural macro](https://doc.rust-lang.org/book/ch19-06-macros.html)\n([reference](https://doc.rust-lang.org/reference/procedural-macros.html)). This is only valid for the \u0060[lib]\u0060\ntarget."
         },
         "procMacro0": {
+          "plain": true,
           "type": "boolean"
         },
         "requiredFeatures": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060required-features\u0060 field specifies which [features](https://doc.rust-lang.org/cargo/reference/features.html) the target needs in\norder to be built. If any of the required features are not enabled, the\ntarget will be skipped. This is only relevant for the \u0060[[bin]]\u0060, \u0060[[bench]]\u0060,\n\u0060[[test]]\u0060, and \u0060[[example]]\u0060 sections, it has no effect on \u0060[lib]\u0060.\n\n\u0060\u0060\u0060toml\n[features]\n# ...\npostgres = []\nsqlite = []\ntools = []\n\n[[bin]]\nname = \u0022my-pg-tool\u0022\nrequired-features = [\u0022postgres\u0022, \u0022tools\u0022]\n\u0060\u0060\u0060\n"
         },
         "test": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060test\u0060 field indicates whether or not the target is tested by default by\n[\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). The default is \u0060true\u0060 for lib, bins, and tests.\n\n\u003E **Note**: Examples are built by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) by default to ensure they\n\u003E continue to compile, but they are not *tested* by default. Setting \u0060test =\n\u003E true\u0060 for an example will also build it as a test and run any\n\u003E [\u0060#[test]\u0060](https://doc.rust-lang.org/reference/attributes/testing.html#the-test-attribute) functions defined in the example."
         }
@@ -468,69 +547,88 @@
       "type": "object",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "bench": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060bench\u0060 field indicates whether or not the target is benchmarked by\ndefault by [\u0060cargo bench\u0060](https://doc.rust-lang.org/cargo/commands/cargo-bench.html). The default is \u0060true\u0060 for lib, bins, and\nbenchmarks."
         },
         "crateType": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060crate-type\u0060 field defines the [crate types](https://doc.rust-lang.org/reference/linkage.html) that will be generated by the\ntarget. It is an array of strings, allowing you to specify multiple crate\ntypes for a single target. This can only be specified for libraries and\nexamples. Binaries, tests, and benchmarks are always the \u0022bin\u0022 crate type.\n\nThe available options are \u0060bin\u0060, \u0060lib\u0060, \u0060rlib\u0060, \u0060dylib\u0060, \u0060cdylib\u0060,\n\u0060staticlib\u0060, and \u0060proc-macro\u0060. You can read more about the different crate\ntypes in the [Rust Reference Manual](https://doc.rust-lang.org/reference/linkage.html)."
         },
         "crateType0": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           }
         },
         "doc": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060doc\u0060 field indicates whether or not the target is included in the\ndocumentation generated by [\u0060cargo doc\u0060](https://doc.rust-lang.org/cargo/commands/cargo-doc.html) by default. The default is \u0060true\u0060 for\nlibraries and binaries.\n\n\u003E **Note**: The binary will be skipped if its name is the same as the lib\n\u003E target."
         },
         "doctest": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060doctest\u0060 field indicates whether or not [documentation examples](https://doc.rust-lang.org/rustdoc/documentation-tests.html) are\ntested by default by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). This is only relevant for libraries, it\nhas no effect on other sections. The default is \u0060true\u0060 for the library.\n"
         },
         "edition": {
+          "plain": true,
           "$ref": "#/types/cargo:index:libEdition"
         },
         "harness": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060harness\u0060 field indicates that the [\u0060--test\u0060 flag](https://doc.rust-lang.org/rustc/command-line-arguments.html#option-test) will be passed to\n\u0060rustc\u0060 which will automatically include the libtest library which is the\ndriver for collecting and running tests marked with the [\u0060#[test]\u0060 attribute](https://doc.rust-lang.org/reference/attributes/testing.html#the-test-attribute) or benchmarks with the \u0060#[bench]\u0060 attribute. The\ndefault is \u0060true\u0060 for all targets.\n\nIf set to \u0060false\u0060, then you are responsible for defining a \u0060main()\u0060 function\nto run tests and benchmarks.\n\nTests have the [\u0060cfg(test)\u0060 conditional expression](https://doc.rust-lang.org/reference/conditional-compilation.html#test) enabled whether\nor not the harness is enabled."
         },
         "name": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060name\u0060 field specifies the name of the target, which corresponds to the\nfilename of the artifact that will be generated. For a library, this is the\ncrate name that dependencies will use to reference it.\n\nFor the \u0060[lib]\u0060 and the default binary (\u0060src/main.rs\u0060), this defaults to the\nname of the package, with any dashes replaced with underscores. For other\n[auto discovered](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#target-auto-discovery) targets, it defaults to the\ndirectory or file name.\n\nThis is required for all targets except \u0060[lib]\u0060."
         },
         "path": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060path\u0060 field specifies where the source for the crate is located, relative\nto the \u0060Cargo.toml\u0060 file.\n\nIf not specified, the [inferred path](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#target-auto-discovery) is used based on\nthe target name."
         },
         "plugin": {
+          "plain": true,
           "type": "boolean"
         },
         "procMacro": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060proc-macro\u0060 field indicates that the library is a [procedural macro](https://doc.rust-lang.org/book/ch19-06-macros.html)\n([reference](https://doc.rust-lang.org/reference/procedural-macros.html)). This is only valid for the \u0060[lib]\u0060\ntarget."
         },
         "procMacro0": {
+          "plain": true,
           "type": "boolean"
         },
         "requiredFeatures": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060required-features\u0060 field specifies which [features](https://doc.rust-lang.org/cargo/reference/features.html) the target needs in\norder to be built. If any of the required features are not enabled, the\ntarget will be skipped. This is only relevant for the \u0060[[bin]]\u0060, \u0060[[bench]]\u0060,\n\u0060[[test]]\u0060, and \u0060[[example]]\u0060 sections, it has no effect on \u0060[lib]\u0060.\n\n\u0060\u0060\u0060toml\n[features]\n# ...\npostgres = []\nsqlite = []\ntools = []\n\n[[bin]]\nname = \u0022my-pg-tool\u0022\nrequired-features = [\u0022postgres\u0022, \u0022tools\u0022]\n\u0060\u0060\u0060\n"
         },
         "test": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060test\u0060 field indicates whether or not the target is tested by default by\n[\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). The default is \u0060true\u0060 for lib, bins, and tests.\n\n\u003E **Note**: Examples are built by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) by default to ensure they\n\u003E continue to compile, but they are not *tested* by default. Setting \u0060test =\n\u003E true\u0060 for an example will also build it as a test and run any\n\u003E [\u0060#[test]\u0060](https://doc.rust-lang.org/reference/attributes/testing.html#the-test-attribute) functions defined in the example."
         }
@@ -559,12 +657,15 @@
       "description": "Cargo by default will warn about unused keys in \u0060Cargo.toml\u0060 to assist in\ndetecting typos and such. The \u0060package.metadata\u0060 table, however, is completely\nignored by Cargo and will not be warned about. This section can be used for\ntools which would like to store package configuration in \u0060Cargo.toml\u0060. For\nexample:\n\n\u0060\u0060\u0060toml\n[package]\nname = \u0022...\u0022\n# ...\n\n# Metadata used when generating an Android APK, for example.\n[package.metadata.android]\npackage-name = \u0022my-awesome-android-app\u0022\nassets = \u0022path/to/static\u0022\n\u0060\u0060\u0060\n",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "playdate": {
+          "plain": true,
           "$ref": "#/types/cargo:index:playdatePackageMetadata"
         }
       }
@@ -585,130 +686,164 @@
       "description": "The only field required by Cargo is [\u0060name\u0060](https://doc.rust-lang.org/cargo/reference/manifest.html#the-name-field).\n If publishing to a registry, the registry may\nrequire additional fields. See the notes below and [the publishing chapter](https://doc.rust-lang.org/cargo/reference/publishing.html) for requirements for publishing to [crates.io](https://crates.io/).",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "authors": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "autobenches": {
+          "plain": true,
           "type": "boolean",
           "description": "Disable automatic discovery of \u0060bench\u0060 targets.\n\nDisabling automatic discovery should only be needed for specialized\nsituations. For example, if you have a library where you want a *module* named\n\u0060bin\u0060, this would present a problem because Cargo would usually attempt to\ncompile anything in the \u0060bin\u0060 directory as an executable. Here is a sample\nlayout of this scenario:\n\n\u0060\u0060\u0060\n\u251C\u2500\u2500 Cargo.toml\n\u2514\u2500\u2500 src\n    \u251C\u2500\u2500 lib.rs\n    \u2514\u2500\u2500 bin\n        \u2514\u2500\u2500 mod.rs\n\u0060\u0060\u0060\n"
         },
         "autobins": {
+          "plain": true,
           "type": "boolean",
           "description": "Disable automatic discovery of \u0060bin\u0060 targets.\n\nDisabling automatic discovery should only be needed for specialized\nsituations. For example, if you have a library where you want a *module* named\n\u0060bin\u0060, this would present a problem because Cargo would usually attempt to\ncompile anything in the \u0060bin\u0060 directory as an executable. Here is a sample\nlayout of this scenario:\n\n\u0060\u0060\u0060\n\u251C\u2500\u2500 Cargo.toml\n\u2514\u2500\u2500 src\n    \u251C\u2500\u2500 lib.rs\n    \u2514\u2500\u2500 bin\n        \u2514\u2500\u2500 mod.rs\n\u0060\u0060\u0060\n\nTo prevent Cargo from inferring \u0060src/bin/mod.rs\u0060 as an executable, set\nthis to \u0060false\u0060 to disable auto-discovery."
         },
         "autoexamples": {
+          "plain": true,
           "type": "boolean",
           "description": "Disable automatic discovery of \u0060example\u0060 targets.\n\nDisabling automatic discovery should only be needed for specialized\nsituations. For example, if you have a library where you want a *module* named\n\u0060bin\u0060, this would present a problem because Cargo would usually attempt to\ncompile anything in the \u0060bin\u0060 directory as an executable. Here is a sample\nlayout of this scenario:\n\n\u0060\u0060\u0060\n\u251C\u2500\u2500 Cargo.toml\n\u2514\u2500\u2500 src\n    \u251C\u2500\u2500 lib.rs\n    \u2514\u2500\u2500 bin\n        \u2514\u2500\u2500 mod.rs\n\u0060\u0060\u0060\n"
         },
         "autotests": {
+          "plain": true,
           "type": "boolean",
           "description": "Disable automatic discovery of \u0060test\u0060 targets.\n\nDisabling automatic discovery should only be needed for specialized\nsituations. For example, if you have a library where you want a *module* named\n\u0060bin\u0060, this would present a problem because Cargo would usually attempt to\ncompile anything in the \u0060bin\u0060 directory as an executable. Here is a sample\nlayout of this scenario:\n\n\u0060\u0060\u0060\n\u251C\u2500\u2500 Cargo.toml\n\u2514\u2500\u2500 src\n    \u251C\u2500\u2500 lib.rs\n    \u2514\u2500\u2500 bin\n        \u2514\u2500\u2500 mod.rs\n\u0060\u0060\u0060\n"
         },
         "build": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "categories": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "defaultRun": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060default-run\u0060 field in the \u0060[package]\u0060 section of the manifest can be used\nto specify a default binary picked by [\u0060cargo run\u0060](https://doc.rust-lang.org/cargo/commands/cargo-run.html). For example, when there is\nboth \u0060src/bin/a.rs\u0060 and \u0060src/bin/b.rs\u0060:\n\n\u0060\u0060\u0060toml\n[package]\ndefault-run = \u0022a\u0022\n\u0060\u0060\u0060"
         },
         "description": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "documentation": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "edition": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "exclude": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "homepage": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "imATeapot": {
+          "plain": true,
           "type": "boolean",
           "description": "Sets whether the current package is a teapot or something else that is not capable of brewing tea."
         },
         "include": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "keywords": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "license": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "licenseFile": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "links": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060links\u0060 field specifies the name of a native library that is being linked\nto. More information can be found in the [\u0060links\u0060](https://doc.rust-lang.org/cargo/reference/build-scripts.html#the-links-manifest-key) section of the build\nscript guide.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\nlinks = \u0022foo\u0022\n\u0060\u0060\u0060"
         },
         "metabuild": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           }
         },
         "metadata": {
+          "plain": true,
           "$ref": "#/types/cargo:index:metadata"
         },
         "name": {
+          "plain": true,
           "type": "string",
           "description": "The package name is an identifier used to refer to the package. It is used\nwhen listed as a dependency in another package, and as the default name of\ninferred lib and bin targets.\n\nThe name must use only [alphanumeric](https://doc.rust-lang.org/std/primitive.char.html#method.is_alphanumeric) characters or \u0060-\u0060 or \u0060_\u0060, and cannot be empty.\nNote that [\u0060cargo new\u0060](https://doc.rust-lang.org/cargo/commands/cargo-new.html) and [\u0060cargo init\u0060](https://doc.rust-lang.org/cargo/commands/cargo-init.html) impose some additional restrictions on\nthe package name, such as enforcing that it is a valid Rust identifier and not\na keyword. [crates.io](https://crates.io) imposes even more restrictions, such as\nenforcing only ASCII characters, not a reserved name, not a special Windows\nname such as \u0022nul\u0022, is not too long, etc."
         },
         "namespacedFeatures": {
+          "plain": true,
           "type": "boolean"
         },
         "publish": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "publishLockfile": {
+          "plain": true,
           "type": "boolean"
         },
         "readme": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "repository": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "resolver": {
+          "plain": true,
           "$ref": "#/types/cargo:index:resolver"
         },
         "rustVersion": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "version": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "workspace": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060workspace\u0060 field can be used to configure the workspace that this package\nwill be a member of. If not specified this will be inferred as the first\nCargo.toml with \u0060[workspace]\u0060 upwards in the filesystem. Setting this is\nuseful if the member is not inside a subdirectory of the workspace root.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\nworkspace = \u0022path/to/workspace/root\u0022\n\u0060\u0060\u0060\n\nThis field cannot be specified if the manifest already has a \u0060[workspace]\u0060\ntable defined. That is, a crate cannot both be a root crate in a workspace\n(contain \u0060[workspace]\u0060) and also be a member crate of another workspace\n(contain \u0060package.workspace\u0060).\n\nFor more information, see the [workspaces chapter](https://doc.rust-lang.org/cargo/reference/workspaces.html)."
         }
@@ -751,41 +886,53 @@
       "type": "object",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "buildDependencies": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           },
           "description": "You can depend on other Cargo-based crates for use in your build scripts.\nDependencies are declared through the \u0060build-dependencies\u0060 section of the\nmanifest:\n\n\u0060\u0060\u0060toml\n[build-dependencies]\ncc = \u00221.0.3\u0022\n\u0060\u0060\u0060\n\nThe build script **does not** have access to the dependencies listed\nin the \u0060dependencies\u0060 or \u0060dev-dependencies\u0060 section. Build\ndependencies will likewise not be available to the package itself\nunless listed under the \u0060dependencies\u0060 section as well. A package\nitself and its build script are built separately, so their\ndependencies need not coincide. Cargo is kept simpler and cleaner by\nusing independent dependencies for independent purposes."
         },
         "buildDependencies0": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "dependencies": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           },
           "description": "Cargo is configured to look for dependencies on [crates.io](https://crates.io) by default. Only\nthe name and a version string are required in this case. In [the cargo\nguide](https://doc.rust-lang.org/cargo/guide/index.html), we specified a dependency on the \u0060time\u0060 crate:\n\n\u0060\u0060\u0060toml\n[dependencies]\ntime = \u00220.1.12\u0022\n\u0060\u0060\u0060\n\nThe string \u0060\u00220.1.12\u0022\u0060 is a [semver](https://github.com/steveklabnik/semver#requirements) version requirement. Since this\nstring does not have any operators in it, it is interpreted the same way as\nif we had specified \u0060\u0022^0.1.12\u0022\u0060, which is called a caret requirement.\n\nA dependency can also be defined by a table with additional options:\n\n\u0060\u0060\u0060toml\n[dependencies]\ntime = { path = \u0022../time\u0022, version = \u00220.1.12\u0022 }\n\u0060\u0060\u0060"
         },
         "devDependencies": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           },
           "description": "The format of \u0060[dev-dependencies]\u0060 is equivalent to \u0060[dependencies]\u0060:\n\n\u0060\u0060\u0060toml\n[dev-dependencies]\ntempdir = \u00220.3\u0022\n\u0060\u0060\u0060\n\nDev-dependencies are not used when compiling\na package for building, but are used for compiling tests, examples, and\nbenchmarks.\n\nThese dependencies are *not* propagated to other packages which depend on this\npackage.\n\nYou can also have target-specific development dependencies by using\n\u0060dev-dependencies\u0060 in the target section header instead of \u0060dependencies\u0060. For\nexample:\n\n\u0060\u0060\u0060toml\n[target.\u0027cfg(unix)\u0027.dev-dependencies]\nmio = \u00220.0.1\u0022\n\u0060\u0060\u0060\n\n\u003E **Note**: When a package is published, only dev-dependencies that specify a\n\u003E \u0060version\u0060 will be included in the published crate. For most use cases,\n\u003E dev-dependencies are not needed when published, though some users (like OS\n\u003E packagers) may want to run tests within a crate, so providing a \u0060version\u0060 if\n\u003E possible can still be beneficial.\n"
         },
         "devDependencies0": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         }
@@ -796,54 +943,68 @@
       "description": "Metadata and build configuration.",
       "properties": {
         "assets": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "author": {
+          "plain": true,
           "type": "string"
         },
         "buildNumber": {
+          "plain": true,
           "type": "integer",
           "description": "A monotonically-increasing integer value used to indicate a unique version of your game. This can be set using an automated build process like Continuous Integration to avoid having to set the value by hand.\n\nFor sideloaded games, buildNumber is required and is used to determine when a newer version is available to download."
         },
         "bundleId": {
+          "plain": true,
           "type": "string",
           "description": "A unique identifier for your game, in reverse DNS notation."
         },
         "contentWarning": {
+          "plain": true,
           "type": "string",
           "description": "Optional. A content warning that displays when the user launches your game for the first time. The user will have the option of backing out and not launching your game if they choose."
         },
         "contentWarning2": {
+          "plain": true,
           "type": "string",
           "description": "Optional. A second content warning that displays on a second screen when the user launches your game for the first time. The user will have the option of backing out and not launching your game if they choose.\n\nNote: \u0060content-warning2\u0060 will only display if a \u0060content-warning\u0060 attribute is also specified.\n\nThe string displayed on the content warning screen can only be so long before it will be truncated with an \u0022\u2026\u0022 character. Be sure to keep this in mind when designing your \u0060content-warning\u0060 and \u0060content-warning2\u0060 text."
         },
         "description": {
+          "plain": true,
           "type": "string"
         },
         "devAssets": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "imagePath": {
+          "plain": true,
           "type": "string",
           "description": "A directory of images that will be used by the launcher.\n\nMore in [official documentation](https://sdk.play.date/#pdxinfo)."
         },
         "launchSoundPath": {
+          "plain": true,
           "type": "string",
           "description": "Should point to the path of a short audio file to be played as the game launch animation is taking place.\n\nMore in [official documentation](https://sdk.play.date/#pdxinfo)."
         },
         "name": {
+          "plain": true,
           "type": "string",
           "description": "A game version number, formatted any way you wish, that is displayed to players. It is not used to compute when updates should occur."
         },
         "options": {
+          "plain": true,
           "$ref": "#/types/cargo:index:configuration"
         },
         "support": {
+          "plain": true,
           "$ref": "#/types/cargo:index:support"
         },
         "version": {
+          "plain": true,
           "type": "string"
         }
       },
@@ -855,59 +1016,75 @@
       "type": "object",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "buildOverride": {
+          "plain": true,
           "$ref": "#/types/cargo:index:profile"
         },
         "codegenUnits": {
+          "plain": true,
           "type": "integer",
           "description": "The \u0060codegen-units\u0060 setting controls the [\u0060-C codegen-units\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#codegen-units) which\ncontrols how many \u0022code generation units\u0022 a crate will be split into. More\ncode generation units allows more of a crate to be processed in parallel\npossibly reducing compile time, but may produce slower code.\n\nThis option takes an integer greater than 0.\n\nThe default is 256 for [incremental](https://doc.rust-lang.org/cargo/reference/profiles.html#incremental) builds, and 16 for\nnon-incremental builds."
         },
         "debug": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "debugAssertions": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060debug-assertions\u0060 setting controls the [\u0060-C debug-assertions\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#debug-assertions) which\nturns \u0060cfg(debug_assertions)\u0060 [conditional compilation](https://doc.rust-lang.org/reference/conditional-compilation.html#debug_assertions) on or off. Debug\nassertions are intended to include runtime validation which is only available\nin debug/development builds. These may be things that are too expensive or\notherwise undesirable in a release build. Debug assertions enables the\n[\u0060debug_assert!\u0060 macro](https://doc.rust-lang.org/std/macro.debug_assert.html) in the standard library."
         },
         "dirName": {
+          "plain": true,
           "type": "string"
         },
         "incremental": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060incremental\u0060 setting controls the [\u0060-C incremental\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#incremental) which controls\nwhether or not incremental compilation is enabled. Incremental compilation\ncauses \u0060rustc\u0060 to to save additional information to disk which will be reused\nwhen recompiling the crate, improving re-compile times. The additional\ninformation is stored in the \u0060target\u0060 directory.\n\nThe valid options are:\n\n* \u0060true\u0060: enabled\n* \u0060false\u0060: disabled\n\nIncremental compilation is only used for workspace members and \u0022path\u0022\ndependencies.\n\nThe incremental value can be overridden globally with the \u0060CARGO_INCREMENTAL\u0060\n[environment variable](https://doc.rust-lang.org/cargo/reference/environment-variables.html) or the [\u0060build.incremental\u0060](https://doc.rust-lang.org/cargo/reference/config.html#buildincremental) config variable."
         },
         "inherits": {
+          "plain": true,
           "type": "string"
         },
         "lto": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "optLevel": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "overflowChecks": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060overflow-checks\u0060 setting controls the [\u0060-C overflow-checks\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#overflow-checks) which\ncontrols the behavior of [runtime integer overflow](https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow). When overflow-checks are\nenabled, a panic will occur on overflow."
         },
         "package": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "#/types/cargo:index:profile"
           },
           "description": "Package-specific overrides.\n\nThe package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can\ntarget individual versions of a package with syntax such as \u0060[profile.dev.package.\u0022foo:2.1.0\u0022]\u0060."
         },
         "panic": {
+          "plain": true,
           "$ref": "#/types/cargo:index:panic"
         },
         "rpath": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060rpath\u0060 setting controls the [\u0060-C rpath\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#rpath) which controls\nwhether or not [\u0060rpath\u0060](https://en.wikipedia.org/wiki/Rpath) is enabled."
         }
@@ -918,21 +1095,27 @@
       "description": "Profiles provide a way to alter the compiler settings, influencing things like optimizations and debugging symbols.\n\nCargo has 4 built-in profiles: dev, release, test, and bench. It automatically chooses the profile based on which command is being run, the package and target that is being built, and command-line flags like --release.",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "#/types/cargo:index:profile"
           }
         },
         "bench": {
+          "plain": true,
           "$ref": "#/types/cargo:index:definitionsProfile"
         },
         "dev": {
+          "plain": true,
           "$ref": "#/types/cargo:index:dev"
         },
         "release": {
+          "plain": true,
           "$ref": "#/types/cargo:index:release"
         },
         "test": {
+          "plain": true,
           "$ref": "#/types/cargo:index:test"
         }
       }
@@ -942,86 +1125,109 @@
       "description": "The \u0060workspace.package\u0060 table is where you define keys that can be\ninherited by members of a workspace. These keys can be inherited by\ndefining them in the member package with \u0060{key}.workspace = true\u0060.\n\nKeys that are supported:\n\n|                |                 |\n|----------------|-----------------|\n| \u0060authors\u0060      | \u0060categories\u0060    |\n| \u0060description\u0060  | \u0060documentation\u0060 |\n| \u0060edition\u0060      | \u0060exclude\u0060       |\n| \u0060homepage\u0060     | \u0060include\u0060       |\n| \u0060keywords\u0060     | \u0060license\u0060       |\n| \u0060license-file\u0060 | \u0060publish\u0060       |\n| \u0060readme\u0060       | \u0060repository\u0060    |\n| \u0060rust-version\u0060 | \u0060version\u0060       |\n\n- \u0060license-file\u0060 and \u0060readme\u0060 are relative to the workspace root\n- \u0060include\u0060 and \u0060exclude\u0060 are relative to your package root\n\nExample:\n\u0060\u0060\u0060toml\n# [PROJECT_DIR]/Cargo.toml\n[workspace]\nmembers = [\u0022bar\u0022]\n\n[workspace.package]\nversion = \u00221.2.3\u0022\nauthors = [\u0022Nice Folks\u0022]\ndescription = \u0022A short description of my package\u0022\ndocumentation = \u0022https://example.com/bar\u0022\n\u0060\u0060\u0060\n\n\u0060\u0060\u0060toml\n# [PROJECT_DIR]/bar/Cargo.toml\n[package]\nname = \u0022bar\u0022\nversion.workspace = true\nauthors.workspace = true\ndescription.workspace = true\ndocumentation.workspace = true\n\u0060\u0060\u0060",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "authors": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060authors\u0060 field lists people or organizations that are considered the\n\u0022authors\u0022 of the package. The exact meaning is open to interpretation \u2014 it may\nlist the original or primary authors, current maintainers, or owners of the\npackage. These names will be listed on the crate\u0027s page on\n[crates.io](https://crates.io). An optional email address may be included within angled\nbrackets at the end of each author.\n\n\u003E **Note**: [crates.io](https://crates.io) requires at least one author to be listed."
         },
         "categories": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060categories\u0060 field is an array of strings of the categories this package\nbelongs to.\n\n\u0060\u0060\u0060toml\ncategories = [\u0022command-line-utilities\u0022, \u0022development-tools::cargo-plugins\u0022]\n\u0060\u0060\u0060\n\n\u003E **Note**: [crates.io](https://crates.io) has a maximum of 5 categories. Each category should\n\u003E match one of the strings available at https://crates.io/category_slugs, and\n\u003E must match exactly."
         },
         "description": {
+          "plain": true,
           "type": "string",
           "description": "The description is a short blurb about the package. [crates.io](https://crates.io) will display\nthis with your package. This should be plain text (not Markdown).\n\n\u0060\u0060\u0060toml\n[package]\n# ...\ndescription = \u0022A short description of my package\u0022\n\u0060\u0060\u0060\n\n\u003E **Note**: [crates.io](https://crates.io) requires the \u0060description\u0060 to be set."
         },
         "documentation": {
+          "plain": true,
           "type": "string",
           "description": "\nThe \u0060documentation\u0060 field specifies a URL to a website hosting the crate\u0027s\ndocumentation. If no URL is specified in the manifest file, [crates.io](https://crates.io) will\nautomatically link your crate to the corresponding [docs.rs](https://docs.rs) page.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\ndocumentation = \u0022https://docs.rs/bitflags\u0022\n\u0060\u0060\u0060\n"
         },
         "edition": {
+          "plain": true,
           "$ref": "#/types/cargo:index:packageEdition"
         },
         "exclude": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "You can explicitly specify that a set of file patterns should be ignored or\nincluded for the purposes of packaging. The patterns specified in the\n\u0060exclude\u0060 field identify a set of files that are not included, and the\npatterns in \u0060include\u0060 specify files that are explicitly included.\n\nThe patterns should be [gitignore](https://git-scm.com/docs/gitignore)-style patterns. Briefly:\n\n- \u0060foo\u0060 matches any file or directory with the name \u0060foo\u0060 anywhere in the\n  package. This is equivalent to the pattern \u0060**/foo\u0060.\n- \u0060/foo\u0060 matches any file or directory with the name \u0060foo\u0060 only in the root of\n  the package.\n- \u0060foo/\u0060 matches any *directory* with the name \u0060foo\u0060 anywhere in the package.\n- Common glob patterns like \u0060*\u0060, \u0060?\u0060, and \u0060[]\u0060 are supported:\n  - \u0060*\u0060 matches zero or more characters except \u0060/\u0060.  For example, \u0060*.html\u0060\n    matches any file or directory with the \u0060.html\u0060 extension anywhere in the\n    package.\n  - \u0060?\u0060 matches any character except \u0060/\u0060. For example, \u0060foo?\u0060 matches \u0060food\u0060,\n    but not \u0060foo\u0060.\n  - \u0060[]\u0060 allows for matching a range of characters. For example, \u0060[ab]\u0060\n    matches either \u0060a\u0060 or \u0060b\u0060. \u0060[a-z]\u0060 matches letters a through z.\n- \u0060**/\u0060 prefix matches in any directory. For example, \u0060**/foo/bar\u0060 matches the\n  file or directory \u0060bar\u0060 anywhere that is directly under directory \u0060foo\u0060.\n- \u0060/**\u0060 suffix matches everything inside. For example, \u0060foo/**\u0060 matches all\n  files inside directory \u0060foo\u0060, including all files in subdirectories below\n  \u0060foo\u0060.\n- \u0060/**/\u0060 matches zero or more directories. For example, \u0060a/**/b\u0060 matches\n  \u0060a/b\u0060, \u0060a/x/b\u0060, \u0060a/x/y/b\u0060, and so on.\n- \u0060!\u0060 prefix negates a pattern. For example, a pattern of \u0060src/**.rs\u0060 and\n  \u0060!foo.rs\u0060 would match all files with the \u0060.rs\u0060 extension inside the \u0060src\u0060\n  directory, except for any file named \u0060foo.rs\u0060.\n\nIf git is being used for a package, the \u0060exclude\u0060 field will be seeded with\nthe \u0060gitignore\u0060 settings from the repository.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\nexclude = [\u0022build/**/*.o\u0022, \u0022doc/**/*.html\u0022]\n\u0060\u0060\u0060\n\n\u0060\u0060\u0060toml\n[package]\n# ...\ninclude = [\u0022src/**/*\u0022, \u0022Cargo.toml\u0022]\n\u0060\u0060\u0060\n\nThe options are mutually exclusive: setting \u0060include\u0060 will override an\n\u0060exclude\u0060. Note that \u0060include\u0060 must be an exhaustive list of files as otherwise\nnecessary source files may not be included. The package\u0027s \u0060Cargo.toml\u0060 is\nautomatically included.\n\nThe include/exclude list is also used for change tracking in some situations.\nFor targets built with \u0060rustdoc\u0060, it is used to determine the list of files to\ntrack to determine if the target should be rebuilt. If the package has a\n[build script](https://doc.rust-lang.org/cargo/reference/build-scripts.html) that does not emit any \u0060rerun-if-*\u0060 directives, then the\ninclude/exclude list is used for tracking if the build script should be re-run\nif any of those files change."
         },
         "homepage": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060homepage\u0060 field should be a URL to a site that is the home page for your\npackage.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\nhomepage = \u0022https://serde.rs/\u0022\n\u0060\u0060\u0060"
         },
         "include": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "You can explicitly specify that a set of file patterns should be ignored or\nincluded for the purposes of packaging. The patterns specified in the\n\u0060exclude\u0060 field identify a set of files that are not included, and the\npatterns in \u0060include\u0060 specify files that are explicitly included.\n\nThe patterns should be [gitignore](https://git-scm.com/docs/gitignore)-style patterns. Briefly:\n\n- \u0060foo\u0060 matches any file or directory with the name \u0060foo\u0060 anywhere in the\n  package. This is equivalent to the pattern \u0060**/foo\u0060.\n- \u0060/foo\u0060 matches any file or directory with the name \u0060foo\u0060 only in the root of\n  the package.\n- \u0060foo/\u0060 matches any *directory* with the name \u0060foo\u0060 anywhere in the package.\n- Common glob patterns like \u0060*\u0060, \u0060?\u0060, and \u0060[]\u0060 are supported:\n  - \u0060*\u0060 matches zero or more characters except \u0060/\u0060.  For example, \u0060*.html\u0060\n    matches any file or directory with the \u0060.html\u0060 extension anywhere in the\n    package.\n  - \u0060?\u0060 matches any character except \u0060/\u0060. For example, \u0060foo?\u0060 matches \u0060food\u0060,\n    but not \u0060foo\u0060.\n  - \u0060[]\u0060 allows for matching a range of characters. For example, \u0060[ab]\u0060\n    matches either \u0060a\u0060 or \u0060b\u0060. \u0060[a-z]\u0060 matches letters a through z.\n- \u0060**/\u0060 prefix matches in any directory. For example, \u0060**/foo/bar\u0060 matches the\n  file or directory \u0060bar\u0060 anywhere that is directly under directory \u0060foo\u0060.\n- \u0060/**\u0060 suffix matches everything inside. For example, \u0060foo/**\u0060 matches all\n  files inside directory \u0060foo\u0060, including all files in subdirectories below\n  \u0060foo\u0060.\n- \u0060/**/\u0060 matches zero or more directories. For example, \u0060a/**/b\u0060 matches\n  \u0060a/b\u0060, \u0060a/x/b\u0060, \u0060a/x/y/b\u0060, and so on.\n- \u0060!\u0060 prefix negates a pattern. For example, a pattern of \u0060src/**.rs\u0060 and\n  \u0060!foo.rs\u0060 would match all files with the \u0060.rs\u0060 extension inside the \u0060src\u0060\n  directory, except for any file named \u0060foo.rs\u0060.\n\nIf git is being used for a package, the \u0060exclude\u0060 field will be seeded with\nthe \u0060gitignore\u0060 settings from the repository.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\nexclude = [\u0022build/**/*.o\u0022, \u0022doc/**/*.html\u0022]\n\u0060\u0060\u0060\n\n\u0060\u0060\u0060toml\n[package]\n# ...\ninclude = [\u0022src/**/*\u0022, \u0022Cargo.toml\u0022]\n\u0060\u0060\u0060\n\nThe options are mutually exclusive: setting \u0060include\u0060 will override an\n\u0060exclude\u0060. Note that \u0060include\u0060 must be an exhaustive list of files as otherwise\nnecessary source files may not be included. The package\u0027s \u0060Cargo.toml\u0060 is\nautomatically included.\n\nThe include/exclude list is also used for change tracking in some situations.\nFor targets built with \u0060rustdoc\u0060, it is used to determine the list of files to\ntrack to determine if the target should be rebuilt. If the package has a\n[build script](https://doc.rust-lang.org/cargo/reference/build-scripts.html) that does not emit any \u0060rerun-if-*\u0060 directives, then the\ninclude/exclude list is used for tracking if the build script should be re-run\nif any of those files change."
         },
         "keywords": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060keywords\u0060 field is an array of strings that describe this package. This\ncan help when searching for the package on a registry, and you may choose any\nwords that would help someone find this crate.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\nkeywords = [\u0022gamedev\u0022, \u0022graphics\u0022]\n\u0060\u0060\u0060\n\n\u003E **Note**: [crates.io](https://crates.io) has a maximum of 5 keywords. Each keyword must be\n\u003E ASCII text, start with a letter, and only contain letters, numbers, \u0060_\u0060 or\n\u003E \u0060-\u0060, and have at most 20 characters."
         },
         "license": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060license\u0060 field contains the name of the software license that the package\nis released under.\n\n[crates.io](https://crates.io/) interprets the \u0060license\u0060 field as an [SPDX 2.1 license\nexpression](https://spdx.org/spdx-specification-21-web-version#h.jxpfx0ykyb60). The name must be a known license\nfrom the [SPDX license list 3.6](https://github.com/spdx/license-list-data/tree/v3.6). Parentheses are not\ncurrently supported. See the [SPDX site](https://spdx.org/license-list) for more information.\n\nSPDX license expressions support AND and OR operators to combine multiple\nlicenses.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\nlicense = \u0022MIT OR Apache-2.0\u0022\n\u0060\u0060\u0060\n\nUsing \u0060OR\u0060 indicates the user may choose either license. Using \u0060AND\u0060 indicates\nthe user must comply with both licenses simultaneously. The \u0060WITH\u0060 operator\nindicates a license with a special exception. Some examples:\n\n* \u0060MIT OR Apache-2.0\u0060\n* \u0060LGPL-2.1 AND MIT AND BSD-2-Clause\u0060\n* \u0060GPL-2.0\u002B WITH Bison-exception-2.2\u0060\n\nIf a package is using a nonstandard license, then the \u0060license-file\u0060 field may\nbe specified in lieu of the \u0060license\u0060 field."
         },
         "licenseFile": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060license-file\u0060 field contains the path to a file\ncontaining the text of the license (relative to this \u0060Cargo.toml\u0060).\n\n\u0060\u0060\u0060toml\n[package]\n# ...\nlicense-file = \u0022LICENSE.txt\u0022\n\u0060\u0060\u0060\n\n\u003E **Note**: [crates.io](https://crates.io) requires either \u0060license\u0060 or \u0060license-file\u0060 to be set."
         },
         "publish": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "readme": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "repository": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060repository\u0060 field should be a URL to the source repository for your\npackage.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\nrepository = \u0022https://github.com/rust-lang/cargo/\u0022\n\u0060\u0060\u0060"
         },
         "rustVersion": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060rust-version\u0060 field is an optional key that tells cargo what version of the\nRust language and compiler your package can be compiled with. If the currently\nselected version of the Rust compiler is older than the stated version, cargo\nwill exit with an error, telling the user what version is required.\n\nThe first version of Cargo that supports this field was released with Rust 1.56.0.\nIn older releases, the field will be ignored, and Cargo will display a warning.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\nrust-version = \u00221.56\u0022\n\u0060\u0060\u0060\n\nThe Rust version must be a bare version number with two or three components; it\ncannot include semver operators or pre-release identifiers. Compiler pre-release\nidentifiers such as -nightly will be ignored while checking the Rust version.\nThe \u0060rust-version\u0060 must be equal to or newer than the version that first\nintroduced the configured \u0060edition\u0060.\n\nThe \u0060rust-version\u0060 may be ignored using the \u0060--ignore-rust-version\u0060 option.\n\nSetting the \u0060rust-version\u0060 key in \u0060[package]\u0060 will affect all targets/crates in\nthe package, including test suites, benchmarks, binaries, examples, etc."
         },
         "version": {
+          "plain": true,
           "type": "string",
           "description": "Cargo bakes in the concept of [Semantic Versioning](https://semver.org/), so make sure you follow some basic rules:\n\n* Before you reach 1.0.0, anything goes, but if you make breaking changes,\n    increment the minor version. In Rust, breaking changes include adding fields to\n    structs or variants to enums.\n* After 1.0.0, only make breaking changes when you increment the major version.\n    Don\u0027t break the build.\n* After 1.0.0, don\u0027t add any new public API (no new \u0060pub\u0060 anything) in patch-level\n    versions. Always increment the minor version if you add any new \u0060pub\u0060 structs,\n    traits, fields, types, functions, methods or anything else.\n* Use version numbers with three numeric parts such as 1.0.0 rather than 1.0."
         }
@@ -1031,59 +1237,75 @@
       "type": "object",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "buildOverride": {
+          "plain": true,
           "$ref": "#/types/cargo:index:release"
         },
         "codegenUnits": {
+          "plain": true,
           "type": "integer",
           "description": "The \u0060codegen-units\u0060 setting controls the [\u0060-C codegen-units\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#codegen-units) which\ncontrols how many \u0022code generation units\u0022 a crate will be split into. More\ncode generation units allows more of a crate to be processed in parallel\npossibly reducing compile time, but may produce slower code.\n\nThis option takes an integer greater than 0.\n\nThe default is 256 for [incremental](https://doc.rust-lang.org/cargo/reference/profiles.html#incremental) builds, and 16 for\nnon-incremental builds."
         },
         "debug": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "debugAssertions": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060debug-assertions\u0060 setting controls the [\u0060-C debug-assertions\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#debug-assertions) which\nturns \u0060cfg(debug_assertions)\u0060 [conditional compilation](https://doc.rust-lang.org/reference/conditional-compilation.html#debug_assertions) on or off. Debug\nassertions are intended to include runtime validation which is only available\nin debug/development builds. These may be things that are too expensive or\notherwise undesirable in a release build. Debug assertions enables the\n[\u0060debug_assert!\u0060 macro](https://doc.rust-lang.org/std/macro.debug_assert.html) in the standard library."
         },
         "dirName": {
+          "plain": true,
           "type": "string"
         },
         "incremental": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060incremental\u0060 setting controls the [\u0060-C incremental\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#incremental) which controls\nwhether or not incremental compilation is enabled. Incremental compilation\ncauses \u0060rustc\u0060 to to save additional information to disk which will be reused\nwhen recompiling the crate, improving re-compile times. The additional\ninformation is stored in the \u0060target\u0060 directory.\n\nThe valid options are:\n\n* \u0060true\u0060: enabled\n* \u0060false\u0060: disabled\n\nIncremental compilation is only used for workspace members and \u0022path\u0022\ndependencies.\n\nThe incremental value can be overridden globally with the \u0060CARGO_INCREMENTAL\u0060\n[environment variable](https://doc.rust-lang.org/cargo/reference/environment-variables.html) or the [\u0060build.incremental\u0060](https://doc.rust-lang.org/cargo/reference/config.html#buildincremental) config variable."
         },
         "inherits": {
+          "plain": true,
           "type": "string"
         },
         "lto": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "optLevel": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "overflowChecks": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060overflow-checks\u0060 setting controls the [\u0060-C overflow-checks\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#overflow-checks) which\ncontrols the behavior of [runtime integer overflow](https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow). When overflow-checks are\nenabled, a panic will occur on overflow."
         },
         "package": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "#/types/cargo:index:release"
           },
           "description": "Package-specific overrides.\n\nThe package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can\ntarget individual versions of a package with syntax such as \u0060[profile.dev.package.\u0022foo:2.1.0\u0022]\u0060."
         },
         "panic": {
+          "plain": true,
           "$ref": "#/types/cargo:index:releasePanic"
         },
         "rpath": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060rpath\u0060 setting controls the [\u0060-C rpath\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#rpath) which controls\nwhether or not [\u0060rpath\u0060](https://en.wikipedia.org/wiki/Rpath) is enabled."
         }
@@ -1121,134 +1343,174 @@
       "description": "A schema for Cargo.toml.",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "badges": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "type": "object",
             "additionalProperties": {
+              "plain": true,
               "type": "string"
             }
           },
           "description": "[crates.io](https://crates.io) can display various badges for build status, test coverage, etc. for\neach crate. All badges are optional.\n\n- The badges pertaining to build status that are currently available are\n  Appveyor, CircleCI, Cirrus CI, GitLab, Azure DevOps, Travis CI and Bitbucket\n  Pipelines.\n- Available badges pertaining to code test coverage are Codecov and Coveralls.\n- There are also maintenance-related badges based on isitmaintained.com\n  which state the issue resolution time, percent of open issues, and future\n  maintenance intentions.\n\nMost badge specifications require a \u0060repository\u0060 key. It is expected to be in\n\u0060user/repo\u0060 format.\n\n\u0060\u0060\u0060toml\n[badges]\n\n# Appveyor: \u0060repository\u0060 is required. \u0060branch\u0060 is optional; default is \u0060master\u0060\n# \u0060service\u0060 is optional; valid values are \u0060github\u0060 (default), \u0060bitbucket\u0060, and\n# \u0060gitlab\u0060; \u0060id\u0060 is optional; you can specify the appveyor project id if you\n# want to use that instead. \u0060project_name\u0060 is optional; use when the repository\n# name differs from the appveyor project name.\nappveyor = { repository = \u0022...\u0022, branch = \u0022master\u0022, service = \u0022github\u0022 }\n\n# Circle CI: \u0060repository\u0060 is required. \u0060branch\u0060 is optional; default is \u0060master\u0060\ncircle-ci = { repository = \u0022...\u0022, branch = \u0022master\u0022 }\n\n# Cirrus CI: \u0060repository\u0060 is required. \u0060branch\u0060 is optional; default is \u0060master\u0060\ncirrus-ci = { repository = \u0022...\u0022, branch = \u0022master\u0022 }\n\n# GitLab: \u0060repository\u0060 is required. \u0060branch\u0060 is optional; default is \u0060master\u0060\ngitlab = { repository = \u0022...\u0022, branch = \u0022master\u0022 }\n\n# Azure DevOps: \u0060project\u0060 is required. \u0060pipeline\u0060 is required. \u0060build\u0060 is optional; default is \u00601\u0060\n# Note: project = \u0060organization/project\u0060, pipeline = \u0060name_of_pipeline\u0060, build = \u0060definitionId\u0060\nazure-devops = { project = \u0022...\u0022, pipeline = \u0022...\u0022, build=\u00222\u0022 }\n\n# Travis CI: \u0060repository\u0060 in format \u0022\u003Cuser\u003E/\u003Cproject\u003E\u0022 is required.\n# \u0060branch\u0060 is optional; default is \u0060master\u0060\ntravis-ci = { repository = \u0022...\u0022, branch = \u0022master\u0022 }\n\n# Bitbucket Pipelines: \u0060repository\u0060 is required. \u0060branch\u0060 is required\nbitbucket-pipelines = { repository = \u0022...\u0022, branch = \u0022master\u0022 }\n\n# Codecov: \u0060repository\u0060 is required. \u0060branch\u0060 is optional; default is \u0060master\u0060\n# \u0060service\u0060 is optional; valid values are \u0060github\u0060 (default), \u0060bitbucket\u0060, and\n# \u0060gitlab\u0060.\ncodecov = { repository = \u0022...\u0022, branch = \u0022master\u0022, service = \u0022github\u0022 }\n\n# Coveralls: \u0060repository\u0060 is required. \u0060branch\u0060 is optional; default is \u0060master\u0060\n# \u0060service\u0060 is optional; valid values are \u0060github\u0060 (default) and \u0060bitbucket\u0060.\ncoveralls = { repository = \u0022...\u0022, branch = \u0022master\u0022, service = \u0022github\u0022 }\n\n# Is it maintained resolution time: \u0060repository\u0060 is required.\nis-it-maintained-issue-resolution = { repository = \u0022...\u0022 }\n\n# Is it maintained percentage of open issues: \u0060repository\u0060 is required.\nis-it-maintained-open-issues = { repository = \u0022...\u0022 }\n\n# Maintenance: \u0060status\u0060 is required. Available options are:\n# - \u0060actively-developed\u0060: New features are being added and bugs are being fixed.\n# - \u0060passively-maintained\u0060: There are no plans for new features, but the maintainer intends to\n#   respond to issues that get filed.\n# - \u0060as-is\u0060: The crate is feature complete, the maintainer does not intend to continue working on\n#   it or providing support, but it works for the purposes it was designed for.\n# - \u0060experimental\u0060: The author wants to share it with the community but is not intending to meet\n#   anyone\u0027s particular use case.\n# - \u0060looking-for-maintainer\u0060: The current maintainer would like to transfer the crate to someone\n#   else.\n# - \u0060deprecated\u0060: The maintainer does not recommend using this crate (the description of the crate\n#   can describe why, there could be a better solution available or there could be problems with\n#   the crate that the author does not want to fix).\n# - \u0060none\u0060: Displays no badge on crates.io, since the maintainer has not chosen to specify\n#   their intentions, potential crate users will need to investigate on their own.\nmaintenance = { status = \u0022...\u0022 }\n\u0060\u0060\u0060"
         },
         "bench": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "$ref": "#/types/cargo:index:target"
           },
           "description": "Benchmarks provide a way to test the performance of your code using the\n[\u0060cargo bench\u0060](https://doc.rust-lang.org/cargo/commands/cargo-bench.html) command. They follow the same structure as [tests](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#tests),\nwith each benchmark function annotated with the \u0060#[bench]\u0060 attribute.\nSimilarly to tests:\n\n* Benchmarks are placed in the [\u0060benches\u0060 directory](https://doc.rust-lang.org/cargo/guide/project-layout.html).\n* Benchmark functions defined in libraries and binaries have access to the\n  *private* API within the target they are defined in. Benchmarks in the\n  \u0060benches\u0060 directory may use the *public* API.\n* [The \u0060bench\u0060 field](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#the-bench-field) can be used to define which targets\n  are benchmarked by default.\n* [The \u0060harness\u0060 field](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#the-harness-field) can be used to disable the\n  built-in harness.\n\n\u003E **Note**: The [\u0060#[bench]\u0060\n\u003E attribute](https://doc.rust-lang.org/unstable-book/library-features/test.html) is currently\n\u003E unstable and only available on the [nightly channel](https://doc.rust-lang.org/book/appendix-07-nightly-rust.html). There are some\n\u003E packages available on [crates.io](https://crates.io/keywords/benchmark) that\n\u003E may help with running benchmarks on the stable channel, such as\n\u003E [Criterion](https://crates.io/crates/criterion)."
         },
         "bin": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "$ref": "#/types/cargo:index:definitionsTarget"
           },
           "description": "Binary targets are executable programs that can be run after being compiled.\nThe default binary filename is \u0060src/main.rs\u0060, which defaults to the name of\nthe package. Additional binaries are stored in the [\u0060src/bin/\u0060\ndirectory](https://doc.rust-lang.org/cargo/guide/project-layout.html). The settings for each binary can be [customized](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#configuring-a-target) in the \u0060[[bin]]\u0060 tables in \u0060Cargo.toml\u0060.\n\nBinaries can use the public API of the package\u0027s library. They are also linked\nwith the [\u0060[dependencies]\u0060](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) defined in \u0060Cargo.toml\u0060.\n\nYou can run individual binaries with the [\u0060cargo run\u0060](https://doc.rust-lang.org/cargo/commands/cargo-run.html) command with the \u0060--bin\n\u003Cbin-name\u003E\u0060 option. [\u0060cargo install\u0060](https://doc.rust-lang.org/cargo/commands/cargo-install.html) can be used to copy the executable to a\ncommon location.\n\n\u0060\u0060\u0060toml\n# Example of customizing binaries in Cargo.toml.\n[[bin]]\nname = \u0022cool-tool\u0022\ntest = false\nbench = false\n\n[[bin]]\nname = \u0022frobnicator\u0022\nrequired-features = [\u0022frobnicate\u0022]\n\u0060\u0060\u0060"
         },
         "buildDependencies": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           },
           "description": "You can depend on other Cargo-based crates for use in your build scripts.\nDependencies are declared through the \u0060build-dependencies\u0060 section of the\nmanifest:\n\n\u0060\u0060\u0060toml\n[build-dependencies]\ncc = \u00221.0.3\u0022\n\u0060\u0060\u0060\n\nThe build script **does not** have access to the dependencies listed\nin the \u0060dependencies\u0060 or \u0060dev-dependencies\u0060 section. Build\ndependencies will likewise not be available to the package itself\nunless listed under the \u0060dependencies\u0060 section as well. A package\nitself and its build script are built separately, so their\ndependencies need not coincide. Cargo is kept simpler and cleaner by\nusing independent dependencies for independent purposes."
         },
         "buildDependencies0": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "cargoFeatures": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           }
         },
         "dependencies": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           },
           "description": "Cargo is configured to look for dependencies on [crates.io](https://crates.io) by default. Only\nthe name and a version string are required in this case. In [the cargo\nguide](https://doc.rust-lang.org/cargo/guide/index.html), we specified a dependency on the \u0060time\u0060 crate:\n\n\u0060\u0060\u0060toml\n[dependencies]\ntime = \u00220.1.12\u0022\n\u0060\u0060\u0060\n\nThe string \u0060\u00220.1.12\u0022\u0060 is a [semver](https://github.com/steveklabnik/semver#requirements) version requirement. Since this\nstring does not have any operators in it, it is interpreted the same way as\nif we had specified \u0060\u0022^0.1.12\u0022\u0060, which is called a caret requirement.\n\nA dependency can also be defined by a table with additional options:\n\n\u0060\u0060\u0060toml\n[dependencies]\ntime = { path = \u0022../time\u0022, version = \u00220.1.12\u0022 }\n\u0060\u0060\u0060"
         },
         "devDependencies": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           },
           "description": "The format of \u0060[dev-dependencies]\u0060 is equivalent to \u0060[dependencies]\u0060:\n\n\u0060\u0060\u0060toml\n[dev-dependencies]\ntempdir = \u00220.3\u0022\n\u0060\u0060\u0060\n\nDev-dependencies are not used when compiling\na package for building, but are used for compiling tests, examples, and\nbenchmarks.\n\nThese dependencies are *not* propagated to other packages which depend on this\npackage.\n\nYou can also have target-specific development dependencies by using\n\u0060dev-dependencies\u0060 in the target section header instead of \u0060dependencies\u0060. For\nexample:\n\n\u0060\u0060\u0060toml\n[target.\u0027cfg(unix)\u0027.dev-dependencies]\nmio = \u00220.0.1\u0022\n\u0060\u0060\u0060\n\n\u003E **Note**: When a package is published, only dev-dependencies that specify a\n\u003E \u0060version\u0060 will be included in the published crate. For most use cases,\n\u003E dev-dependencies are not needed when published, though some users (like OS\n\u003E packagers) may want to run tests within a crate, so providing a \u0060version\u0060 if\n\u003E possible can still be beneficial.\n"
         },
         "devDependencies0": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "example": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "$ref": "#/types/cargo:index:items"
           },
           "description": "Files located under the [examples directory](https://doc.rust-lang.org/cargo/guide/project-layout.html) are example uses of the functionality provided by the library. When compiled, they are placed in the[ target/debug/examples directory](https://doc.rust-lang.org/cargo/guide/build-cache.html).\n\nExamples can use the public API of the package\u0027s library. They are also linked with the [dependencies](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) and [dev-dependencies](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#development-dependencies) defined in Cargo.toml.\n\nBy default, examples are executable binaries (with a \u0060main()\u0060 function). You\ncan specify the [\u0060crate-type\u0060 field](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#the-crate-type-field) to make an example\nbe compiled as a library:\n\n\u0060\u0060\u0060toml\n[[example]]\nname = \u0022foo\u0022\ncrate-type = [\u0022staticlib\u0022]\n\u0060\u0060\u0060\n\nYou can run individual executable examples with the [\u0060cargo run\u0060](https://doc.rust-lang.org/cargo/commands/cargo-run.html) command with\nthe \u0060--example \u003Cexample-name\u003E\u0060 option. Library examples can be built with\n[\u0060cargo build\u0060](https://doc.rust-lang.org/cargo/commands/cargo-build.html) with the \u0060--example \u003Cexample-name\u003E\u0060 option. [\u0060cargo install\u0060](https://doc.rust-lang.org/cargo/commands/cargo-install.html)\nwith the \u0060--example \u003Cexample-name\u003E\u0060 option can be used to copy executable\nbinaries to a common location. Examples are compiled by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) by\ndefault to protect them from bit-rotting. Set [the \u0060test\u0060\nfield](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#the-test-field) to \u0060true\u0060 if you have \u0060#[test]\u0060 functions in the\nexample that you want to run with [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html).\n"
         },
         "features": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "type": "array",
             "items": {
+              "plain": true,
               "type": "string"
             }
           },
           "description": "Cargo supports features to allow expression of:\n\n* conditional compilation options (usable through \u0060cfg\u0060 attributes);\n* optional dependencies, which enhance a package, but are not required; and\n* clusters of optional dependencies, such as \u0060postgres-all\u0060, that would include the\n  \u0060postgres\u0060 package, the \u0060postgres-macros\u0060 package, and possibly other packages\n  (such as development-time mocking libraries, debugging tools, etc.).\n\nA feature of a package is either an optional dependency, or a set of other\nfeatures.\n"
         },
         "lib": {
+          "plain": true,
           "$ref": "#/types/cargo:index:lib"
         },
         "package": {
+          "plain": true,
           "$ref": "#/types/cargo:index:package"
         },
         "patch": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "type": "object",
             "additionalProperties": {
+              "plain": true,
               "$ref": "pulumi.json#/Any"
             }
           },
           "description": "The \u0060[patch]\u0060 section of \u0060Cargo.toml\u0060 can be used to override dependencies\nwith other copies. The syntax is similar to the\n[\u0060[dependencies]\u0060](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) section.\n\n"
         },
         "profile": {
+          "plain": true,
           "$ref": "#/types/cargo:index:profiles"
         },
         "project": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "Ref needs more translation map [(Json.Schema.UnrecognizedKeyword, [Json.Schema.UnrecognizedKeyword; Json.Schema.UnrecognizedKeyword])]"
         },
         "replace": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "target": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "#/types/cargo:index:platform"
           }
         },
         "test": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "$ref": "#/types/cargo:index:testItems"
           },
           "description": "Files located under the [\u0060tests\u0060 directory](https://doc.rust-lang.org/cargo/guide/project-layout.html) are integration\ntests. When you run [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html), Cargo will compile each of these files as\na separate crate, and execute them.\n\nIntegration tests can use the public API of the package\u0027s library. They are\nalso linked with the [\u0060[dependencies]\u0060](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) and\n[\u0060[dev-dependencies]\u0060](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#development-dependencies) defined in \u0060Cargo.toml\u0060.\n\nIf you want to share code among multiple integration tests, you can place it\nin a separate module such as \u0060tests/common/mod.rs\u0060 and then put \u0060mod common;\u0060\nin each test to import it.\n\nEach integration test results in a separate executable binary, and [\u0060cargo\ntest\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) will run them serially. In some cases this can be inefficient, as it\ncan take longer to compile, and may not make full use of multiple CPUs when\nrunning the tests. If you have a lot of integration tests, you may want to\nconsider creating a single integration test, and split the tests into multiple\nmodules. The libtest harness will automatically find all of the \u0060#[test]\u0060\nannotated functions and run them in parallel. You can pass module names to\n[\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) to only run the tests within that module.\n\nBinary targets are automatically built if there is an integration test. This\nallows an integration test to execute the binary to exercise and test its\nbehavior. The \u0060CARGO_BIN_EXE_\u003Cname\u003E\u0060 [environment variable](https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-crates) is set when the\nintegration test is built so that it can use the [\u0060env\u0060 macro](https://doc.rust-lang.org/std/macro.env.html) to locate the\nexecutable."
         },
         "workspace": {
+          "plain": true,
           "$ref": "#/types/cargo:index:workspace"
         }
       }
@@ -1257,8 +1519,10 @@
       "type": "object",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         }
@@ -1269,69 +1533,88 @@
       "description": "Benchmarks provide a way to test the performance of your code using the\n[\u0060cargo bench\u0060](https://doc.rust-lang.org/cargo/commands/cargo-bench.html) command. They follow the same structure as [tests](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#tests),\nwith each benchmark function annotated with the \u0060#[bench]\u0060 attribute.\nSimilarly to tests:\n\n* Benchmarks are placed in the [\u0060benches\u0060 directory](https://doc.rust-lang.org/cargo/guide/project-layout.html).\n* Benchmark functions defined in libraries and binaries have access to the\n  *private* API within the target they are defined in. Benchmarks in the\n  \u0060benches\u0060 directory may use the *public* API.\n* [The \u0060bench\u0060 field](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#the-bench-field) can be used to define which targets\n  are benchmarked by default.\n* [The \u0060harness\u0060 field](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#the-harness-field) can be used to disable the\n  built-in harness.\n\n\u003E **Note**: The [\u0060#[bench]\u0060\n\u003E attribute](https://doc.rust-lang.org/unstable-book/library-features/test.html) is currently\n\u003E unstable and only available on the [nightly channel](https://doc.rust-lang.org/book/appendix-07-nightly-rust.html). There are some\n\u003E packages available on [crates.io](https://crates.io/keywords/benchmark) that\n\u003E may help with running benchmarks on the stable channel, such as\n\u003E [Criterion](https://crates.io/crates/criterion).",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "bench": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060bench\u0060 field indicates whether or not the target is benchmarked by\ndefault by [\u0060cargo bench\u0060](https://doc.rust-lang.org/cargo/commands/cargo-bench.html). The default is \u0060true\u0060 for lib, bins, and\nbenchmarks."
         },
         "crateType": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060crate-type\u0060 field defines the [crate types](https://doc.rust-lang.org/reference/linkage.html) that will be generated by the\ntarget. It is an array of strings, allowing you to specify multiple crate\ntypes for a single target. This can only be specified for libraries and\nexamples. Binaries, tests, and benchmarks are always the \u0022bin\u0022 crate type.\n\nThe available options are \u0060bin\u0060, \u0060lib\u0060, \u0060rlib\u0060, \u0060dylib\u0060, \u0060cdylib\u0060,\n\u0060staticlib\u0060, and \u0060proc-macro\u0060. You can read more about the different crate\ntypes in the [Rust Reference Manual](https://doc.rust-lang.org/reference/linkage.html)."
         },
         "crateType0": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           }
         },
         "doc": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060doc\u0060 field indicates whether or not the target is included in the\ndocumentation generated by [\u0060cargo doc\u0060](https://doc.rust-lang.org/cargo/commands/cargo-doc.html) by default. The default is \u0060true\u0060 for\nlibraries and binaries.\n\n\u003E **Note**: The binary will be skipped if its name is the same as the lib\n\u003E target."
         },
         "doctest": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060doctest\u0060 field indicates whether or not [documentation examples](https://doc.rust-lang.org/rustdoc/documentation-tests.html) are\ntested by default by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). This is only relevant for libraries, it\nhas no effect on other sections. The default is \u0060true\u0060 for the library.\n"
         },
         "edition": {
+          "plain": true,
           "$ref": "#/types/cargo:index:edition"
         },
         "harness": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060harness\u0060 field indicates that the [\u0060--test\u0060 flag](https://doc.rust-lang.org/rustc/command-line-arguments.html#option-test) will be passed to\n\u0060rustc\u0060 which will automatically include the libtest library which is the\ndriver for collecting and running tests marked with the [\u0060#[test]\u0060 attribute](https://doc.rust-lang.org/reference/attributes/testing.html#the-test-attribute) or benchmarks with the \u0060#[bench]\u0060 attribute. The\ndefault is \u0060true\u0060 for all targets.\n\nIf set to \u0060false\u0060, then you are responsible for defining a \u0060main()\u0060 function\nto run tests and benchmarks.\n\nTests have the [\u0060cfg(test)\u0060 conditional expression](https://doc.rust-lang.org/reference/conditional-compilation.html#test) enabled whether\nor not the harness is enabled."
         },
         "name": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060name\u0060 field specifies the name of the target, which corresponds to the\nfilename of the artifact that will be generated. For a library, this is the\ncrate name that dependencies will use to reference it.\n\nFor the \u0060[lib]\u0060 and the default binary (\u0060src/main.rs\u0060), this defaults to the\nname of the package, with any dashes replaced with underscores. For other\n[auto discovered](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#target-auto-discovery) targets, it defaults to the\ndirectory or file name.\n\nThis is required for all targets except \u0060[lib]\u0060."
         },
         "path": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060path\u0060 field specifies where the source for the crate is located, relative\nto the \u0060Cargo.toml\u0060 file.\n\nIf not specified, the [inferred path](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#target-auto-discovery) is used based on\nthe target name."
         },
         "plugin": {
+          "plain": true,
           "type": "boolean"
         },
         "procMacro": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060proc-macro\u0060 field indicates that the library is a [procedural macro](https://doc.rust-lang.org/book/ch19-06-macros.html)\n([reference](https://doc.rust-lang.org/reference/procedural-macros.html)). This is only valid for the \u0060[lib]\u0060\ntarget."
         },
         "procMacro0": {
+          "plain": true,
           "type": "boolean"
         },
         "requiredFeatures": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060required-features\u0060 field specifies which [features](https://doc.rust-lang.org/cargo/reference/features.html) the target needs in\norder to be built. If any of the required features are not enabled, the\ntarget will be skipped. This is only relevant for the \u0060[[bin]]\u0060, \u0060[[bench]]\u0060,\n\u0060[[test]]\u0060, and \u0060[[example]]\u0060 sections, it has no effect on \u0060[lib]\u0060.\n\n\u0060\u0060\u0060toml\n[features]\n# ...\npostgres = []\nsqlite = []\ntools = []\n\n[[bin]]\nname = \u0022my-pg-tool\u0022\nrequired-features = [\u0022postgres\u0022, \u0022tools\u0022]\n\u0060\u0060\u0060\n"
         },
         "test": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060test\u0060 field indicates whether or not the target is tested by default by\n[\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). The default is \u0060true\u0060 for lib, bins, and tests.\n\n\u003E **Note**: Examples are built by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) by default to ensure they\n\u003E continue to compile, but they are not *tested* by default. Setting \u0060test =\n\u003E true\u0060 for an example will also build it as a test and run any\n\u003E [\u0060#[test]\u0060](https://doc.rust-lang.org/reference/attributes/testing.html#the-test-attribute) functions defined in the example."
         }
@@ -1341,59 +1624,75 @@
       "type": "object",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "buildOverride": {
+          "plain": true,
           "$ref": "#/types/cargo:index:test"
         },
         "codegenUnits": {
+          "plain": true,
           "type": "integer",
           "description": "The \u0060codegen-units\u0060 setting controls the [\u0060-C codegen-units\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#codegen-units) which\ncontrols how many \u0022code generation units\u0022 a crate will be split into. More\ncode generation units allows more of a crate to be processed in parallel\npossibly reducing compile time, but may produce slower code.\n\nThis option takes an integer greater than 0.\n\nThe default is 256 for [incremental](https://doc.rust-lang.org/cargo/reference/profiles.html#incremental) builds, and 16 for\nnon-incremental builds."
         },
         "debug": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "debugAssertions": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060debug-assertions\u0060 setting controls the [\u0060-C debug-assertions\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#debug-assertions) which\nturns \u0060cfg(debug_assertions)\u0060 [conditional compilation](https://doc.rust-lang.org/reference/conditional-compilation.html#debug_assertions) on or off. Debug\nassertions are intended to include runtime validation which is only available\nin debug/development builds. These may be things that are too expensive or\notherwise undesirable in a release build. Debug assertions enables the\n[\u0060debug_assert!\u0060 macro](https://doc.rust-lang.org/std/macro.debug_assert.html) in the standard library."
         },
         "dirName": {
+          "plain": true,
           "type": "string"
         },
         "incremental": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060incremental\u0060 setting controls the [\u0060-C incremental\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#incremental) which controls\nwhether or not incremental compilation is enabled. Incremental compilation\ncauses \u0060rustc\u0060 to to save additional information to disk which will be reused\nwhen recompiling the crate, improving re-compile times. The additional\ninformation is stored in the \u0060target\u0060 directory.\n\nThe valid options are:\n\n* \u0060true\u0060: enabled\n* \u0060false\u0060: disabled\n\nIncremental compilation is only used for workspace members and \u0022path\u0022\ndependencies.\n\nThe incremental value can be overridden globally with the \u0060CARGO_INCREMENTAL\u0060\n[environment variable](https://doc.rust-lang.org/cargo/reference/environment-variables.html) or the [\u0060build.incremental\u0060](https://doc.rust-lang.org/cargo/reference/config.html#buildincremental) config variable."
         },
         "inherits": {
+          "plain": true,
           "type": "string"
         },
         "lto": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "optLevel": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword"
         },
         "overflowChecks": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060overflow-checks\u0060 setting controls the [\u0060-C overflow-checks\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#overflow-checks) which\ncontrols the behavior of [runtime integer overflow](https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow). When overflow-checks are\nenabled, a panic will occur on overflow."
         },
         "package": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "#/types/cargo:index:test"
           },
           "description": "Package-specific overrides.\n\nThe package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can\ntarget individual versions of a package with syntax such as \u0060[profile.dev.package.\u0022foo:2.1.0\u0022]\u0060."
         },
         "panic": {
+          "plain": true,
           "$ref": "#/types/cargo:index:testPanic"
         },
         "rpath": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060rpath\u0060 setting controls the [\u0060-C rpath\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#rpath) which controls\nwhether or not [\u0060rpath\u0060](https://en.wikipedia.org/wiki/Rpath) is enabled."
         }
@@ -1404,69 +1703,88 @@
       "description": "Files located under the [\u0060tests\u0060 directory](https://doc.rust-lang.org/cargo/guide/project-layout.html) are integration\ntests. When you run [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html), Cargo will compile each of these files as\na separate crate, and execute them.\n\nIntegration tests can use the public API of the package\u0027s library. They are\nalso linked with the [\u0060[dependencies]\u0060](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) and\n[\u0060[dev-dependencies]\u0060](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#development-dependencies) defined in \u0060Cargo.toml\u0060.\n\nIf you want to share code among multiple integration tests, you can place it\nin a separate module such as \u0060tests/common/mod.rs\u0060 and then put \u0060mod common;\u0060\nin each test to import it.\n\nEach integration test results in a separate executable binary, and [\u0060cargo\ntest\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) will run them serially. In some cases this can be inefficient, as it\ncan take longer to compile, and may not make full use of multiple CPUs when\nrunning the tests. If you have a lot of integration tests, you may want to\nconsider creating a single integration test, and split the tests into multiple\nmodules. The libtest harness will automatically find all of the \u0060#[test]\u0060\nannotated functions and run them in parallel. You can pass module names to\n[\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) to only run the tests within that module.\n\nBinary targets are automatically built if there is an integration test. This\nallows an integration test to execute the binary to exercise and test its\nbehavior. The \u0060CARGO_BIN_EXE_\u003Cname\u003E\u0060 [environment variable](https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-crates) is set when the\nintegration test is built so that it can use the [\u0060env\u0060 macro](https://doc.rust-lang.org/std/macro.env.html) to locate the\nexecutable.",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "bench": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060bench\u0060 field indicates whether or not the target is benchmarked by\ndefault by [\u0060cargo bench\u0060](https://doc.rust-lang.org/cargo/commands/cargo-bench.html). The default is \u0060true\u0060 for lib, bins, and\nbenchmarks."
         },
         "crateType": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060crate-type\u0060 field defines the [crate types](https://doc.rust-lang.org/reference/linkage.html) that will be generated by the\ntarget. It is an array of strings, allowing you to specify multiple crate\ntypes for a single target. This can only be specified for libraries and\nexamples. Binaries, tests, and benchmarks are always the \u0022bin\u0022 crate type.\n\nThe available options are \u0060bin\u0060, \u0060lib\u0060, \u0060rlib\u0060, \u0060dylib\u0060, \u0060cdylib\u0060,\n\u0060staticlib\u0060, and \u0060proc-macro\u0060. You can read more about the different crate\ntypes in the [Rust Reference Manual](https://doc.rust-lang.org/reference/linkage.html)."
         },
         "crateType0": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           }
         },
         "doc": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060doc\u0060 field indicates whether or not the target is included in the\ndocumentation generated by [\u0060cargo doc\u0060](https://doc.rust-lang.org/cargo/commands/cargo-doc.html) by default. The default is \u0060true\u0060 for\nlibraries and binaries.\n\n\u003E **Note**: The binary will be skipped if its name is the same as the lib\n\u003E target."
         },
         "doctest": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060doctest\u0060 field indicates whether or not [documentation examples](https://doc.rust-lang.org/rustdoc/documentation-tests.html) are\ntested by default by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). This is only relevant for libraries, it\nhas no effect on other sections. The default is \u0060true\u0060 for the library.\n"
         },
         "edition": {
+          "plain": true,
           "$ref": "#/types/cargo:index:testItemsEdition"
         },
         "harness": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060harness\u0060 field indicates that the [\u0060--test\u0060 flag](https://doc.rust-lang.org/rustc/command-line-arguments.html#option-test) will be passed to\n\u0060rustc\u0060 which will automatically include the libtest library which is the\ndriver for collecting and running tests marked with the [\u0060#[test]\u0060 attribute](https://doc.rust-lang.org/reference/attributes/testing.html#the-test-attribute) or benchmarks with the \u0060#[bench]\u0060 attribute. The\ndefault is \u0060true\u0060 for all targets.\n\nIf set to \u0060false\u0060, then you are responsible for defining a \u0060main()\u0060 function\nto run tests and benchmarks.\n\nTests have the [\u0060cfg(test)\u0060 conditional expression](https://doc.rust-lang.org/reference/conditional-compilation.html#test) enabled whether\nor not the harness is enabled."
         },
         "name": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060name\u0060 field specifies the name of the target, which corresponds to the\nfilename of the artifact that will be generated. For a library, this is the\ncrate name that dependencies will use to reference it.\n\nFor the \u0060[lib]\u0060 and the default binary (\u0060src/main.rs\u0060), this defaults to the\nname of the package, with any dashes replaced with underscores. For other\n[auto discovered](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#target-auto-discovery) targets, it defaults to the\ndirectory or file name.\n\nThis is required for all targets except \u0060[lib]\u0060."
         },
         "path": {
+          "plain": true,
           "type": "string",
           "description": "The \u0060path\u0060 field specifies where the source for the crate is located, relative\nto the \u0060Cargo.toml\u0060 file.\n\nIf not specified, the [inferred path](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#target-auto-discovery) is used based on\nthe target name."
         },
         "plugin": {
+          "plain": true,
           "type": "boolean"
         },
         "procMacro": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060proc-macro\u0060 field indicates that the library is a [procedural macro](https://doc.rust-lang.org/book/ch19-06-macros.html)\n([reference](https://doc.rust-lang.org/reference/procedural-macros.html)). This is only valid for the \u0060[lib]\u0060\ntarget."
         },
         "procMacro0": {
+          "plain": true,
           "type": "boolean"
         },
         "requiredFeatures": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060required-features\u0060 field specifies which [features](https://doc.rust-lang.org/cargo/reference/features.html) the target needs in\norder to be built. If any of the required features are not enabled, the\ntarget will be skipped. This is only relevant for the \u0060[[bin]]\u0060, \u0060[[bench]]\u0060,\n\u0060[[test]]\u0060, and \u0060[[example]]\u0060 sections, it has no effect on \u0060[lib]\u0060.\n\n\u0060\u0060\u0060toml\n[features]\n# ...\npostgres = []\nsqlite = []\ntools = []\n\n[[bin]]\nname = \u0022my-pg-tool\u0022\nrequired-features = [\u0022postgres\u0022, \u0022tools\u0022]\n\u0060\u0060\u0060\n"
         },
         "test": {
+          "plain": true,
           "type": "boolean",
           "description": "The \u0060test\u0060 field indicates whether or not the target is tested by default by\n[\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). The default is \u0060true\u0060 for lib, bins, and tests.\n\n\u003E **Note**: Examples are built by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) by default to ensure they\n\u003E continue to compile, but they are not *tested* by default. Setting \u0060test =\n\u003E true\u0060 for an example will also build it as a test and run any\n\u003E [\u0060#[test]\u0060](https://doc.rust-lang.org/reference/attributes/testing.html#the-test-attribute) functions defined in the example."
         }
@@ -1507,50 +1825,64 @@
       "description": "The \u0060[workspace]\u0060 table in \u0060Cargo.toml\u0060 defines which packages are members of\nthe workspace:\n\n\u0060\u0060\u0060toml\n[workspace]\nmembers = [\u0022member1\u0022, \u0022path/to/member2\u0022, \u0022crates/*\u0022]\nexclude = [\u0022crates/foo\u0022, \u0022path/to/other\u0022]\n\u0060\u0060\u0060\n\nAn empty \u0060[workspace]\u0060 table can be used with a \u0060[package]\u0060 to conveniently\ncreate a workspace with the package and all of its path dependencies.\n\nAll [\u0060path\u0060 dependencies](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#specifying-path-dependencies) residing in the workspace directory automatically\nbecome members. Additional members can be listed with the \u0060members\u0060 key, which\nshould be an array of strings containing directories with \u0060Cargo.toml\u0060 files.\n\nThe \u0060members\u0060 list also supports [globs](https://docs.rs/glob/0.3.0/glob/struct.Pattern.html) to match multiple paths, using\ntypical filename glob patterns like \u0060*\u0060 and \u0060?\u0060.\n\nThe \u0060exclude\u0060 key can be used to prevent paths from being included in a\nworkspace. This can be useful if some path dependencies aren\u0027t desired to be\nin the workspace at all, or using a glob pattern and you want to remove a\ndirectory.\n\nAn empty \u0060[workspace]\u0060 table can be used with a \u0060[package]\u0060 to conveniently\ncreate a workspace with the package and all of its path dependencies.",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "defaultMembers": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The optional \u0060default-members\u0060 key can be specified to set the members to\noperate on when in the workspace root and the package selection flags are not\nused:\n\n\u0060\u0060\u0060toml\n[workspace]\nmembers = [\u0022path/to/member1\u0022, \u0022path/to/member2\u0022, \u0022path/to/member3/*\u0022]\ndefault-members = [\u0022path/to/member2\u0022, \u0022path/to/member3/foo\u0022]\n\u0060\u0060\u0060\n\nWhen specified, \u0060default-members\u0060 must expand to a subset of \u0060members\u0060."
         },
         "dependencies": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           },
           "description": "The \u0060workspace.dependencies\u0060 table is where you define dependencies to be\ninherited by members of a workspace.\n\nSpecifying a workspace dependency is similar to [package dependencies](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) except:\n- Dependencies from this table cannot be declared as \u0060optional\u0060\n- [\u0060features\u0060][features] declared in this table are additive with the \u0060features\u0060 from \u0060[dependencies]\u0060\n\nYou can then [inherit the workspace dependency as a package dependency](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#inheriting-a-dependency-from-a-workspace)\n\nExample:\n\u0060\u0060\u0060toml\n# [PROJECT_DIR]/Cargo.toml\n[workspace]\nmembers = [\u0022bar\u0022]\n\n[workspace.dependencies]\ncc = \u00221.0.73\u0022\nrand = \u00220.8.5\u0022\nregex = { version = \u00221.6.0\u0022, default-features = false, features = [\u0022std\u0022] }\n\u0060\u0060\u0060\n\n\u0060\u0060\u0060toml\n# [PROJECT_DIR]/bar/Cargo.toml\n[package]\nname = \u0022bar\u0022\nversion = \u00220.2.0\u0022\n\n[dependencies]\nregex = { workspace = true, features = [\u0022unicode\u0022] }\n\n[build-dependencies]\ncc.workspace = true\n\n[dev-dependencies]\nrand.workspace = true\n\u0060\u0060\u0060"
         },
         "exclude": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "The \u0060exclude\u0060 key can be used to prevent paths from being included in a\nworkspace. This can be useful if some path dependencies aren\u0027t desired to be\nin the workspace at all, or using a glob pattern and you want to remove a\ndirectory."
         },
         "members": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "All [\u0060path\u0060 dependencies] residing in the workspace directory automatically\nbecome members. Additional members can be listed with the \u0060members\u0060 key, which\nshould be an array of strings containing directories with \u0060Cargo.toml\u0060 files.\n\nThe \u0060members\u0060 list also supports [globs] to match multiple paths, using\ntypical filename glob patterns like \u0060*\u0060 and \u0060?\u0060."
         },
         "metadata": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           },
           "description": "The \u0060workspace.metadata\u0060 table is ignored by Cargo and will not be warned\nabout. This section can be used for tools that would like to store workspace\nconfiguration in \u0060Cargo.toml\u0060. For example:\n\n\u0060\u0060\u0060toml\n[workspace]\nmembers = [\u0022member1\u0022, \u0022member2\u0022]\n\n[workspace.metadata.webcontents]\nroot = \u0022path/to/webproject\u0022\ntool = [\u0022npm\u0022, \u0022run\u0022, \u0022build\u0022]\n# ...\n\u0060\u0060\u0060\n\nThere is a similar set of tables at the package level at\n\u0060package.metadata\u0060. While cargo does not specify a\nformat for the content of either of these tables, it is suggested that\nexternal tools may wish to use them in a consistent fashion, such as referring\nto the data in \u0060workspace.metadata\u0060 if data is missing from \u0060package.metadata\u0060,\nif that makes sense for the tool in question.\n"
         },
         "package": {
+          "plain": true,
           "$ref": "#/types/cargo:index:propertiesPackage"
         },
         "resolver": {
+          "plain": true,
           "$ref": "#/types/cargo:index:definitionsResolver"
         }
       }

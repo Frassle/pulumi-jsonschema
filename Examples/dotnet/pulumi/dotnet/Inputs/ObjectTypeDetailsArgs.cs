@@ -16,34 +16,34 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class ObjectTypeDetailsArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("properties")]
-        private InputMap<Inputs.InputsPropertiesAdditionalPropertiesArgs>? _properties;
+        private Dictionary<string, Inputs.InputsPropertiesAdditionalPropertiesArgs>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public InputMap<Inputs.InputsPropertiesAdditionalPropertiesArgs> Properties
+        public Dictionary<string, Inputs.InputsPropertiesAdditionalPropertiesArgs> Properties
         {
-            get => _properties ?? (_properties = new InputMap<Inputs.InputsPropertiesAdditionalPropertiesArgs>());
+            get => _properties ?? (_properties = new Dictionary<string, Inputs.InputsPropertiesAdditionalPropertiesArgs>());
             set => _properties = value;
         }
 
         [Input("required")]
-        private InputList<string>? _required;
+        private List<string>? _required;
 
         /// <summary>
         /// A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
         /// </summary>
-        public InputList<string> Required
+        public List<string> Required
         {
-            get => _required ?? (_required = new InputList<string>());
+            get => _required ?? (_required = new List<string>());
             set => _required = value;
         }
 

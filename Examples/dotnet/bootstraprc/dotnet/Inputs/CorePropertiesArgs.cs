@@ -13,10 +13,10 @@ namespace Pulumi.Bootstraprc.Inputs
     public sealed class CorePropertiesArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
@@ -24,41 +24,41 @@ namespace Pulumi.Bootstraprc.Inputs
         /// Import your custom styles here. Usually this endpoint file contains a list of @imports of your application styles.
         /// </summary>
         [Input("appStyles")]
-        public Input<string>? AppStyles { get; set; }
+        public string? AppStyles { get; set; }
 
         /// <summary>
         /// The .scss file path to be loaded after Bootstrap's _variables.scss file
         /// </summary>
         [Input("bootstrapCustomizations")]
-        public Input<string>? BootstrapCustomizations { get; set; }
+        public string? BootstrapCustomizations { get; set; }
 
         [Input("bootstrapVersion", required: true)]
-        public Input<Pulumi.Bootstraprc.BootstrapVersion> BootstrapVersion { get; set; } = null!;
+        public Pulumi.Bootstraprc.BootstrapVersion BootstrapVersion { get; set; }
 
         [Input("loglevel")]
-        public Input<Pulumi.Bootstraprc.Loglevel>? Loglevel { get; set; }
+        public Pulumi.Bootstraprc.Loglevel? Loglevel { get; set; }
 
         /// <summary>
         /// The .scss file path to be loaded before Bootstrap's _variables.scss file
         /// </summary>
         [Input("preBootstrapCustomizations")]
-        public Input<string>? PreBootstrapCustomizations { get; set; }
+        public string? PreBootstrapCustomizations { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.DescriptionKeyword, Json.Schema.TypeKeyword
         /// </summary>
         [Input("scripts")]
-        public Input<object>? Scripts { get; set; }
+        public object? Scripts { get; set; }
 
         [Input("styleLoaders", required: true)]
-        private InputList<string>? _styleLoaders;
+        private List<string>? _styleLoaders;
 
         /// <summary>
         /// An array of Webpack loader names. Order matters, and sass-loader is required.
         /// </summary>
-        public InputList<string> StyleLoaders
+        public List<string> StyleLoaders
         {
-            get => _styleLoaders ?? (_styleLoaders = new InputList<string>());
+            get => _styleLoaders ?? (_styleLoaders = new List<string>());
             set => _styleLoaders = value;
         }
 
@@ -66,19 +66,19 @@ namespace Pulumi.Bootstraprc.Inputs
         /// unhandled schema: Json.Schema.DescriptionKeyword, Json.Schema.TypeKeyword
         /// </summary>
         [Input("styles")]
-        public Input<object>? Styles { get; set; }
+        public object? Styles { get; set; }
 
         /// <summary>
         /// Set to true if using a custom icon font and you need to specify its path in your Sass files
         /// </summary>
         [Input("useCustomIconFontPath")]
-        public Input<bool>? UseCustomIconFontPath { get; set; }
+        public bool? UseCustomIconFontPath { get; set; }
 
         /// <summary>
         /// Enables/disables the flexbox model available in Bootstrap 4
         /// </summary>
         [Input("useFlexbox")]
-        public Input<bool>? UseFlexbox { get; set; }
+        public bool? UseFlexbox { get; set; }
 
         public CorePropertiesArgs()
         {

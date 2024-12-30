@@ -16,15 +16,15 @@ namespace Pulumi.Cargo.Inputs
     public sealed class RootArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("badges")]
-        private InputMap<ImmutableDictionary<string, string>>? _badges;
+        private Dictionary<string, ImmutableDictionary<string, string>>? _badges;
 
         /// <summary>
         /// [crates.io](https://crates.io) can display various badges for build status, test coverage, etc. for
@@ -104,14 +104,14 @@ namespace Pulumi.Cargo.Inputs
         /// maintenance = { status = "..." }
         /// ```
         /// </summary>
-        public InputMap<ImmutableDictionary<string, string>> Badges
+        public Dictionary<string, ImmutableDictionary<string, string>> Badges
         {
-            get => _badges ?? (_badges = new InputMap<ImmutableDictionary<string, string>>());
+            get => _badges ?? (_badges = new Dictionary<string, ImmutableDictionary<string, string>>());
             set => _badges = value;
         }
 
         [Input("bench")]
-        private InputList<Inputs.TargetArgs>? _bench;
+        private List<Inputs.TargetArgs>? _bench;
 
         /// <summary>
         /// Benchmarks provide a way to test the performance of your code using the
@@ -135,14 +135,14 @@ namespace Pulumi.Cargo.Inputs
         /// &gt; may help with running benchmarks on the stable channel, such as
         /// &gt; [Criterion](https://crates.io/crates/criterion).
         /// </summary>
-        public InputList<Inputs.TargetArgs> Bench
+        public List<Inputs.TargetArgs> Bench
         {
-            get => _bench ?? (_bench = new InputList<Inputs.TargetArgs>());
+            get => _bench ?? (_bench = new List<Inputs.TargetArgs>());
             set => _bench = value;
         }
 
         [Input("bin")]
-        private InputList<Inputs.DefinitionsTargetArgs>? _bin;
+        private List<Inputs.DefinitionsTargetArgs>? _bin;
 
         /// <summary>
         /// Binary targets are executable programs that can be run after being compiled.
@@ -169,14 +169,14 @@ namespace Pulumi.Cargo.Inputs
         /// required-features = ["frobnicate"]
         /// ```
         /// </summary>
-        public InputList<Inputs.DefinitionsTargetArgs> Bin
+        public List<Inputs.DefinitionsTargetArgs> Bin
         {
-            get => _bin ?? (_bin = new InputList<Inputs.DefinitionsTargetArgs>());
+            get => _bin ?? (_bin = new List<Inputs.DefinitionsTargetArgs>());
             set => _bin = value;
         }
 
         [Input("buildDependencies")]
-        private InputMap<object>? _buildDependencies;
+        private Dictionary<string, object>? _buildDependencies;
 
         /// <summary>
         /// You can depend on other Cargo-based crates for use in your build scripts.
@@ -196,30 +196,30 @@ namespace Pulumi.Cargo.Inputs
         /// dependencies need not coincide. Cargo is kept simpler and cleaner by
         /// using independent dependencies for independent purposes.
         /// </summary>
-        public InputMap<object> BuildDependencies
+        public Dictionary<string, object> BuildDependencies
         {
-            get => _buildDependencies ?? (_buildDependencies = new InputMap<object>());
+            get => _buildDependencies ?? (_buildDependencies = new Dictionary<string, object>());
             set => _buildDependencies = value;
         }
 
         [Input("buildDependencies0")]
-        private InputMap<object>? _buildDependencies0;
-        public InputMap<object> BuildDependencies0
+        private Dictionary<string, object>? _buildDependencies0;
+        public Dictionary<string, object> BuildDependencies0
         {
-            get => _buildDependencies0 ?? (_buildDependencies0 = new InputMap<object>());
+            get => _buildDependencies0 ?? (_buildDependencies0 = new Dictionary<string, object>());
             set => _buildDependencies0 = value;
         }
 
         [Input("cargoFeatures")]
-        private InputList<string>? _cargoFeatures;
-        public InputList<string> CargoFeatures
+        private List<string>? _cargoFeatures;
+        public List<string> CargoFeatures
         {
-            get => _cargoFeatures ?? (_cargoFeatures = new InputList<string>());
+            get => _cargoFeatures ?? (_cargoFeatures = new List<string>());
             set => _cargoFeatures = value;
         }
 
         [Input("dependencies")]
-        private InputMap<object>? _dependencies;
+        private Dictionary<string, object>? _dependencies;
 
         /// <summary>
         /// Cargo is configured to look for dependencies on [crates.io](https://crates.io) by default. Only
@@ -242,14 +242,14 @@ namespace Pulumi.Cargo.Inputs
         /// time = { path = "../time", version = "0.1.12" }
         /// ```
         /// </summary>
-        public InputMap<object> Dependencies
+        public Dictionary<string, object> Dependencies
         {
-            get => _dependencies ?? (_dependencies = new InputMap<object>());
+            get => _dependencies ?? (_dependencies = new Dictionary<string, object>());
             set => _dependencies = value;
         }
 
         [Input("devDependencies")]
-        private InputMap<object>? _devDependencies;
+        private Dictionary<string, object>? _devDependencies;
 
         /// <summary>
         /// The format of `[dev-dependencies]` is equivalent to `[dependencies]`:
@@ -281,22 +281,22 @@ namespace Pulumi.Cargo.Inputs
         /// &gt; packagers) may want to run tests within a crate, so providing a `version` if
         /// &gt; possible can still be beneficial.
         /// </summary>
-        public InputMap<object> DevDependencies
+        public Dictionary<string, object> DevDependencies
         {
-            get => _devDependencies ?? (_devDependencies = new InputMap<object>());
+            get => _devDependencies ?? (_devDependencies = new Dictionary<string, object>());
             set => _devDependencies = value;
         }
 
         [Input("devDependencies0")]
-        private InputMap<object>? _devDependencies0;
-        public InputMap<object> DevDependencies0
+        private Dictionary<string, object>? _devDependencies0;
+        public Dictionary<string, object> DevDependencies0
         {
-            get => _devDependencies0 ?? (_devDependencies0 = new InputMap<object>());
+            get => _devDependencies0 ?? (_devDependencies0 = new Dictionary<string, object>());
             set => _devDependencies0 = value;
         }
 
         [Input("example")]
-        private InputList<Inputs.ItemsArgs>? _example;
+        private List<Inputs.ItemsArgs>? _example;
 
         /// <summary>
         /// Files located under the [examples directory](https://doc.rust-lang.org/cargo/guide/project-layout.html) are example uses of the functionality provided by the library. When compiled, they are placed in the[ target/debug/examples directory](https://doc.rust-lang.org/cargo/guide/build-cache.html).
@@ -322,14 +322,14 @@ namespace Pulumi.Cargo.Inputs
         /// field](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#the-test-field) to `true` if you have `#[test]` functions in the
         /// example that you want to run with [`cargo test`](https://doc.rust-lang.org/cargo/commands/cargo-test.html).
         /// </summary>
-        public InputList<Inputs.ItemsArgs> Example
+        public List<Inputs.ItemsArgs> Example
         {
-            get => _example ?? (_example = new InputList<Inputs.ItemsArgs>());
+            get => _example ?? (_example = new List<Inputs.ItemsArgs>());
             set => _example = value;
         }
 
         [Input("features")]
-        private InputMap<ImmutableArray<string>>? _features;
+        private Dictionary<string, ImmutableArray<string>>? _features;
 
         /// <summary>
         /// Cargo supports features to allow expression of:
@@ -343,59 +343,59 @@ namespace Pulumi.Cargo.Inputs
         /// A feature of a package is either an optional dependency, or a set of other
         /// features.
         /// </summary>
-        public InputMap<ImmutableArray<string>> Features
+        public Dictionary<string, ImmutableArray<string>> Features
         {
-            get => _features ?? (_features = new InputMap<ImmutableArray<string>>());
+            get => _features ?? (_features = new Dictionary<string, ImmutableArray<string>>());
             set => _features = value;
         }
 
         [Input("lib")]
-        public Input<Inputs.LibArgs>? Lib { get; set; }
+        public Inputs.LibArgs? Lib { get; set; }
 
         [Input("package")]
-        public Input<Inputs.PackageArgs>? Package { get; set; }
+        public Inputs.PackageArgs? Package { get; set; }
 
         [Input("patch")]
-        private InputMap<ImmutableDictionary<string, object>>? _patch;
+        private Dictionary<string, ImmutableDictionary<string, object>>? _patch;
 
         /// <summary>
         /// The `[patch]` section of `Cargo.toml` can be used to override dependencies
         /// with other copies. The syntax is similar to the
         /// [`[dependencies]`](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) section.
         /// </summary>
-        public InputMap<ImmutableDictionary<string, object>> Patch
+        public Dictionary<string, ImmutableDictionary<string, object>> Patch
         {
-            get => _patch ?? (_patch = new InputMap<ImmutableDictionary<string, object>>());
+            get => _patch ?? (_patch = new Dictionary<string, ImmutableDictionary<string, object>>());
             set => _patch = value;
         }
 
         [Input("profile")]
-        public Input<Inputs.ProfilesArgs>? Profile { get; set; }
+        public Inputs.ProfilesArgs? Profile { get; set; }
 
         /// <summary>
         /// Ref needs more translation map [(Json.Schema.UnrecognizedKeyword, [Json.Schema.UnrecognizedKeyword; Json.Schema.UnrecognizedKeyword])]
         /// </summary>
         [Input("project")]
-        public Input<object>? Project { get; set; }
+        public object? Project { get; set; }
 
         [Input("replace")]
-        private InputMap<object>? _replace;
-        public InputMap<object> Replace
+        private Dictionary<string, object>? _replace;
+        public Dictionary<string, object> Replace
         {
-            get => _replace ?? (_replace = new InputMap<object>());
+            get => _replace ?? (_replace = new Dictionary<string, object>());
             set => _replace = value;
         }
 
         [Input("target")]
-        private InputMap<Inputs.PlatformArgs>? _target;
-        public InputMap<Inputs.PlatformArgs> Target
+        private Dictionary<string, Inputs.PlatformArgs>? _target;
+        public Dictionary<string, Inputs.PlatformArgs> Target
         {
-            get => _target ?? (_target = new InputMap<Inputs.PlatformArgs>());
+            get => _target ?? (_target = new Dictionary<string, Inputs.PlatformArgs>());
             set => _target = value;
         }
 
         [Input("test")]
-        private InputList<Inputs.TestItemsArgs>? _test;
+        private List<Inputs.TestItemsArgs>? _test;
 
         /// <summary>
         /// Files located under the [`tests` directory](https://doc.rust-lang.org/cargo/guide/project-layout.html) are integration
@@ -425,14 +425,14 @@ namespace Pulumi.Cargo.Inputs
         /// integration test is built so that it can use the [`env` macro](https://doc.rust-lang.org/std/macro.env.html) to locate the
         /// executable.
         /// </summary>
-        public InputList<Inputs.TestItemsArgs> Test
+        public List<Inputs.TestItemsArgs> Test
         {
-            get => _test ?? (_test = new InputList<Inputs.TestItemsArgs>());
+            get => _test ?? (_test = new List<Inputs.TestItemsArgs>());
             set => _test = value;
         }
 
         [Input("workspace")]
-        public Input<Inputs.WorkspaceArgs>? Workspace { get; set; }
+        public Inputs.WorkspaceArgs? Workspace { get; set; }
 
         public RootArgs()
         {

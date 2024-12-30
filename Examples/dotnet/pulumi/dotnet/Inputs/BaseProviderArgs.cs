@@ -16,19 +16,19 @@ namespace Pulumi.Pulumi.Inputs
         /// The unqualified name of the package (e.g. "aws", "azure", "gcp", "kubernetes", "random")
         /// </summary>
         [Input("name", required: true)]
-        public Input<string> Name { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// The URL to use when downloading the provider plugin binary.
         /// </summary>
         [Input("pluginDownloadURL")]
-        public Input<string>? PluginDownloadURL { get; set; }
+        public string? PluginDownloadURL { get; set; }
 
         /// <summary>
         /// The version of the package. The version must be valid semver.
         /// </summary>
         [Input("version", required: true)]
-        public Input<string> Version { get; set; } = null!;
+        public string Version { get; set; } = null!;
 
         public BaseProviderArgs()
         {

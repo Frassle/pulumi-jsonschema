@@ -57,15 +57,15 @@ namespace Pulumi.Cargo.Inputs
     public sealed class PropertiesPackageArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("authors")]
-        private InputList<string>? _authors;
+        private List<string>? _authors;
 
         /// <summary>
         /// The `authors` field lists people or organizations that are considered the
@@ -77,14 +77,14 @@ namespace Pulumi.Cargo.Inputs
         /// 
         /// &gt; **Note**: [crates.io](https://crates.io) requires at least one author to be listed.
         /// </summary>
-        public InputList<string> Authors
+        public List<string> Authors
         {
-            get => _authors ?? (_authors = new InputList<string>());
+            get => _authors ?? (_authors = new List<string>());
             set => _authors = value;
         }
 
         [Input("categories")]
-        private InputList<string>? _categories;
+        private List<string>? _categories;
 
         /// <summary>
         /// The `categories` field is an array of strings of the categories this package
@@ -98,9 +98,9 @@ namespace Pulumi.Cargo.Inputs
         /// &gt; match one of the strings available at https://crates.io/category_slugs, and
         /// &gt; must match exactly.
         /// </summary>
-        public InputList<string> Categories
+        public List<string> Categories
         {
-            get => _categories ?? (_categories = new InputList<string>());
+            get => _categories ?? (_categories = new List<string>());
             set => _categories = value;
         }
 
@@ -117,7 +117,7 @@ namespace Pulumi.Cargo.Inputs
         /// &gt; **Note**: [crates.io](https://crates.io) requires the `description` to be set.
         /// </summary>
         [Input("description")]
-        public Input<string>? Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// 
@@ -132,13 +132,13 @@ namespace Pulumi.Cargo.Inputs
         /// ```
         /// </summary>
         [Input("documentation")]
-        public Input<string>? Documentation { get; set; }
+        public string? Documentation { get; set; }
 
         [Input("edition")]
-        public Input<Pulumi.Cargo.PackageEdition>? Edition { get; set; }
+        public Pulumi.Cargo.PackageEdition? Edition { get; set; }
 
         [Input("exclude")]
-        private InputList<string>? _exclude;
+        private List<string>? _exclude;
 
         /// <summary>
         /// You can explicitly specify that a set of file patterns should be ignored or
@@ -199,9 +199,9 @@ namespace Pulumi.Cargo.Inputs
         /// include/exclude list is used for tracking if the build script should be re-run
         /// if any of those files change.
         /// </summary>
-        public InputList<string> Exclude
+        public List<string> Exclude
         {
-            get => _exclude ?? (_exclude = new InputList<string>());
+            get => _exclude ?? (_exclude = new List<string>());
             set => _exclude = value;
         }
 
@@ -216,10 +216,10 @@ namespace Pulumi.Cargo.Inputs
         /// ```
         /// </summary>
         [Input("homepage")]
-        public Input<string>? Homepage { get; set; }
+        public string? Homepage { get; set; }
 
         [Input("include")]
-        private InputList<string>? _include;
+        private List<string>? _include;
 
         /// <summary>
         /// You can explicitly specify that a set of file patterns should be ignored or
@@ -280,14 +280,14 @@ namespace Pulumi.Cargo.Inputs
         /// include/exclude list is used for tracking if the build script should be re-run
         /// if any of those files change.
         /// </summary>
-        public InputList<string> Include
+        public List<string> Include
         {
-            get => _include ?? (_include = new InputList<string>());
+            get => _include ?? (_include = new List<string>());
             set => _include = value;
         }
 
         [Input("keywords")]
-        private InputList<string>? _keywords;
+        private List<string>? _keywords;
 
         /// <summary>
         /// The `keywords` field is an array of strings that describe this package. This
@@ -304,9 +304,9 @@ namespace Pulumi.Cargo.Inputs
         /// &gt; ASCII text, start with a letter, and only contain letters, numbers, `_` or
         /// &gt; `-`, and have at most 20 characters.
         /// </summary>
-        public InputList<string> Keywords
+        public List<string> Keywords
         {
-            get => _keywords ?? (_keywords = new InputList<string>());
+            get => _keywords ?? (_keywords = new List<string>());
             set => _keywords = value;
         }
 
@@ -340,7 +340,7 @@ namespace Pulumi.Cargo.Inputs
         /// be specified in lieu of the `license` field.
         /// </summary>
         [Input("license")]
-        public Input<string>? License { get; set; }
+        public string? License { get; set; }
 
         /// <summary>
         /// The `license-file` field contains the path to a file
@@ -355,19 +355,19 @@ namespace Pulumi.Cargo.Inputs
         /// &gt; **Note**: [crates.io](https://crates.io) requires either `license` or `license-file` to be set.
         /// </summary>
         [Input("licenseFile")]
-        public Input<string>? LicenseFile { get; set; }
+        public string? LicenseFile { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword, Json.Schema.UnrecognizedKeyword
         /// </summary>
         [Input("publish")]
-        public Input<object>? Publish { get; set; }
+        public object? Publish { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword, Json.Schema.UnrecognizedKeyword
         /// </summary>
         [Input("readme")]
-        public Input<object>? Readme { get; set; }
+        public object? Readme { get; set; }
 
         /// <summary>
         /// The `repository` field should be a URL to the source repository for your
@@ -380,7 +380,7 @@ namespace Pulumi.Cargo.Inputs
         /// ```
         /// </summary>
         [Input("repository")]
-        public Input<string>? Repository { get; set; }
+        public string? Repository { get; set; }
 
         /// <summary>
         /// The `rust-version` field is an optional key that tells cargo what version of the
@@ -409,7 +409,7 @@ namespace Pulumi.Cargo.Inputs
         /// the package, including test suites, benchmarks, binaries, examples, etc.
         /// </summary>
         [Input("rustVersion")]
-        public Input<string>? RustVersion { get; set; }
+        public string? RustVersion { get; set; }
 
         /// <summary>
         /// Cargo bakes in the concept of [Semantic Versioning](https://semver.org/), so make sure you follow some basic rules:
@@ -425,7 +425,7 @@ namespace Pulumi.Cargo.Inputs
         /// * Use version numbers with three numeric parts such as 1.0.0 rather than 1.0.
         /// </summary>
         [Input("version")]
-        public Input<string>? Version { get; set; }
+        public string? Version { get; set; }
 
         public PropertiesPackageArgs()
         {

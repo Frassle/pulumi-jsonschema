@@ -16,10 +16,10 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class ArrayTypeArgs : global::Pulumi.ResourceArgs
     {
         [Input("items", required: true)]
-        public Input<Inputs.PropertyDefinitionArgs> Items { get; set; } = null!;
+        public Inputs.PropertyDefinitionArgs Items { get; set; } = null!;
 
         [Input("type", required: true)]
-        public Input<string> Type { get; set; } = null!;
+        public string Type { get; set; } = null!;
 
         public ArrayTypeArgs()
         {

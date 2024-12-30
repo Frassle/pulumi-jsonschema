@@ -18,24 +18,24 @@ namespace Pulumi.Cargo.Inputs
     public sealed class ProfilesArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<Inputs.ProfileArgs>? _additionalProperties;
-        public InputMap<Inputs.ProfileArgs> AdditionalProperties
+        private Dictionary<string, Inputs.ProfileArgs>? _additionalProperties;
+        public Dictionary<string, Inputs.ProfileArgs> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<Inputs.ProfileArgs>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, Inputs.ProfileArgs>());
             set => _additionalProperties = value;
         }
 
         [Input("bench")]
-        public Input<Inputs.DefinitionsProfileArgs>? Bench { get; set; }
+        public Inputs.DefinitionsProfileArgs? Bench { get; set; }
 
         [Input("dev")]
-        public Input<Inputs.DevArgs>? Dev { get; set; }
+        public Inputs.DevArgs? Dev { get; set; }
 
         [Input("release")]
-        public Input<Inputs.ReleaseArgs>? Release { get; set; }
+        public Inputs.ReleaseArgs? Release { get; set; }
 
         [Input("test")]
-        public Input<Inputs.TestArgs>? Test { get; set; }
+        public Inputs.TestArgs? Test { get; set; }
 
         public ProfilesArgs()
         {

@@ -16,22 +16,22 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class PropertiesAdditionalPropertiesChoice5Of5Args : global::Pulumi.ResourceArgs
     {
         [Input("discriminator")]
-        public Input<Inputs.DiscriminatorArgs>? Discriminator { get; set; }
+        public Inputs.DiscriminatorArgs? Discriminator { get; set; }
 
         [Input("oneOf", required: true)]
-        private InputList<Inputs.ProviderPropertiesAdditionalPropertiesArgs>? _oneOf;
+        private List<Inputs.ProviderPropertiesAdditionalPropertiesArgs>? _oneOf;
 
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
-        public InputList<Inputs.ProviderPropertiesAdditionalPropertiesArgs> OneOf
+        public List<Inputs.ProviderPropertiesAdditionalPropertiesArgs> OneOf
         {
-            get => _oneOf ?? (_oneOf = new InputList<Inputs.ProviderPropertiesAdditionalPropertiesArgs>());
+            get => _oneOf ?? (_oneOf = new List<Inputs.ProviderPropertiesAdditionalPropertiesArgs>());
             set => _oneOf = value;
         }
 
         [Input("type")]
-        public Input<Pulumi.Pulumi.ProviderPropertiesAdditionalPropertiesChoice5Of5Type>? Type { get; set; }
+        public Pulumi.Pulumi.ProviderPropertiesAdditionalPropertiesChoice5Of5Type? Type { get; set; }
 
         public PropertiesAdditionalPropertiesChoice5Of5Args()
         {

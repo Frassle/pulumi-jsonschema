@@ -41,15 +41,15 @@ namespace Pulumi.Cargo.Inputs
     public sealed class WorkspaceArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("defaultMembers")]
-        private InputList<string>? _defaultMembers;
+        private List<string>? _defaultMembers;
 
         /// <summary>
         /// The optional `default-members` key can be specified to set the members to
@@ -64,14 +64,14 @@ namespace Pulumi.Cargo.Inputs
         /// 
         /// When specified, `default-members` must expand to a subset of `members`.
         /// </summary>
-        public InputList<string> DefaultMembers
+        public List<string> DefaultMembers
         {
-            get => _defaultMembers ?? (_defaultMembers = new InputList<string>());
+            get => _defaultMembers ?? (_defaultMembers = new List<string>());
             set => _defaultMembers = value;
         }
 
         [Input("dependencies")]
-        private InputMap<object>? _dependencies;
+        private Dictionary<string, object>? _dependencies;
 
         /// <summary>
         /// The `workspace.dependencies` table is where you define dependencies to be
@@ -111,14 +111,14 @@ namespace Pulumi.Cargo.Inputs
         /// rand.workspace = true
         /// ```
         /// </summary>
-        public InputMap<object> Dependencies
+        public Dictionary<string, object> Dependencies
         {
-            get => _dependencies ?? (_dependencies = new InputMap<object>());
+            get => _dependencies ?? (_dependencies = new Dictionary<string, object>());
             set => _dependencies = value;
         }
 
         [Input("exclude")]
-        private InputList<string>? _exclude;
+        private List<string>? _exclude;
 
         /// <summary>
         /// The `exclude` key can be used to prevent paths from being included in a
@@ -126,14 +126,14 @@ namespace Pulumi.Cargo.Inputs
         /// in the workspace at all, or using a glob pattern and you want to remove a
         /// directory.
         /// </summary>
-        public InputList<string> Exclude
+        public List<string> Exclude
         {
-            get => _exclude ?? (_exclude = new InputList<string>());
+            get => _exclude ?? (_exclude = new List<string>());
             set => _exclude = value;
         }
 
         [Input("members")]
-        private InputList<string>? _members;
+        private List<string>? _members;
 
         /// <summary>
         /// All [`path` dependencies] residing in the workspace directory automatically
@@ -143,14 +143,14 @@ namespace Pulumi.Cargo.Inputs
         /// The `members` list also supports [globs] to match multiple paths, using
         /// typical filename glob patterns like `*` and `?`.
         /// </summary>
-        public InputList<string> Members
+        public List<string> Members
         {
-            get => _members ?? (_members = new InputList<string>());
+            get => _members ?? (_members = new List<string>());
             set => _members = value;
         }
 
         [Input("metadata")]
-        private InputMap<object>? _metadata;
+        private Dictionary<string, object>? _metadata;
 
         /// <summary>
         /// The `workspace.metadata` table is ignored by Cargo and will not be warned
@@ -174,17 +174,17 @@ namespace Pulumi.Cargo.Inputs
         /// to the data in `workspace.metadata` if data is missing from `package.metadata`,
         /// if that makes sense for the tool in question.
         /// </summary>
-        public InputMap<object> Metadata
+        public Dictionary<string, object> Metadata
         {
-            get => _metadata ?? (_metadata = new InputMap<object>());
+            get => _metadata ?? (_metadata = new Dictionary<string, object>());
             set => _metadata = value;
         }
 
         [Input("package")]
-        public Input<Inputs.PropertiesPackageArgs>? Package { get; set; }
+        public Inputs.PropertiesPackageArgs? Package { get; set; }
 
         [Input("resolver")]
-        public Input<Pulumi.Cargo.DefinitionsResolver>? Resolver { get; set; }
+        public Pulumi.Cargo.DefinitionsResolver? Resolver { get; set; }
 
         public WorkspaceArgs()
         {

@@ -39,7 +39,7 @@ namespace Pulumi.Cargo
     public sealed class WriteInvokeArgs : global::Pulumi.InvokeArgs
     {
         [Input("value", required: true)]
-        public Input<Inputs.RootArgs> Value { get; set; } = null!;
+        public Inputs.RootArgs Value { get; set; } = null!;
 
         public WriteInvokeArgs()
         {

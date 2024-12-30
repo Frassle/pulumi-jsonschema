@@ -36,6 +36,7 @@
         ],
         "properties": {
           "value": {
+            "plain": true,
             "$ref": "#/types/bootstraprc:index:coreProperties"
           }
         }
@@ -49,6 +50,7 @@
         ],
         "properties": {
           "value": {
+            "plain": true,
             "$ref": "#/types/bootstraprc:index:coreProperties"
           }
         }
@@ -82,49 +84,62 @@
       "type": "object",
       "properties": {
         "additionalProperties": {
+          "plain": true,
           "type": "object",
           "additionalProperties": {
+            "plain": true,
             "$ref": "pulumi.json#/Any"
           }
         },
         "appStyles": {
+          "plain": true,
           "type": "string",
           "description": "Import your custom styles here. Usually this endpoint file contains a list of @imports of your application styles."
         },
         "bootstrapCustomizations": {
+          "plain": true,
           "type": "string",
           "description": "The .scss file path to be loaded after Bootstrap\u0027s _variables.scss file"
         },
         "bootstrapVersion": {
+          "plain": true,
           "$ref": "#/types/bootstraprc:index:bootstrapVersion"
         },
         "loglevel": {
+          "plain": true,
           "$ref": "#/types/bootstraprc:index:loglevel"
         },
         "preBootstrapCustomizations": {
+          "plain": true,
           "type": "string",
           "description": "The .scss file path to be loaded before Bootstrap\u0027s _variables.scss file"
         },
         "scripts": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.DescriptionKeyword, Json.Schema.TypeKeyword"
         },
         "styleLoaders": {
+          "plain": true,
           "type": "array",
           "items": {
+            "plain": true,
             "type": "string"
           },
           "description": "An array of Webpack loader names. Order matters, and sass-loader is required."
         },
         "styles": {
+          "plain": true,
           "$ref": "pulumi.json#/Any",
           "description": "unhandled schema: Json.Schema.DescriptionKeyword, Json.Schema.TypeKeyword"
         },
         "useCustomIconFontPath": {
+          "plain": true,
           "type": "boolean",
           "description": "Set to true if using a custom icon font and you need to specify its path in your Sass files"
         },
         "useFlexbox": {
+          "plain": true,
           "type": "boolean",
           "description": "Enables/disables the flexbox model available in Bootstrap 4"
         }

@@ -16,40 +16,40 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class TypeDefinitionArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("choice1Of2")]
-        public Input<Inputs.ObjectTypeDefinitionArgs>? Choice1Of2 { get; set; }
+        public Inputs.ObjectTypeDefinitionArgs? Choice1Of2 { get; set; }
 
         [Input("choice2Of2")]
-        public Input<Inputs.EnumTypeDefinitionArgs>? Choice2Of2 { get; set; }
+        public Inputs.EnumTypeDefinitionArgs? Choice2Of2 { get; set; }
 
         /// <summary>
         /// The description of the type, if any. Interpreted as Markdown.
         /// </summary>
         [Input("description")]
-        public Input<string>? Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Indicates that the implementation of the type should not be generated from the schema, and is instead provided out-of-band by the package author
         /// </summary>
         [Input("isOverlay")]
-        public Input<bool>? IsOverlay { get; set; }
+        public bool? IsOverlay { get; set; }
 
         [Input("language")]
-        private InputMap<object>? _language;
+        private Dictionary<string, object>? _language;
 
         /// <summary>
         /// Additional language-specific data about the type.
         /// </summary>
-        public InputMap<object> Language
+        public Dictionary<string, object> Language
         {
-            get => _language ?? (_language = new InputMap<object>());
+            get => _language ?? (_language = new Dictionary<string, object>());
             set => _language = value;
         }
 

@@ -26,13 +26,13 @@ namespace Pulumi.Pulumi.Inputs
         ///   "/provider/vX.Y.Z/schema.json" or "pulumi.json" or "http[s]://example.com/provider/vX.Y.Z/schema.json"
         /// </summary>
         [Input("$ref", required: true)]
-        public Input<string> $ref { get; set; } = null!;
+        public string $ref { get; set; } = null!;
 
         /// <summary>
         /// ignored; present for compatibility with existing schemas
         /// </summary>
         [Input("type")]
-        public Input<string>? Type { get; set; }
+        public string? Type { get; set; }
 
         public NamedTypeArgs()
         {

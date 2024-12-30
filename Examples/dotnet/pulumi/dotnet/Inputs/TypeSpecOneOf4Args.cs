@@ -16,22 +16,22 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class TypeSpecOneOf4Args : global::Pulumi.ResourceArgs
     {
         [Input("discriminator")]
-        public Input<Inputs.DiscriminatorArgs>? Discriminator { get; set; }
+        public Inputs.DiscriminatorArgs? Discriminator { get; set; }
 
         [Input("oneOf", required: true)]
-        private InputList<Inputs.AdditionalPropertiesArgs>? _oneOf;
+        private List<Inputs.AdditionalPropertiesArgs>? _oneOf;
 
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
-        public InputList<Inputs.AdditionalPropertiesArgs> OneOf
+        public List<Inputs.AdditionalPropertiesArgs> OneOf
         {
-            get => _oneOf ?? (_oneOf = new InputList<Inputs.AdditionalPropertiesArgs>());
+            get => _oneOf ?? (_oneOf = new List<Inputs.AdditionalPropertiesArgs>());
             set => _oneOf = value;
         }
 
         [Input("type")]
-        public Input<Pulumi.Pulumi.Choice5Of5Type>? Type { get; set; }
+        public Pulumi.Pulumi.Choice5Of5Type? Type { get; set; }
 
         public TypeSpecOneOf4Args()
         {

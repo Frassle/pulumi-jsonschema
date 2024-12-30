@@ -39,7 +39,7 @@ namespace Pulumi.Pulumi
     public sealed class WriteInvokeArgs : global::Pulumi.InvokeArgs
     {
         [Input("value", required: true)]
-        public Input<Inputs.PulumiPackageMetaschemaArgs> Value { get; set; } = null!;
+        public Inputs.PulumiPackageMetaschemaArgs Value { get; set; } = null!;
 
         public WriteInvokeArgs()
         {

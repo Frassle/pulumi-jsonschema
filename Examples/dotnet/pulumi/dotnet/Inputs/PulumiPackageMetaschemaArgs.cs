@@ -19,32 +19,32 @@ namespace Pulumi.Pulumi.Inputs
         /// Freeform text attribution of derived work, if required.
         /// </summary>
         [Input("attribution")]
-        public Input<string>? Attribution { get; set; }
+        public string? Attribution { get; set; }
 
         [Input("config")]
-        public Input<Inputs.ConfigArgs>? Config { get; set; }
+        public Inputs.ConfigArgs? Config { get; set; }
 
         /// <summary>
         /// The description of the package. Descriptions are interpreted as Markdown.
         /// </summary>
         [Input("description")]
-        public Input<string>? Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// The human-friendly name of the package.
         /// </summary>
         [Input("displayName")]
-        public Input<string>? DisplayName { get; set; }
+        public string? DisplayName { get; set; }
 
         [Input("functions")]
-        private InputMap<Inputs.FunctionDefinitionArgs>? _functions;
+        private Dictionary<string, Inputs.FunctionDefinitionArgs>? _functions;
 
         /// <summary>
         /// A map from token to functionSpec that describes the set of functions defined by this package.
         /// </summary>
-        public InputMap<Inputs.FunctionDefinitionArgs> Functions
+        public Dictionary<string, Inputs.FunctionDefinitionArgs> Functions
         {
-            get => _functions ?? (_functions = new InputMap<Inputs.FunctionDefinitionArgs>());
+            get => _functions ?? (_functions = new Dictionary<string, Inputs.FunctionDefinitionArgs>());
             set => _functions = value;
         }
 
@@ -52,29 +52,29 @@ namespace Pulumi.Pulumi.Inputs
         /// The package's homepage.
         /// </summary>
         [Input("homepage")]
-        public Input<string>? Homepage { get; set; }
+        public string? Homepage { get; set; }
 
         [Input("keywords")]
-        private InputList<string>? _keywords;
+        private List<string>? _keywords;
 
         /// <summary>
         /// The list of keywords that are associated with the package, if any.
         /// </summary>
-        public InputList<string> Keywords
+        public List<string> Keywords
         {
-            get => _keywords ?? (_keywords = new InputList<string>());
+            get => _keywords ?? (_keywords = new List<string>());
             set => _keywords = value;
         }
 
         [Input("language")]
-        private InputMap<object>? _language;
+        private Dictionary<string, object>? _language;
 
         /// <summary>
         /// Additional language-specific data about the package.
         /// </summary>
-        public InputMap<object> Language
+        public Dictionary<string, object> Language
         {
-            get => _language ?? (_language = new InputMap<object>());
+            get => _language ?? (_language = new Dictionary<string, object>());
             set => _language = value;
         }
 
@@ -82,68 +82,68 @@ namespace Pulumi.Pulumi.Inputs
         /// The name of the license used for the package's contents.
         /// </summary>
         [Input("license")]
-        public Input<string>? License { get; set; }
+        public string? License { get; set; }
 
         /// <summary>
         /// The URL of the package's logo, if any.
         /// </summary>
         [Input("logoUrl")]
-        public Input<string>? LogoUrl { get; set; }
+        public string? LogoUrl { get; set; }
 
         [Input("meta")]
-        public Input<Inputs.MetaArgs>? Meta { get; set; }
+        public Inputs.MetaArgs? Meta { get; set; }
 
         /// <summary>
         /// The unqualified name of the package (e.g. "aws", "azure", "gcp", "kubernetes", "random")
         /// </summary>
         [Input("name", required: true)]
-        public Input<string> Name { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
         [Input("parameterization")]
-        public Input<Inputs.ParameterizationArgs>? Parameterization { get; set; }
+        public Inputs.ParameterizationArgs? Parameterization { get; set; }
 
         /// <summary>
         /// The URL to use when downloading the provider plugin binary.
         /// </summary>
         [Input("pluginDownloadURL")]
-        public Input<string>? PluginDownloadURL { get; set; }
+        public string? PluginDownloadURL { get; set; }
 
         [Input("provider")]
-        public Input<Inputs.ObjectTypeSpecArgs>? Provider { get; set; }
+        public Inputs.ObjectTypeSpecArgs? Provider { get; set; }
 
         /// <summary>
         /// The name of the person or organization that authored and published the package.
         /// </summary>
         [Input("publisher")]
-        public Input<string>? Publisher { get; set; }
+        public string? Publisher { get; set; }
 
         /// <summary>
         /// The URL at which the package's sources can be found.
         /// </summary>
         [Input("repository")]
-        public Input<string>? Repository { get; set; }
+        public string? Repository { get; set; }
 
         [Input("resources")]
-        private InputMap<Inputs.ResourceDefinitionArgs>? _resources;
+        private Dictionary<string, Inputs.ResourceDefinitionArgs>? _resources;
 
         /// <summary>
         /// A map from type token to resourceSpec that describes the set of resources and components defined by this package.
         /// </summary>
-        public InputMap<Inputs.ResourceDefinitionArgs> Resources
+        public Dictionary<string, Inputs.ResourceDefinitionArgs> Resources
         {
-            get => _resources ?? (_resources = new InputMap<Inputs.ResourceDefinitionArgs>());
+            get => _resources ?? (_resources = new Dictionary<string, Inputs.ResourceDefinitionArgs>());
             set => _resources = value;
         }
 
         [Input("types")]
-        private InputMap<Inputs.TypeDefinitionArgs>? _types;
+        private Dictionary<string, Inputs.TypeDefinitionArgs>? _types;
 
         /// <summary>
         /// A map from type token to complexTypeSpec that describes the set of complex types (i.e. object, enum) defined by this package.
         /// </summary>
-        public InputMap<Inputs.TypeDefinitionArgs> Types
+        public Dictionary<string, Inputs.TypeDefinitionArgs> Types
         {
-            get => _types ?? (_types = new InputMap<Inputs.TypeDefinitionArgs>());
+            get => _types ?? (_types = new Dictionary<string, Inputs.TypeDefinitionArgs>());
             set => _types = value;
         }
 
@@ -151,7 +151,7 @@ namespace Pulumi.Pulumi.Inputs
         /// The version of the package. The version must be valid semver.
         /// </summary>
         [Input("version")]
-        public Input<string>? Version { get; set; }
+        public string? Version { get; set; }
 
         public PulumiPackageMetaschemaArgs()
         {

@@ -13,15 +13,15 @@ namespace Pulumi.Cargo.Inputs
     public sealed class TestArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("buildOverride")]
-        public Input<Inputs.TestArgs>? BuildOverride { get; set; }
+        public Inputs.TestArgs? BuildOverride { get; set; }
 
         /// <summary>
         /// The `codegen-units` setting controls the [`-C codegen-units` flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#codegen-units) which
@@ -35,13 +35,13 @@ namespace Pulumi.Cargo.Inputs
         /// non-incremental builds.
         /// </summary>
         [Input("codegenUnits")]
-        public Input<int>? CodegenUnits { get; set; }
+        public int? CodegenUnits { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword
         /// </summary>
         [Input("debug")]
-        public Input<object>? Debug { get; set; }
+        public object? Debug { get; set; }
 
         /// <summary>
         /// The `debug-assertions` setting controls the [`-C debug-assertions` flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#debug-assertions) which
@@ -52,10 +52,10 @@ namespace Pulumi.Cargo.Inputs
         /// [`debug_assert!` macro](https://doc.rust-lang.org/std/macro.debug_assert.html) in the standard library.
         /// </summary>
         [Input("debugAssertions")]
-        public Input<bool>? DebugAssertions { get; set; }
+        public bool? DebugAssertions { get; set; }
 
         [Input("dirName")]
-        public Input<string>? DirName { get; set; }
+        public string? DirName { get; set; }
 
         /// <summary>
         /// The `incremental` setting controls the [`-C incremental` flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#incremental) which controls
@@ -76,22 +76,22 @@ namespace Pulumi.Cargo.Inputs
         /// [environment variable](https://doc.rust-lang.org/cargo/reference/environment-variables.html) or the [`build.incremental`](https://doc.rust-lang.org/cargo/reference/config.html#buildincremental) config variable.
         /// </summary>
         [Input("incremental")]
-        public Input<bool>? Incremental { get; set; }
+        public bool? Incremental { get; set; }
 
         [Input("inherits")]
-        public Input<string>? Inherits { get; set; }
+        public string? Inherits { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword
         /// </summary>
         [Input("lto")]
-        public Input<object>? Lto { get; set; }
+        public object? Lto { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.EnumKeyword, Json.Schema.UnrecognizedKeyword
         /// </summary>
         [Input("optLevel")]
-        public Input<object>? OptLevel { get; set; }
+        public object? OptLevel { get; set; }
 
         /// <summary>
         /// The `overflow-checks` setting controls the [`-C overflow-checks` flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#overflow-checks) which
@@ -99,10 +99,10 @@ namespace Pulumi.Cargo.Inputs
         /// enabled, a panic will occur on overflow.
         /// </summary>
         [Input("overflowChecks")]
-        public Input<bool>? OverflowChecks { get; set; }
+        public bool? OverflowChecks { get; set; }
 
         [Input("package")]
-        private InputMap<Inputs.TestArgs>? _package;
+        private Dictionary<string, Inputs.TestArgs>? _package;
 
         /// <summary>
         /// Package-specific overrides.
@@ -110,21 +110,21 @@ namespace Pulumi.Cargo.Inputs
         /// The package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can
         /// target individual versions of a package with syntax such as `[profile.dev.package."foo:2.1.0"]`.
         /// </summary>
-        public InputMap<Inputs.TestArgs> Package
+        public Dictionary<string, Inputs.TestArgs> Package
         {
-            get => _package ?? (_package = new InputMap<Inputs.TestArgs>());
+            get => _package ?? (_package = new Dictionary<string, Inputs.TestArgs>());
             set => _package = value;
         }
 
         [Input("panic")]
-        public Input<Pulumi.Cargo.TestPanic>? Panic { get; set; }
+        public Pulumi.Cargo.TestPanic? Panic { get; set; }
 
         /// <summary>
         /// The `rpath` setting controls the [`-C rpath` flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#rpath) which controls
         /// whether or not [`rpath`](https://en.wikipedia.org/wiki/Rpath) is enabled.
         /// </summary>
         [Input("rpath")]
-        public Input<bool>? Rpath { get; set; }
+        public bool? Rpath { get; set; }
 
         public TestArgs()
         {

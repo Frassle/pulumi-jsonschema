@@ -16,26 +16,26 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class ConfigArgs : global::Pulumi.ResourceArgs
     {
         [Input("defaults")]
-        private InputList<string>? _defaults;
+        private List<string>? _defaults;
 
         /// <summary>
         /// A list of the names of the package's non-required configuration variables.
         /// </summary>
-        public InputList<string> Defaults
+        public List<string> Defaults
         {
-            get => _defaults ?? (_defaults = new InputList<string>());
+            get => _defaults ?? (_defaults = new List<string>());
             set => _defaults = value;
         }
 
         [Input("variables")]
-        private InputMap<Inputs.VariablesAdditionalPropertiesArgs>? _variables;
+        private Dictionary<string, Inputs.VariablesAdditionalPropertiesArgs>? _variables;
 
         /// <summary>
         /// A map from variable name to propertySpec that describes a package's configuration variables.
         /// </summary>
-        public InputMap<Inputs.VariablesAdditionalPropertiesArgs> Variables
+        public Dictionary<string, Inputs.VariablesAdditionalPropertiesArgs> Variables
         {
-            get => _variables ?? (_variables = new InputMap<Inputs.VariablesAdditionalPropertiesArgs>());
+            get => _variables ?? (_variables = new Dictionary<string, Inputs.VariablesAdditionalPropertiesArgs>());
             set => _variables = value;
         }
 

@@ -18,10 +18,10 @@ namespace Pulumi.Cargo.Inputs
     public sealed class PackageArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
@@ -29,7 +29,7 @@ namespace Pulumi.Cargo.Inputs
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("authors")]
-        public Input<object>? Authors { get; set; }
+        public object? Authors { get; set; }
 
         /// <summary>
         /// Disable automatic discovery of `bench` targets.
@@ -49,7 +49,7 @@ namespace Pulumi.Cargo.Inputs
         /// ```
         /// </summary>
         [Input("autobenches")]
-        public Input<bool>? Autobenches { get; set; }
+        public bool? Autobenches { get; set; }
 
         /// <summary>
         /// Disable automatic discovery of `bin` targets.
@@ -72,7 +72,7 @@ namespace Pulumi.Cargo.Inputs
         /// this to `false` to disable auto-discovery.
         /// </summary>
         [Input("autobins")]
-        public Input<bool>? Autobins { get; set; }
+        public bool? Autobins { get; set; }
 
         /// <summary>
         /// Disable automatic discovery of `example` targets.
@@ -92,7 +92,7 @@ namespace Pulumi.Cargo.Inputs
         /// ```
         /// </summary>
         [Input("autoexamples")]
-        public Input<bool>? Autoexamples { get; set; }
+        public bool? Autoexamples { get; set; }
 
         /// <summary>
         /// Disable automatic discovery of `test` targets.
@@ -112,19 +112,19 @@ namespace Pulumi.Cargo.Inputs
         /// ```
         /// </summary>
         [Input("autotests")]
-        public Input<bool>? Autotests { get; set; }
+        public bool? Autotests { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.TitleKeyword, Json.Schema.DescriptionKeyword, Json.Schema.AnyOfKeyword, Json.Schema.UnrecognizedKeyword
         /// </summary>
         [Input("build")]
-        public Input<object>? Build { get; set; }
+        public object? Build { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("categories")]
-        public Input<object>? Categories { get; set; }
+        public object? Categories { get; set; }
 
         /// <summary>
         /// The `default-run` field in the `[package]` section of the manifest can be used
@@ -137,67 +137,67 @@ namespace Pulumi.Cargo.Inputs
         /// ```
         /// </summary>
         [Input("defaultRun")]
-        public Input<string>? DefaultRun { get; set; }
+        public string? DefaultRun { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("description")]
-        public Input<object>? Description { get; set; }
+        public object? Description { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("documentation")]
-        public Input<object>? Documentation { get; set; }
+        public object? Documentation { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("edition")]
-        public Input<object>? Edition { get; set; }
+        public object? Edition { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("exclude")]
-        public Input<object>? Exclude { get; set; }
+        public object? Exclude { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("homepage")]
-        public Input<object>? Homepage { get; set; }
+        public object? Homepage { get; set; }
 
         /// <summary>
         /// Sets whether the current package is a teapot or something else that is not capable of brewing tea.
         /// </summary>
         [Input("imATeapot")]
-        public Input<bool>? ImATeapot { get; set; }
+        public bool? ImATeapot { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("include")]
-        public Input<object>? Include { get; set; }
+        public object? Include { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("keywords")]
-        public Input<object>? Keywords { get; set; }
+        public object? Keywords { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("license")]
-        public Input<object>? License { get; set; }
+        public object? License { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("licenseFile")]
-        public Input<object>? LicenseFile { get; set; }
+        public object? LicenseFile { get; set; }
 
         /// <summary>
         /// The `links` field specifies the name of a native library that is being linked
@@ -211,18 +211,18 @@ namespace Pulumi.Cargo.Inputs
         /// ```
         /// </summary>
         [Input("links")]
-        public Input<string>? Links { get; set; }
+        public string? Links { get; set; }
 
         [Input("metabuild")]
-        private InputList<string>? _metabuild;
-        public InputList<string> Metabuild
+        private List<string>? _metabuild;
+        public List<string> Metabuild
         {
-            get => _metabuild ?? (_metabuild = new InputList<string>());
+            get => _metabuild ?? (_metabuild = new List<string>());
             set => _metabuild = value;
         }
 
         [Input("metadata")]
-        public Input<Inputs.MetadataArgs>? Metadata { get; set; }
+        public Inputs.MetadataArgs? Metadata { get; set; }
 
         /// <summary>
         /// The package name is an identifier used to refer to the package. It is used
@@ -237,46 +237,46 @@ namespace Pulumi.Cargo.Inputs
         /// name such as "nul", is not too long, etc.
         /// </summary>
         [Input("name", required: true)]
-        public Input<string> Name { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
         [Input("namespacedFeatures")]
-        public Input<bool>? NamespacedFeatures { get; set; }
+        public bool? NamespacedFeatures { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("publish")]
-        public Input<object>? Publish { get; set; }
+        public object? Publish { get; set; }
 
         [Input("publishLockfile")]
-        public Input<bool>? PublishLockfile { get; set; }
+        public bool? PublishLockfile { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("readme")]
-        public Input<object>? Readme { get; set; }
+        public object? Readme { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("repository")]
-        public Input<object>? Repository { get; set; }
+        public object? Repository { get; set; }
 
         [Input("resolver")]
-        public Input<Pulumi.Cargo.Resolver>? Resolver { get; set; }
+        public Pulumi.Cargo.Resolver? Resolver { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("rustVersion")]
-        public Input<object>? RustVersion { get; set; }
+        public object? RustVersion { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("version")]
-        public Input<object>? Version { get; set; }
+        public object? Version { get; set; }
 
         /// <summary>
         /// The `workspace` field can be used to configure the workspace that this package
@@ -298,7 +298,7 @@ namespace Pulumi.Cargo.Inputs
         /// For more information, see the [workspaces chapter](https://doc.rust-lang.org/cargo/reference/workspaces.html).
         /// </summary>
         [Input("workspace")]
-        public Input<string>? Workspace { get; set; }
+        public string? Workspace { get; set; }
 
         public PackageArgs()
         {

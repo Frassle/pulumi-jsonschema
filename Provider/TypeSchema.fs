@@ -36,6 +36,7 @@ type TypeReference =
 
     member this.AsSchema() =
         let schema = JsonObject()
+        schema.Add("plain", true)
 
         match this with
         | Primitive typ -> schema.Add("type", typ.JsonValue)

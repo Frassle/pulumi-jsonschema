@@ -13,10 +13,10 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class AliasDefinitionArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
@@ -24,19 +24,19 @@ namespace Pulumi.Pulumi.Inputs
         /// The name portion of the alias, if any
         /// </summary>
         [Input("name")]
-        public Input<string>? Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// The project portion of the alias, if any
         /// </summary>
         [Input("project")]
-        public Input<string>? Project { get; set; }
+        public string? Project { get; set; }
 
         /// <summary>
         /// The type portion of the alias, if any
         /// </summary>
         [Input("type")]
-        public Input<string>? Type { get; set; }
+        public string? Type { get; set; }
 
         public AliasDefinitionArgs()
         {

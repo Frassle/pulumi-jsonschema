@@ -31,15 +31,15 @@ namespace Pulumi.Cargo.Inputs
     public sealed class MetadataArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("playdate")]
-        public Input<Inputs.PlaydatePackageMetadataArgs>? Playdate { get; set; }
+        public Inputs.PlaydatePackageMetadataArgs? Playdate { get; set; }
 
         public MetadataArgs()
         {

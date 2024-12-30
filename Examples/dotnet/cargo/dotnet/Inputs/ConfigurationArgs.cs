@@ -16,15 +16,15 @@ namespace Pulumi.Cargo.Inputs
     public sealed class ConfigurationArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("assets")]
-        public Input<Inputs.AssetsConfigurationArgs>? Assets { get; set; }
+        public Inputs.AssetsConfigurationArgs? Assets { get; set; }
 
         public ConfigurationArgs()
         {

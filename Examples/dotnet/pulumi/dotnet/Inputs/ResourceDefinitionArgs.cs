@@ -16,22 +16,22 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class ResourceDefinitionArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("aliases")]
-        private InputList<Inputs.AliasDefinitionArgs>? _aliases;
+        private List<Inputs.AliasDefinitionArgs>? _aliases;
 
         /// <summary>
         /// The list of aliases for the resource.
         /// </summary>
-        public InputList<Inputs.AliasDefinitionArgs> Aliases
+        public List<Inputs.AliasDefinitionArgs> Aliases
         {
-            get => _aliases ?? (_aliases = new InputList<Inputs.AliasDefinitionArgs>());
+            get => _aliases ?? (_aliases = new List<Inputs.AliasDefinitionArgs>());
             set => _aliases = value;
         }
 
@@ -39,23 +39,23 @@ namespace Pulumi.Pulumi.Inputs
         /// Indicates whether the resource is deprecated
         /// </summary>
         [Input("deprecationMessage")]
-        public Input<string>? DeprecationMessage { get; set; }
+        public string? DeprecationMessage { get; set; }
 
         /// <summary>
         /// The description of the resource, if any. Interpreted as Markdown.
         /// </summary>
         [Input("description")]
-        public Input<string>? Description { get; set; }
+        public string? Description { get; set; }
 
         [Input("inputProperties")]
-        private InputMap<Inputs.PropertyDefinitionArgs>? _inputProperties;
+        private Dictionary<string, Inputs.PropertyDefinitionArgs>? _inputProperties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the resource's input properties.
         /// </summary>
-        public InputMap<Inputs.PropertyDefinitionArgs> InputProperties
+        public Dictionary<string, Inputs.PropertyDefinitionArgs> InputProperties
         {
-            get => _inputProperties ?? (_inputProperties = new InputMap<Inputs.PropertyDefinitionArgs>());
+            get => _inputProperties ?? (_inputProperties = new Dictionary<string, Inputs.PropertyDefinitionArgs>());
             set => _inputProperties = value;
         }
 
@@ -63,64 +63,64 @@ namespace Pulumi.Pulumi.Inputs
         /// Indicates whether the resource is a component.
         /// </summary>
         [Input("isComponent")]
-        public Input<bool>? IsComponent { get; set; }
+        public bool? IsComponent { get; set; }
 
         /// <summary>
         /// Indicates that the implementation of the resource should not be generated from the schema, and is instead provided out-of-band by the package author
         /// </summary>
         [Input("isOverlay")]
-        public Input<bool>? IsOverlay { get; set; }
+        public bool? IsOverlay { get; set; }
 
         [Input("methods")]
-        private InputMap<string>? _methods;
+        private Dictionary<string, string>? _methods;
 
         /// <summary>
         /// A map from method name to function token that describes the resource's method set.
         /// </summary>
-        public InputMap<string> Methods
+        public Dictionary<string, string> Methods
         {
-            get => _methods ?? (_methods = new InputMap<string>());
+            get => _methods ?? (_methods = new Dictionary<string, string>());
             set => _methods = value;
         }
 
         [Input("properties")]
-        private InputMap<Inputs.AdditionalPropertiesArgs>? _properties;
+        private Dictionary<string, Inputs.AdditionalPropertiesArgs>? _properties;
 
         /// <summary>
         /// A map from property name to propertySpec that describes the object's properties.
         /// </summary>
-        public InputMap<Inputs.AdditionalPropertiesArgs> Properties
+        public Dictionary<string, Inputs.AdditionalPropertiesArgs> Properties
         {
-            get => _properties ?? (_properties = new InputMap<Inputs.AdditionalPropertiesArgs>());
+            get => _properties ?? (_properties = new Dictionary<string, Inputs.AdditionalPropertiesArgs>());
             set => _properties = value;
         }
 
         [Input("required")]
-        private InputList<string>? _required;
+        private List<string>? _required;
 
         /// <summary>
         /// A list of the names of an object type's required properties. These properties must be set for inputs and will always be set for outputs.
         /// </summary>
-        public InputList<string> Required
+        public List<string> Required
         {
-            get => _required ?? (_required = new InputList<string>());
+            get => _required ?? (_required = new List<string>());
             set => _required = value;
         }
 
         [Input("requiredInputs")]
-        private InputList<string>? _requiredInputs;
+        private List<string>? _requiredInputs;
 
         /// <summary>
         /// A list of the names of the resource's required input properties.
         /// </summary>
-        public InputList<string> RequiredInputs
+        public List<string> RequiredInputs
         {
-            get => _requiredInputs ?? (_requiredInputs = new InputList<string>());
+            get => _requiredInputs ?? (_requiredInputs = new List<string>());
             set => _requiredInputs = value;
         }
 
         [Input("stateInputs")]
-        public Input<Inputs.ResourceDefinitionArgs>? StateInputs { get; set; }
+        public Inputs.ResourceDefinitionArgs? StateInputs { get; set; }
 
         public ResourceDefinitionArgs()
         {

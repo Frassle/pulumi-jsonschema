@@ -16,10 +16,10 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class OneOf1Args : global::Pulumi.ResourceArgs
     {
         [Input("items", required: true)]
-        public Input<Inputs.TypeSpecArgs> Items { get; set; } = null!;
+        public Inputs.TypeSpecArgs Items { get; set; } = null!;
 
         [Input("type", required: true)]
-        public Input<string> Type { get; set; } = null!;
+        public string Type { get; set; } = null!;
 
         public OneOf1Args()
         {

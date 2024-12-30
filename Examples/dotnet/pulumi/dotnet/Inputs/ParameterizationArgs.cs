@@ -16,13 +16,13 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class ParameterizationArgs : global::Pulumi.ResourceArgs
     {
         [Input("baseProvider")]
-        public Input<Inputs.BaseProviderArgs>? BaseProvider { get; set; }
+        public Inputs.BaseProviderArgs? BaseProvider { get; set; }
 
         /// <summary>
         /// The parameter for the provider.
         /// </summary>
         [Input("parameter")]
-        public Input<string>? Parameter { get; set; }
+        public string? Parameter { get; set; }
 
         public ParameterizationArgs()
         {

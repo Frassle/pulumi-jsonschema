@@ -16,19 +16,19 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class EnumTypeDefinitionArgs : global::Pulumi.ResourceArgs
     {
         [Input("enum", required: true)]
-        private InputList<Inputs.EnumValueDefinitionArgs>? _enum;
+        private List<Inputs.EnumValueDefinitionArgs>? _enum;
 
         /// <summary>
         /// The list of possible values for the enum
         /// </summary>
-        public InputList<Inputs.EnumValueDefinitionArgs> Enum
+        public List<Inputs.EnumValueDefinitionArgs> Enum
         {
-            get => _enum ?? (_enum = new InputList<Inputs.EnumValueDefinitionArgs>());
+            get => _enum ?? (_enum = new List<Inputs.EnumValueDefinitionArgs>());
             set => _enum = value;
         }
 
         [Input("type", required: true)]
-        public Input<Pulumi.Pulumi.EnumTypeSpecPropertiesType> Type { get; set; } = null!;
+        public Pulumi.Pulumi.EnumTypeSpecPropertiesType Type { get; set; }
 
         public EnumTypeDefinitionArgs()
         {

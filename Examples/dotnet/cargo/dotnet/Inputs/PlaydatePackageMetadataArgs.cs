@@ -19,10 +19,10 @@ namespace Pulumi.Cargo.Inputs
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("assets")]
-        public Input<object>? Assets { get; set; }
+        public object? Assets { get; set; }
 
         [Input("author")]
-        public Input<string>? Author { get; set; }
+        public string? Author { get; set; }
 
         /// <summary>
         /// A monotonically-increasing integer value used to indicate a unique version of your game. This can be set using an automated build process like Continuous Integration to avoid having to set the value by hand.
@@ -30,19 +30,19 @@ namespace Pulumi.Cargo.Inputs
         /// For sideloaded games, buildNumber is required and is used to determine when a newer version is available to download.
         /// </summary>
         [Input("buildNumber")]
-        public Input<int>? BuildNumber { get; set; }
+        public int? BuildNumber { get; set; }
 
         /// <summary>
         /// A unique identifier for your game, in reverse DNS notation.
         /// </summary>
         [Input("bundleId", required: true)]
-        public Input<string> BundleId { get; set; } = null!;
+        public string BundleId { get; set; } = null!;
 
         /// <summary>
         /// Optional. A content warning that displays when the user launches your game for the first time. The user will have the option of backing out and not launching your game if they choose.
         /// </summary>
         [Input("contentWarning")]
-        public Input<string>? ContentWarning { get; set; }
+        public string? ContentWarning { get; set; }
 
         /// <summary>
         /// Optional. A second content warning that displays on a second screen when the user launches your game for the first time. The user will have the option of backing out and not launching your game if they choose.
@@ -52,16 +52,16 @@ namespace Pulumi.Cargo.Inputs
         /// The string displayed on the content warning screen can only be so long before it will be truncated with an "…" character. Be sure to keep this in mind when designing your `content-warning` and `content-warning2` text.
         /// </summary>
         [Input("contentWarning2")]
-        public Input<string>? ContentWarning2 { get; set; }
+        public string? ContentWarning2 { get; set; }
 
         [Input("description")]
-        public Input<string>? Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         [Input("devAssets")]
-        public Input<object>? DevAssets { get; set; }
+        public object? DevAssets { get; set; }
 
         /// <summary>
         /// A directory of images that will be used by the launcher.
@@ -69,7 +69,7 @@ namespace Pulumi.Cargo.Inputs
         /// More in [official documentation](https://sdk.play.date/#pdxinfo).
         /// </summary>
         [Input("imagePath")]
-        public Input<string>? ImagePath { get; set; }
+        public string? ImagePath { get; set; }
 
         /// <summary>
         /// Should point to the path of a short audio file to be played as the game launch animation is taking place.
@@ -77,22 +77,22 @@ namespace Pulumi.Cargo.Inputs
         /// More in [official documentation](https://sdk.play.date/#pdxinfo).
         /// </summary>
         [Input("launchSoundPath")]
-        public Input<string>? LaunchSoundPath { get; set; }
+        public string? LaunchSoundPath { get; set; }
 
         /// <summary>
         /// A game version number, formatted any way you wish, that is displayed to players. It is not used to compute when updates should occur.
         /// </summary>
         [Input("name")]
-        public Input<string>? Name { get; set; }
+        public string? Name { get; set; }
 
         [Input("options")]
-        public Input<Inputs.ConfigurationArgs>? Options { get; set; }
+        public Inputs.ConfigurationArgs? Options { get; set; }
 
         [Input("support")]
-        public Input<Inputs.SupportArgs>? Support { get; set; }
+        public Inputs.SupportArgs? Support { get; set; }
 
         [Input("version")]
-        public Input<string>? Version { get; set; }
+        public string? Version { get; set; }
 
         public PlaydatePackageMetadataArgs()
         {

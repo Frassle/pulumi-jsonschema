@@ -13,10 +13,10 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class EnumValueDefinitionArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
@@ -24,19 +24,19 @@ namespace Pulumi.Pulumi.Inputs
         /// Indicates whether the value is deprecated.
         /// </summary>
         [Input("deprecationMessage")]
-        public Input<string>? DeprecationMessage { get; set; }
+        public string? DeprecationMessage { get; set; }
 
         /// <summary>
         /// The description of the enum value, if any. Interpreted as Markdown.
         /// </summary>
         [Input("description")]
-        public Input<string>? Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// If present, overrides the name of the enum value that would usually be derived from the value.
         /// </summary>
         [Input("name")]
-        public Input<string>? Name { get; set; }
+        public string? Name { get; set; }
 
         [Input("value", required: true)]
         public object Value { get; set; } = null!;

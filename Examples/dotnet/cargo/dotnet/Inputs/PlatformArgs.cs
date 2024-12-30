@@ -13,15 +13,15 @@ namespace Pulumi.Cargo.Inputs
     public sealed class PlatformArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("buildDependencies")]
-        private InputMap<object>? _buildDependencies;
+        private Dictionary<string, object>? _buildDependencies;
 
         /// <summary>
         /// You can depend on other Cargo-based crates for use in your build scripts.
@@ -41,22 +41,22 @@ namespace Pulumi.Cargo.Inputs
         /// dependencies need not coincide. Cargo is kept simpler and cleaner by
         /// using independent dependencies for independent purposes.
         /// </summary>
-        public InputMap<object> BuildDependencies
+        public Dictionary<string, object> BuildDependencies
         {
-            get => _buildDependencies ?? (_buildDependencies = new InputMap<object>());
+            get => _buildDependencies ?? (_buildDependencies = new Dictionary<string, object>());
             set => _buildDependencies = value;
         }
 
         [Input("buildDependencies0")]
-        private InputMap<object>? _buildDependencies0;
-        public InputMap<object> BuildDependencies0
+        private Dictionary<string, object>? _buildDependencies0;
+        public Dictionary<string, object> BuildDependencies0
         {
-            get => _buildDependencies0 ?? (_buildDependencies0 = new InputMap<object>());
+            get => _buildDependencies0 ?? (_buildDependencies0 = new Dictionary<string, object>());
             set => _buildDependencies0 = value;
         }
 
         [Input("dependencies")]
-        private InputMap<object>? _dependencies;
+        private Dictionary<string, object>? _dependencies;
 
         /// <summary>
         /// Cargo is configured to look for dependencies on [crates.io](https://crates.io) by default. Only
@@ -79,14 +79,14 @@ namespace Pulumi.Cargo.Inputs
         /// time = { path = "../time", version = "0.1.12" }
         /// ```
         /// </summary>
-        public InputMap<object> Dependencies
+        public Dictionary<string, object> Dependencies
         {
-            get => _dependencies ?? (_dependencies = new InputMap<object>());
+            get => _dependencies ?? (_dependencies = new Dictionary<string, object>());
             set => _dependencies = value;
         }
 
         [Input("devDependencies")]
-        private InputMap<object>? _devDependencies;
+        private Dictionary<string, object>? _devDependencies;
 
         /// <summary>
         /// The format of `[dev-dependencies]` is equivalent to `[dependencies]`:
@@ -118,17 +118,17 @@ namespace Pulumi.Cargo.Inputs
         /// &gt; packagers) may want to run tests within a crate, so providing a `version` if
         /// &gt; possible can still be beneficial.
         /// </summary>
-        public InputMap<object> DevDependencies
+        public Dictionary<string, object> DevDependencies
         {
-            get => _devDependencies ?? (_devDependencies = new InputMap<object>());
+            get => _devDependencies ?? (_devDependencies = new Dictionary<string, object>());
             set => _devDependencies = value;
         }
 
         [Input("devDependencies0")]
-        private InputMap<object>? _devDependencies0;
-        public InputMap<object> DevDependencies0
+        private Dictionary<string, object>? _devDependencies0;
+        public Dictionary<string, object> DevDependencies0
         {
-            get => _devDependencies0 ?? (_devDependencies0 = new InputMap<object>());
+            get => _devDependencies0 ?? (_devDependencies0 = new Dictionary<string, object>());
             set => _devDependencies0 = value;
         }
 

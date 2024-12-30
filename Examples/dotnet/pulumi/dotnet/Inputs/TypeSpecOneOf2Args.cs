@@ -16,10 +16,10 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class TypeSpecOneOf2Args : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        public Input<Inputs.AdditionalPropertiesArgs>? AdditionalProperties { get; set; }
+        public Inputs.AdditionalPropertiesArgs? AdditionalProperties { get; set; }
 
         [Input("type", required: true)]
-        public Input<string> Type { get; set; } = null!;
+        public string Type { get; set; } = null!;
 
         public TypeSpecOneOf2Args()
         {

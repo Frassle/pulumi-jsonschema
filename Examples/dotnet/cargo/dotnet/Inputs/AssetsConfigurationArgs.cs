@@ -19,19 +19,19 @@ namespace Pulumi.Cargo.Inputs
         /// Allow build assets for dependencies.
         /// </summary>
         [Input("dependencies")]
-        public Input<bool>? Dependencies { get; set; }
+        public bool? Dependencies { get; set; }
 
         [Input("followSymlinks")]
-        public Input<bool>? FollowSymlinks { get; set; }
+        public bool? FollowSymlinks { get; set; }
 
         [Input("method")]
-        public Input<Pulumi.Cargo.Method>? Method { get; set; }
+        public Pulumi.Cargo.Method? Method { get; set; }
 
         /// <summary>
         /// Allow overwriting existing files.
         /// </summary>
         [Input("overwrite")]
-        public Input<bool>? Overwrite { get; set; }
+        public bool? Overwrite { get; set; }
 
         public AssetsConfigurationArgs()
         {

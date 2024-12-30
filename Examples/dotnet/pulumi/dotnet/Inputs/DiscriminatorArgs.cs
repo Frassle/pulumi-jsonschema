@@ -16,22 +16,22 @@ namespace Pulumi.Pulumi.Inputs
     public sealed class DiscriminatorArgs : global::Pulumi.ResourceArgs
     {
         [Input("additionalProperties")]
-        private InputMap<object>? _additionalProperties;
-        public InputMap<object> AdditionalProperties
+        private Dictionary<string, object>? _additionalProperties;
+        public Dictionary<string, object> AdditionalProperties
         {
-            get => _additionalProperties ?? (_additionalProperties = new InputMap<object>());
+            get => _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>());
             set => _additionalProperties = value;
         }
 
         [Input("mapping")]
-        private InputMap<string>? _mapping;
+        private Dictionary<string, string>? _mapping;
 
         /// <summary>
         /// An optional object to hold mappings between payload values and schema names or references
         /// </summary>
-        public InputMap<string> Mapping
+        public Dictionary<string, string> Mapping
         {
-            get => _mapping ?? (_mapping = new InputMap<string>());
+            get => _mapping ?? (_mapping = new Dictionary<string, string>());
             set => _mapping = value;
         }
 
@@ -39,7 +39,7 @@ namespace Pulumi.Pulumi.Inputs
         /// PropertyName is the name of the property in the payload that will hold the discriminator value
         /// </summary>
         [Input("propertyName", required: true)]
-        public Input<string> PropertyName { get; set; } = null!;
+        public string PropertyName { get; set; } = null!;
 
         public DiscriminatorArgs()
         {
