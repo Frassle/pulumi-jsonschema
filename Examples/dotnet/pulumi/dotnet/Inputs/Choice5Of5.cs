@@ -15,6 +15,9 @@ namespace Pulumi.Pulumi.Inputs
     /// </summary>
     public sealed class Choice5Of5 : global::Pulumi.InvokeArgs
     {
+        /// <summary>
+        /// Informs the consumer of an alternative schema based on the value associated with it
+        /// </summary>
         [Input("discriminator")]
         public Inputs.Discriminator? Discriminator { get; set; }
 
@@ -30,6 +33,9 @@ namespace Pulumi.Pulumi.Inputs
             set => _oneOf = value;
         }
 
+        /// <summary>
+        /// The underlying primitive type of the union, if any
+        /// </summary>
         [Input("type")]
         public Pulumi.Pulumi.AdditionalPropertiesChoice5Of5Type? Type { get; set; }
 

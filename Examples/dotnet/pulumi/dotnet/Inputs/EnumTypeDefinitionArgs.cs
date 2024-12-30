@@ -27,6 +27,9 @@ namespace Pulumi.Pulumi.Inputs
             set => _enum = value;
         }
 
+        /// <summary>
+        /// The underlying primitive type of the enum
+        /// </summary>
         [Input("type", required: true)]
         public Input<Pulumi.Pulumi.EnumTypeSpecPropertiesType> Type { get; set; } = null!;
 

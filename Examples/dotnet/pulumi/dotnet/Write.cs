@@ -27,6 +27,9 @@ namespace Pulumi.Pulumi
 
     public sealed class WriteArgs : global::Pulumi.InvokeArgs
     {
+        /// <summary>
+        /// A description of the schema for a Pulumi Package
+        /// </summary>
         [Input("value", required: true)]
         public Inputs.PulumiPackageMetaschema Value { get; set; } = null!;
 
@@ -38,6 +41,9 @@ namespace Pulumi.Pulumi
 
     public sealed class WriteInvokeArgs : global::Pulumi.InvokeArgs
     {
+        /// <summary>
+        /// A description of the schema for a Pulumi Package
+        /// </summary>
         [Input("value", required: true)]
         public Input<Inputs.PulumiPackageMetaschemaArgs> Value { get; set; } = null!;
 

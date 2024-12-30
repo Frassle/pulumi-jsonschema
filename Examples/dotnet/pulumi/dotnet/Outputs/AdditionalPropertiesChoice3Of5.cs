@@ -16,6 +16,9 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class AdditionalPropertiesChoice3Of5
     {
+        /// <summary>
+        /// Describes an object or resource property
+        /// </summary>
         public readonly Outputs.InputsPropertiesAdditionalProperties? AdditionalProperties;
         public readonly string Type;
 

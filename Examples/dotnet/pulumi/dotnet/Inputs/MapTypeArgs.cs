@@ -15,6 +15,9 @@ namespace Pulumi.Pulumi.Inputs
     /// </summary>
     public sealed class MapTypeArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// Describes an object or resource property
+        /// </summary>
         [Input("additionalProperties")]
         public Input<Inputs.PropertyDefinitionArgs>? AdditionalProperties { get; set; }
 

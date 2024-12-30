@@ -27,6 +27,9 @@ namespace Pulumi.Cargo
 
     public sealed class WriteArgs : global::Pulumi.InvokeArgs
     {
+        /// <summary>
+        /// A schema for Cargo.toml.
+        /// </summary>
         [Input("value", required: true)]
         public Inputs.Root Value { get; set; } = null!;
 
@@ -38,6 +41,9 @@ namespace Pulumi.Cargo
 
     public sealed class WriteInvokeArgs : global::Pulumi.InvokeArgs
     {
+        /// <summary>
+        /// A schema for Cargo.toml.
+        /// </summary>
         [Input("value", required: true)]
         public Input<Inputs.RootArgs> Value { get; set; } = null!;
 

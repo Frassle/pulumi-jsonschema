@@ -36,7 +36,8 @@
         ],
         "properties": {
           "value": {
-            "$ref": "#/types/cargo:index:root"
+            "$ref": "#/types/cargo:index:root",
+            "description": "A schema for Cargo.toml."
           }
         }
       }
@@ -49,7 +50,8 @@
         ],
         "properties": {
           "value": {
-            "$ref": "#/types/cargo:index:root"
+            "$ref": "#/types/cargo:index:root",
+            "description": "A schema for Cargo.toml."
           }
         }
       },
@@ -97,7 +99,8 @@
           }
         },
         "assets": {
-          "$ref": "#/types/cargo:index:assetsConfiguration"
+          "$ref": "#/types/cargo:index:assetsConfiguration",
+          "description": "Options for assets paths resolution and how to build assets collection"
         }
       }
     },
@@ -185,7 +188,8 @@
           "description": "Package-specific overrides.\n\nThe package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can\ntarget individual versions of a package with syntax such as \u0060[profile.dev.package.\u0022foo:2.1.0\u0022]\u0060."
         },
         "panic": {
-          "$ref": "#/types/cargo:index:definitionsPanic"
+          "$ref": "#/types/cargo:index:definitionsPanic",
+          "description": "The \u0060panic\u0060 setting controls the [\u0060-C panic\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#panic) which controls which panic\nstrategy to use.\n\nWhen set to \u0060\u0022unwind\u0022\u0060, the actual value depends on the default of the target\nplatform. For example, the NVPTX platform does not support unwinding, so it\nalways uses \u0060\u0022abort\u0022\u0060.\n\nTests, benchmarks, build scripts, and proc macros ignore the \u0060panic\u0060 setting.\nThe \u0060rustc\u0060 test harness currently requires \u0060unwind\u0060 behavior. See the\n[\u0060panic-abort-tests\u0060](https://doc.rust-lang.org/cargo/reference/unstable.html#panic-abort-tests) unstable flag which enables \u0060abort\u0060 behavior.\n\nAdditionally, when using the \u0060abort\u0060 strategy and building a test, all of the\ndependencies will also be forced to built with the \u0060unwind\u0060 strategy."
         },
         "rpath": {
           "type": "boolean",
@@ -244,7 +248,8 @@
           "description": "The \u0060doctest\u0060 field indicates whether or not [documentation examples](https://doc.rust-lang.org/rustdoc/documentation-tests.html) are\ntested by default by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). This is only relevant for libraries, it\nhas no effect on other sections. The default is \u0060true\u0060 for the library.\n"
         },
         "edition": {
-          "$ref": "#/types/cargo:index:definitionsEdition"
+          "$ref": "#/types/cargo:index:definitionsEdition",
+          "description": "The \u0060edition\u0060 key affects which edition your package is compiled with. Cargo\nwill always generate packages via [\u0060cargo new\u0060](https://doc.rust-lang.org/cargo/commands/cargo-new.html) with the \u0060edition\u0060 key set to the\nlatest edition. Setting the \u0060edition\u0060 key in \u0060[package]\u0060 will affect all\ntargets/crates in the package, including test suites, benchmarks, binaries,\nexamples, etc."
         },
         "harness": {
           "type": "boolean",
@@ -335,7 +340,8 @@
           "description": "Package-specific overrides.\n\nThe package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can\ntarget individual versions of a package with syntax such as \u0060[profile.dev.package.\u0022foo:2.1.0\u0022]\u0060."
         },
         "panic": {
-          "$ref": "#/types/cargo:index:devPanic"
+          "$ref": "#/types/cargo:index:devPanic",
+          "description": "The \u0060panic\u0060 setting controls the [\u0060-C panic\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#panic) which controls which panic\nstrategy to use.\n\nWhen set to \u0060\u0022unwind\u0022\u0060, the actual value depends on the default of the target\nplatform. For example, the NVPTX platform does not support unwinding, so it\nalways uses \u0060\u0022abort\u0022\u0060.\n\nTests, benchmarks, build scripts, and proc macros ignore the \u0060panic\u0060 setting.\nThe \u0060rustc\u0060 test harness currently requires \u0060unwind\u0060 behavior. See the\n[\u0060panic-abort-tests\u0060](https://doc.rust-lang.org/cargo/reference/unstable.html#panic-abort-tests) unstable flag which enables \u0060abort\u0060 behavior.\n\nAdditionally, when using the \u0060abort\u0060 strategy and building a test, all of the\ndependencies will also be forced to built with the \u0060unwind\u0060 strategy."
         },
         "rpath": {
           "type": "boolean",
@@ -409,7 +415,8 @@
           "description": "The \u0060doctest\u0060 field indicates whether or not [documentation examples](https://doc.rust-lang.org/rustdoc/documentation-tests.html) are\ntested by default by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). This is only relevant for libraries, it\nhas no effect on other sections. The default is \u0060true\u0060 for the library.\n"
         },
         "edition": {
-          "$ref": "#/types/cargo:index:itemsEdition"
+          "$ref": "#/types/cargo:index:itemsEdition",
+          "description": "The \u0060edition\u0060 key affects which edition your package is compiled with. Cargo\nwill always generate packages via [\u0060cargo new\u0060](https://doc.rust-lang.org/cargo/commands/cargo-new.html) with the \u0060edition\u0060 key set to the\nlatest edition. Setting the \u0060edition\u0060 key in \u0060[package]\u0060 will affect all\ntargets/crates in the package, including test suites, benchmarks, binaries,\nexamples, etc."
         },
         "harness": {
           "type": "boolean",
@@ -499,7 +506,8 @@
           "description": "The \u0060doctest\u0060 field indicates whether or not [documentation examples](https://doc.rust-lang.org/rustdoc/documentation-tests.html) are\ntested by default by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). This is only relevant for libraries, it\nhas no effect on other sections. The default is \u0060true\u0060 for the library.\n"
         },
         "edition": {
-          "$ref": "#/types/cargo:index:libEdition"
+          "$ref": "#/types/cargo:index:libEdition",
+          "description": "The \u0060edition\u0060 key affects which edition your package is compiled with. Cargo\nwill always generate packages via [\u0060cargo new\u0060](https://doc.rust-lang.org/cargo/commands/cargo-new.html) with the \u0060edition\u0060 key set to the\nlatest edition. Setting the \u0060edition\u0060 key in \u0060[package]\u0060 will affect all\ntargets/crates in the package, including test suites, benchmarks, binaries,\nexamples, etc."
         },
         "harness": {
           "type": "boolean",
@@ -565,7 +573,8 @@
           }
         },
         "playdate": {
-          "$ref": "#/types/cargo:index:playdatePackageMetadata"
+          "$ref": "#/types/cargo:index:playdatePackageMetadata",
+          "description": "Metadata and build configuration."
         }
       }
     },
@@ -673,7 +682,8 @@
           }
         },
         "metadata": {
-          "$ref": "#/types/cargo:index:metadata"
+          "$ref": "#/types/cargo:index:metadata",
+          "description": "Cargo by default will warn about unused keys in \u0060Cargo.toml\u0060 to assist in\ndetecting typos and such. The \u0060package.metadata\u0060 table, however, is completely\nignored by Cargo and will not be warned about. This section can be used for\ntools which would like to store package configuration in \u0060Cargo.toml\u0060. For\nexample:\n\n\u0060\u0060\u0060toml\n[package]\nname = \u0022...\u0022\n# ...\n\n# Metadata used when generating an Android APK, for example.\n[package.metadata.android]\npackage-name = \u0022my-awesome-android-app\u0022\nassets = \u0022path/to/static\u0022\n\u0060\u0060\u0060\n"
         },
         "name": {
           "type": "string",
@@ -698,7 +708,8 @@
           "description": "unhandled schema: Json.Schema.AnyOfKeyword"
         },
         "resolver": {
-          "$ref": "#/types/cargo:index:resolver"
+          "$ref": "#/types/cargo:index:resolver",
+          "description": "A different feature resolver algorithm can be used by specifying the resolver version in Cargo.toml like this:\n\n[package]\nname = \u0022my-package\u0022\nversion = \u00221.0.0\u0022\nresolver = \u00222\u0022\n\nThe version \u00221\u0022 resolver is the original resolver that shipped with Cargo up to version 1.50. The default is \u00222\u0022 if the root package specifies edition = \u00222021\u0022 or a newer edition. Otherwise the default is \u00221\u0022.\n\nThe version \u00222\u0022 resolver introduces changes in feature unification. See the features chapter for more details.\n\nThe resolver is a global option that affects the entire workspace. The resolver version in dependencies is ignored, only the value in the top-level package will be used. If using a virtual workspace, the version should be specified in the [workspace] table, for example:\n\n[workspace]\nmembers = [\u0022member1\u0022, \u0022member2\u0022]\nresolver = \u00222\u0022"
         },
         "rustVersion": {
           "$ref": "pulumi.json#/Any",
@@ -838,7 +849,8 @@
           "description": "A game version number, formatted any way you wish, that is displayed to players. It is not used to compute when updates should occur."
         },
         "options": {
-          "$ref": "#/types/cargo:index:configuration"
+          "$ref": "#/types/cargo:index:configuration",
+          "description": "Package build options."
         },
         "support": {
           "$ref": "#/types/cargo:index:support"
@@ -905,7 +917,8 @@
           "description": "Package-specific overrides.\n\nThe package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can\ntarget individual versions of a package with syntax such as \u0060[profile.dev.package.\u0022foo:2.1.0\u0022]\u0060."
         },
         "panic": {
-          "$ref": "#/types/cargo:index:panic"
+          "$ref": "#/types/cargo:index:panic",
+          "description": "The \u0060panic\u0060 setting controls the [\u0060-C panic\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#panic) which controls which panic\nstrategy to use.\n\nWhen set to \u0060\u0022unwind\u0022\u0060, the actual value depends on the default of the target\nplatform. For example, the NVPTX platform does not support unwinding, so it\nalways uses \u0060\u0022abort\u0022\u0060.\n\nTests, benchmarks, build scripts, and proc macros ignore the \u0060panic\u0060 setting.\nThe \u0060rustc\u0060 test harness currently requires \u0060unwind\u0060 behavior. See the\n[\u0060panic-abort-tests\u0060](https://doc.rust-lang.org/cargo/reference/unstable.html#panic-abort-tests) unstable flag which enables \u0060abort\u0060 behavior.\n\nAdditionally, when using the \u0060abort\u0060 strategy and building a test, all of the\ndependencies will also be forced to built with the \u0060unwind\u0060 strategy."
         },
         "rpath": {
           "type": "boolean",
@@ -970,7 +983,8 @@
           "description": "\nThe \u0060documentation\u0060 field specifies a URL to a website hosting the crate\u0027s\ndocumentation. If no URL is specified in the manifest file, [crates.io](https://crates.io) will\nautomatically link your crate to the corresponding [docs.rs](https://docs.rs) page.\n\n\u0060\u0060\u0060toml\n[package]\n# ...\ndocumentation = \u0022https://docs.rs/bitflags\u0022\n\u0060\u0060\u0060\n"
         },
         "edition": {
-          "$ref": "#/types/cargo:index:packageEdition"
+          "$ref": "#/types/cargo:index:packageEdition",
+          "description": "The \u0060edition\u0060 key affects which edition your package is compiled with. Cargo\nwill always generate packages via [\u0060cargo new\u0060](https://doc.rust-lang.org/cargo/commands/cargo-new.html) with the \u0060edition\u0060 key set to the\nlatest edition. Setting the \u0060edition\u0060 key in \u0060[package]\u0060 will affect all\ntargets/crates in the package, including test suites, benchmarks, binaries,\nexamples, etc."
         },
         "exclude": {
           "type": "array",
@@ -1081,7 +1095,8 @@
           "description": "Package-specific overrides.\n\nThe package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can\ntarget individual versions of a package with syntax such as \u0060[profile.dev.package.\u0022foo:2.1.0\u0022]\u0060."
         },
         "panic": {
-          "$ref": "#/types/cargo:index:releasePanic"
+          "$ref": "#/types/cargo:index:releasePanic",
+          "description": "The \u0060panic\u0060 setting controls the [\u0060-C panic\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#panic) which controls which panic\nstrategy to use.\n\nWhen set to \u0060\u0022unwind\u0022\u0060, the actual value depends on the default of the target\nplatform. For example, the NVPTX platform does not support unwinding, so it\nalways uses \u0060\u0022abort\u0022\u0060.\n\nTests, benchmarks, build scripts, and proc macros ignore the \u0060panic\u0060 setting.\nThe \u0060rustc\u0060 test harness currently requires \u0060unwind\u0060 behavior. See the\n[\u0060panic-abort-tests\u0060](https://doc.rust-lang.org/cargo/reference/unstable.html#panic-abort-tests) unstable flag which enables \u0060abort\u0060 behavior.\n\nAdditionally, when using the \u0060abort\u0060 strategy and building a test, all of the\ndependencies will also be forced to built with the \u0060unwind\u0060 strategy."
         },
         "rpath": {
           "type": "boolean",
@@ -1210,7 +1225,8 @@
           "$ref": "#/types/cargo:index:lib"
         },
         "package": {
-          "$ref": "#/types/cargo:index:package"
+          "$ref": "#/types/cargo:index:package",
+          "description": "The only field required by Cargo is [\u0060name\u0060](https://doc.rust-lang.org/cargo/reference/manifest.html#the-name-field).\n If publishing to a registry, the registry may\nrequire additional fields. See the notes below and [the publishing chapter](https://doc.rust-lang.org/cargo/reference/publishing.html) for requirements for publishing to [crates.io](https://crates.io/)."
         },
         "patch": {
           "type": "object",
@@ -1223,7 +1239,8 @@
           "description": "The \u0060[patch]\u0060 section of \u0060Cargo.toml\u0060 can be used to override dependencies\nwith other copies. The syntax is similar to the\n[\u0060[dependencies]\u0060](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) section.\n\n"
         },
         "profile": {
-          "$ref": "#/types/cargo:index:profiles"
+          "$ref": "#/types/cargo:index:profiles",
+          "description": "Profiles provide a way to alter the compiler settings, influencing things like optimizations and debugging symbols.\n\nCargo has 4 built-in profiles: dev, release, test, and bench. It automatically chooses the profile based on which command is being run, the package and target that is being built, and command-line flags like --release."
         },
         "project": {
           "$ref": "pulumi.json#/Any",
@@ -1249,7 +1266,8 @@
           "description": "Files located under the [\u0060tests\u0060 directory](https://doc.rust-lang.org/cargo/guide/project-layout.html) are integration\ntests. When you run [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html), Cargo will compile each of these files as\na separate crate, and execute them.\n\nIntegration tests can use the public API of the package\u0027s library. They are\nalso linked with the [\u0060[dependencies]\u0060](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html) and\n[\u0060[dev-dependencies]\u0060](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#development-dependencies) defined in \u0060Cargo.toml\u0060.\n\nIf you want to share code among multiple integration tests, you can place it\nin a separate module such as \u0060tests/common/mod.rs\u0060 and then put \u0060mod common;\u0060\nin each test to import it.\n\nEach integration test results in a separate executable binary, and [\u0060cargo\ntest\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) will run them serially. In some cases this can be inefficient, as it\ncan take longer to compile, and may not make full use of multiple CPUs when\nrunning the tests. If you have a lot of integration tests, you may want to\nconsider creating a single integration test, and split the tests into multiple\nmodules. The libtest harness will automatically find all of the \u0060#[test]\u0060\nannotated functions and run them in parallel. You can pass module names to\n[\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html) to only run the tests within that module.\n\nBinary targets are automatically built if there is an integration test. This\nallows an integration test to execute the binary to exercise and test its\nbehavior. The \u0060CARGO_BIN_EXE_\u003Cname\u003E\u0060 [environment variable](https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-crates) is set when the\nintegration test is built so that it can use the [\u0060env\u0060 macro](https://doc.rust-lang.org/std/macro.env.html) to locate the\nexecutable."
         },
         "workspace": {
-          "$ref": "#/types/cargo:index:workspace"
+          "$ref": "#/types/cargo:index:workspace",
+          "description": "The \u0060[workspace]\u0060 table in \u0060Cargo.toml\u0060 defines which packages are members of\nthe workspace:\n\n\u0060\u0060\u0060toml\n[workspace]\nmembers = [\u0022member1\u0022, \u0022path/to/member2\u0022, \u0022crates/*\u0022]\nexclude = [\u0022crates/foo\u0022, \u0022path/to/other\u0022]\n\u0060\u0060\u0060\n\nAn empty \u0060[workspace]\u0060 table can be used with a \u0060[package]\u0060 to conveniently\ncreate a workspace with the package and all of its path dependencies.\n\nAll [\u0060path\u0060 dependencies](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#specifying-path-dependencies) residing in the workspace directory automatically\nbecome members. Additional members can be listed with the \u0060members\u0060 key, which\nshould be an array of strings containing directories with \u0060Cargo.toml\u0060 files.\n\nThe \u0060members\u0060 list also supports [globs](https://docs.rs/glob/0.3.0/glob/struct.Pattern.html) to match multiple paths, using\ntypical filename glob patterns like \u0060*\u0060 and \u0060?\u0060.\n\nThe \u0060exclude\u0060 key can be used to prevent paths from being included in a\nworkspace. This can be useful if some path dependencies aren\u0027t desired to be\nin the workspace at all, or using a glob pattern and you want to remove a\ndirectory.\n\nAn empty \u0060[workspace]\u0060 table can be used with a \u0060[package]\u0060 to conveniently\ncreate a workspace with the package and all of its path dependencies."
         }
       }
     },
@@ -1300,7 +1318,8 @@
           "description": "The \u0060doctest\u0060 field indicates whether or not [documentation examples](https://doc.rust-lang.org/rustdoc/documentation-tests.html) are\ntested by default by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). This is only relevant for libraries, it\nhas no effect on other sections. The default is \u0060true\u0060 for the library.\n"
         },
         "edition": {
-          "$ref": "#/types/cargo:index:edition"
+          "$ref": "#/types/cargo:index:edition",
+          "description": "The \u0060edition\u0060 key affects which edition your package is compiled with. Cargo\nwill always generate packages via [\u0060cargo new\u0060](https://doc.rust-lang.org/cargo/commands/cargo-new.html) with the \u0060edition\u0060 key set to the\nlatest edition. Setting the \u0060edition\u0060 key in \u0060[package]\u0060 will affect all\ntargets/crates in the package, including test suites, benchmarks, binaries,\nexamples, etc."
         },
         "harness": {
           "type": "boolean",
@@ -1391,7 +1410,8 @@
           "description": "Package-specific overrides.\n\nThe package name is a [Package ID Spec](https://doc.rust-lang.org/cargo/reference/pkgid-spec.html), so you can\ntarget individual versions of a package with syntax such as \u0060[profile.dev.package.\u0022foo:2.1.0\u0022]\u0060."
         },
         "panic": {
-          "$ref": "#/types/cargo:index:testPanic"
+          "$ref": "#/types/cargo:index:testPanic",
+          "description": "The \u0060panic\u0060 setting controls the [\u0060-C panic\u0060 flag](https://doc.rust-lang.org/rustc/codegen-options/index.html#panic) which controls which panic\nstrategy to use.\n\nWhen set to \u0060\u0022unwind\u0022\u0060, the actual value depends on the default of the target\nplatform. For example, the NVPTX platform does not support unwinding, so it\nalways uses \u0060\u0022abort\u0022\u0060.\n\nTests, benchmarks, build scripts, and proc macros ignore the \u0060panic\u0060 setting.\nThe \u0060rustc\u0060 test harness currently requires \u0060unwind\u0060 behavior. See the\n[\u0060panic-abort-tests\u0060](https://doc.rust-lang.org/cargo/reference/unstable.html#panic-abort-tests) unstable flag which enables \u0060abort\u0060 behavior.\n\nAdditionally, when using the \u0060abort\u0060 strategy and building a test, all of the\ndependencies will also be forced to built with the \u0060unwind\u0060 strategy."
         },
         "rpath": {
           "type": "boolean",
@@ -1435,7 +1455,8 @@
           "description": "The \u0060doctest\u0060 field indicates whether or not [documentation examples](https://doc.rust-lang.org/rustdoc/documentation-tests.html) are\ntested by default by [\u0060cargo test\u0060](https://doc.rust-lang.org/cargo/commands/cargo-test.html). This is only relevant for libraries, it\nhas no effect on other sections. The default is \u0060true\u0060 for the library.\n"
         },
         "edition": {
-          "$ref": "#/types/cargo:index:testItemsEdition"
+          "$ref": "#/types/cargo:index:testItemsEdition",
+          "description": "The \u0060edition\u0060 key affects which edition your package is compiled with. Cargo\nwill always generate packages via [\u0060cargo new\u0060](https://doc.rust-lang.org/cargo/commands/cargo-new.html) with the \u0060edition\u0060 key set to the\nlatest edition. Setting the \u0060edition\u0060 key in \u0060[package]\u0060 will affect all\ntargets/crates in the package, including test suites, benchmarks, binaries,\nexamples, etc."
         },
         "harness": {
           "type": "boolean",
@@ -1548,10 +1569,12 @@
           "description": "The \u0060workspace.metadata\u0060 table is ignored by Cargo and will not be warned\nabout. This section can be used for tools that would like to store workspace\nconfiguration in \u0060Cargo.toml\u0060. For example:\n\n\u0060\u0060\u0060toml\n[workspace]\nmembers = [\u0022member1\u0022, \u0022member2\u0022]\n\n[workspace.metadata.webcontents]\nroot = \u0022path/to/webproject\u0022\ntool = [\u0022npm\u0022, \u0022run\u0022, \u0022build\u0022]\n# ...\n\u0060\u0060\u0060\n\nThere is a similar set of tables at the package level at\n\u0060package.metadata\u0060. While cargo does not specify a\nformat for the content of either of these tables, it is suggested that\nexternal tools may wish to use them in a consistent fashion, such as referring\nto the data in \u0060workspace.metadata\u0060 if data is missing from \u0060package.metadata\u0060,\nif that makes sense for the tool in question.\n"
         },
         "package": {
-          "$ref": "#/types/cargo:index:propertiesPackage"
+          "$ref": "#/types/cargo:index:propertiesPackage",
+          "description": "The \u0060workspace.package\u0060 table is where you define keys that can be\ninherited by members of a workspace. These keys can be inherited by\ndefining them in the member package with \u0060{key}.workspace = true\u0060.\n\nKeys that are supported:\n\n|                |                 |\n|----------------|-----------------|\n| \u0060authors\u0060      | \u0060categories\u0060    |\n| \u0060description\u0060  | \u0060documentation\u0060 |\n| \u0060edition\u0060      | \u0060exclude\u0060       |\n| \u0060homepage\u0060     | \u0060include\u0060       |\n| \u0060keywords\u0060     | \u0060license\u0060       |\n| \u0060license-file\u0060 | \u0060publish\u0060       |\n| \u0060readme\u0060       | \u0060repository\u0060    |\n| \u0060rust-version\u0060 | \u0060version\u0060       |\n\n- \u0060license-file\u0060 and \u0060readme\u0060 are relative to the workspace root\n- \u0060include\u0060 and \u0060exclude\u0060 are relative to your package root\n\nExample:\n\u0060\u0060\u0060toml\n# [PROJECT_DIR]/Cargo.toml\n[workspace]\nmembers = [\u0022bar\u0022]\n\n[workspace.package]\nversion = \u00221.2.3\u0022\nauthors = [\u0022Nice Folks\u0022]\ndescription = \u0022A short description of my package\u0022\ndocumentation = \u0022https://example.com/bar\u0022\n\u0060\u0060\u0060\n\n\u0060\u0060\u0060toml\n# [PROJECT_DIR]/bar/Cargo.toml\n[package]\nname = \u0022bar\u0022\nversion.workspace = true\nauthors.workspace = true\ndescription.workspace = true\ndocumentation.workspace = true\n\u0060\u0060\u0060"
         },
         "resolver": {
-          "$ref": "#/types/cargo:index:definitionsResolver"
+          "$ref": "#/types/cargo:index:definitionsResolver",
+          "description": "A different feature resolver algorithm can be used by specifying the resolver version in Cargo.toml like this:\n\n[package]\nname = \u0022my-package\u0022\nversion = \u00221.0.0\u0022\nresolver = \u00222\u0022\n\nThe version \u00221\u0022 resolver is the original resolver that shipped with Cargo up to version 1.50. The default is \u00222\u0022 if the root package specifies edition = \u00222021\u0022 or a newer edition. Otherwise the default is \u00221\u0022.\n\nThe version \u00222\u0022 resolver introduces changes in feature unification. See the features chapter for more details.\n\nThe resolver is a global option that affects the entire workspace. The resolver version in dependencies is ignored, only the value in the top-level package will be used. If using a virtual workspace, the version should be specified in the [workspace] table, for example:\n\n[workspace]\nmembers = [\u0022member1\u0022, \u0022member2\u0022]\nresolver = \u00222\u0022"
         }
       }
     }

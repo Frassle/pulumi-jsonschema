@@ -64,6 +64,9 @@ namespace Pulumi.Cargo.Outputs
         /// A game version number, formatted any way you wish, that is displayed to players. It is not used to compute when updates should occur.
         /// </summary>
         public readonly string? Name;
+        /// <summary>
+        /// Package build options.
+        /// </summary>
         public readonly Outputs.Configuration? Options;
         public readonly Outputs.Support? Support;
         public readonly string? Version;

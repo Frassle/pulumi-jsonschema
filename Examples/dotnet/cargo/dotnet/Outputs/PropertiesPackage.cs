@@ -108,6 +108,13 @@ namespace Pulumi.Cargo.Outputs
         /// ```
         /// </summary>
         public readonly string? Documentation;
+        /// <summary>
+        /// The `edition` key affects which edition your package is compiled with. Cargo
+        /// will always generate packages via [`cargo new`](https://doc.rust-lang.org/cargo/commands/cargo-new.html) with the `edition` key set to the
+        /// latest edition. Setting the `edition` key in `[package]` will affect all
+        /// targets/crates in the package, including test suites, benchmarks, binaries,
+        /// examples, etc.
+        /// </summary>
         public readonly Pulumi.Cargo.PackageEdition? Edition;
         /// <summary>
         /// You can explicitly specify that a set of file patterns should be ignored or

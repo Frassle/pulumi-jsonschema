@@ -16,6 +16,9 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class OneOf0
     {
+        /// <summary>
+        /// The primitive type, if any
+        /// </summary>
         public readonly Pulumi.Pulumi.PropertiesType Type;
 
         [OutputConstructor]

@@ -35,6 +35,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("description")]
         public string? Description { get; set; }
 
+        /// <summary>
+        /// Describes an object type
+        /// </summary>
         [Input("inputs")]
         public Inputs.ObjectTypeDetails? Inputs { get; set; }
 

@@ -119,6 +119,9 @@ namespace Pulumi.Pulumi.Inputs
             set => _requiredInputs = value;
         }
 
+        /// <summary>
+        /// Describes a resource or component.
+        /// </summary>
         [Input("stateInputs")]
         public Input<Inputs.ObjectTypeSpecArgs>? StateInputs { get; set; }
 

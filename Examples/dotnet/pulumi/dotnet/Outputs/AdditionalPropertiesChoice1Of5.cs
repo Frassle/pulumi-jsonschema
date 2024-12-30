@@ -16,6 +16,9 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class AdditionalPropertiesChoice1Of5
     {
+        /// <summary>
+        /// The primitive type, if any
+        /// </summary>
         public readonly Pulumi.Pulumi.Choice1Of5Type Type;
 
         [OutputConstructor]

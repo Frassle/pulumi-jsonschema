@@ -15,6 +15,9 @@ namespace Pulumi.Pulumi.Inputs
     /// </summary>
     public sealed class TypeSpecOneOf2 : global::Pulumi.InvokeArgs
     {
+        /// <summary>
+        /// Describes an object or resource property
+        /// </summary>
         [Input("additionalProperties")]
         public Inputs.AdditionalProperties? AdditionalProperties { get; set; }
 

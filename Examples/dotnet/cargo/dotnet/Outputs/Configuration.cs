@@ -17,6 +17,9 @@ namespace Pulumi.Cargo.Outputs
     public sealed class Configuration
     {
         public readonly ImmutableDictionary<string, object>? AdditionalProperties;
+        /// <summary>
+        /// Options for assets paths resolution and how to build assets collection
+        /// </summary>
         public readonly Outputs.AssetsConfiguration? Assets;
 
         [OutputConstructor]

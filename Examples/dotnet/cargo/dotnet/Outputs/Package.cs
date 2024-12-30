@@ -170,6 +170,24 @@ namespace Pulumi.Cargo.Outputs
         /// </summary>
         public readonly string? Links;
         public readonly ImmutableArray<string> Metabuild;
+        /// <summary>
+        /// Cargo by default will warn about unused keys in `Cargo.toml` to assist in
+        /// detecting typos and such. The `package.metadata` table, however, is completely
+        /// ignored by Cargo and will not be warned about. This section can be used for
+        /// tools which would like to store package configuration in `Cargo.toml`. For
+        /// example:
+        /// 
+        /// ```toml
+        /// [package]
+        /// name = "..."
+        /// # ...
+        /// 
+        /// # Metadata used when generating an Android APK, for example.
+        /// [package.metadata.android]
+        /// package-name = "my-awesome-android-app"
+        /// assets = "path/to/static"
+        /// ```
+        /// </summary>
         public readonly Outputs.Metadata? Metadata;
         /// <summary>
         /// The package name is an identifier used to refer to the package. It is used
@@ -198,6 +216,24 @@ namespace Pulumi.Cargo.Outputs
         /// unhandled schema: Json.Schema.AnyOfKeyword
         /// </summary>
         public readonly object? Repository;
+        /// <summary>
+        /// A different feature resolver algorithm can be used by specifying the resolver version in Cargo.toml like this:
+        /// 
+        /// [package]
+        /// name = "my-package"
+        /// version = "1.0.0"
+        /// resolver = "2"
+        /// 
+        /// The version "1" resolver is the original resolver that shipped with Cargo up to version 1.50. The default is "2" if the root package specifies edition = "2021" or a newer edition. Otherwise the default is "1".
+        /// 
+        /// The version "2" resolver introduces changes in feature unification. See the features chapter for more details.
+        /// 
+        /// The resolver is a global option that affects the entire workspace. The resolver version in dependencies is ignored, only the value in the top-level package will be used. If using a virtual workspace, the version should be specified in the [workspace] table, for example:
+        /// 
+        /// [workspace]
+        /// members = ["member1", "member2"]
+        /// resolver = "2"
+        /// </summary>
         public readonly Pulumi.Cargo.Resolver? Resolver;
         /// <summary>
         /// unhandled schema: Json.Schema.AnyOfKeyword

@@ -23,6 +23,9 @@ namespace Pulumi.Cargo.Inputs
             set => _additionalProperties = value;
         }
 
+        /// <summary>
+        /// Options for assets paths resolution and how to build assets collection
+        /// </summary>
         [Input("assets")]
         public Input<Inputs.AssetsConfigurationArgs>? Assets { get; set; }
 

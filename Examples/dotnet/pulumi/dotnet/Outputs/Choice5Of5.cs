@@ -16,11 +16,17 @@ namespace Pulumi.Pulumi.Outputs
     [OutputType]
     public sealed class Choice5Of5
     {
+        /// <summary>
+        /// Informs the consumer of an alternative schema based on the value associated with it
+        /// </summary>
         public readonly Outputs.Discriminator? Discriminator;
         /// <summary>
         /// If present, indicates that values of the type may be one of any of the listed types
         /// </summary>
         public readonly ImmutableArray<Outputs.PropertiesAdditionalProperties> OneOf;
+        /// <summary>
+        /// The underlying primitive type of the union, if any
+        /// </summary>
         public readonly Pulumi.Pulumi.AdditionalPropertiesChoice5Of5Type? Type;
 
         [OutputConstructor]

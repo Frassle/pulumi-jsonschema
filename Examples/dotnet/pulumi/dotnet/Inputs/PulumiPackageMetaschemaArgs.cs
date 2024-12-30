@@ -21,6 +21,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("attribution")]
         public Input<string>? Attribution { get; set; }
 
+        /// <summary>
+        /// The package's configuration variables.
+        /// </summary>
         [Input("config")]
         public Input<Inputs.ConfigArgs>? Config { get; set; }
 
@@ -90,6 +93,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("logoUrl")]
         public Input<string>? LogoUrl { get; set; }
 
+        /// <summary>
+        /// Format metadata about this package.
+        /// </summary>
         [Input("meta")]
         public Input<Inputs.MetaArgs>? Meta { get; set; }
 
@@ -99,6 +105,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("name", required: true)]
         public Input<string> Name { get; set; } = null!;
 
+        /// <summary>
+        /// An optional object to define parameterization for the package.
+        /// </summary>
         [Input("parameterization")]
         public Input<Inputs.ParameterizationArgs>? Parameterization { get; set; }
 
@@ -108,6 +117,9 @@ namespace Pulumi.Pulumi.Inputs
         [Input("pluginDownloadURL")]
         public Input<string>? PluginDownloadURL { get; set; }
 
+        /// <summary>
+        /// Describes a resource or component.
+        /// </summary>
         [Input("provider")]
         public Input<Inputs.ObjectTypeSpecArgs>? Provider { get; set; }
 

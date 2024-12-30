@@ -20,6 +20,9 @@ namespace Pulumi.Pulumi.Outputs
         /// Freeform text attribution of derived work, if required.
         /// </summary>
         public readonly string? Attribution;
+        /// <summary>
+        /// The package's configuration variables.
+        /// </summary>
         public readonly Outputs.Config? Config;
         /// <summary>
         /// The description of the package. Descriptions are interpreted as Markdown.
@@ -53,16 +56,25 @@ namespace Pulumi.Pulumi.Outputs
         /// The URL of the package's logo, if any.
         /// </summary>
         public readonly string? LogoUrl;
+        /// <summary>
+        /// Format metadata about this package.
+        /// </summary>
         public readonly Outputs.Meta? Meta;
         /// <summary>
         /// The unqualified name of the package (e.g. "aws", "azure", "gcp", "kubernetes", "random")
         /// </summary>
         public readonly string Name;
+        /// <summary>
+        /// An optional object to define parameterization for the package.
+        /// </summary>
         public readonly Outputs.Parameterization? Parameterization;
         /// <summary>
         /// The URL to use when downloading the provider plugin binary.
         /// </summary>
         public readonly string? PluginDownloadURL;
+        /// <summary>
+        /// Describes a resource or component.
+        /// </summary>
         public readonly Outputs.ObjectTypeSpec? Provider;
         /// <summary>
         /// The name of the person or organization that authored and published the package.
