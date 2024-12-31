@@ -138,7 +138,8 @@ type SchemaTest =
 
     member this.RoundTrip() =
         // Use Json.Schema.Data to generate some json, check we can read and write it
-        let data = Json.Schema.DataGeneration.JsonSchemaExtensions.GenerateData(this.Schema)
+        let data = lock this.Schema (fun () ->
+            Json.Schema.DataGeneration.JsonSchemaExtensions.GenerateData(this.Schema))
 
         if not data.IsSuccess then
             failwithf "Could not generate JSON data: %s" data.ErrorMessage
